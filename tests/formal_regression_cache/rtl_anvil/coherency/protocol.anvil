@@ -1,0 +1,81 @@
+import "../common/types.anvil"
+
+enum coh_op {
+    coh_get_s, 
+    coh_get_m, 
+    coh_writeback
+}
+
+enum snoop_op {
+    snoop_downgrade,
+    snoop_invalidate
+}
+
+enum grant_op {
+    grant_s,
+    grant_e,
+    grant_m,
+    grant_writeback_done
+}
+
+enum ack_op {
+    ack_invalidate,
+    ack_downgrade,
+    ack_not_present
+}
+
+struct coh_req {
+    requester : logic[1],
+    trans_id  : logic[8],
+    op        : coh_op,
+    addr      : logic[64],
+    data      : logic[512]
+}
+
+struct coh_rsp {
+    trans_id : logic[8],
+    op       : grant_op,
+    state : mesi_state,
+    data  : logic[512]
+}
+
+struct snoop_req {
+    trans_id : logic[8],
+    op       : snoop_op,
+    addr     : logic[64]
+}
+
+struct snoop_rsp {
+    trans_id : logic[8],
+    op       : ack_op,
+    present : logic,
+    dirty   : logic,
+    data    : logic[512]
+}
+
+chan cache_directory_ch {
+    left req       : (coh_req@#1)   @dyn-@dyn,
+    right rsp      : (coh_rsp@#1)   @dyn-@dyn,
+    right snoop    : (snoop_req@#1) @dyn-@dyn,
+    left snoop_rsp : (snoop_rsp@#1) @dyn-@dyn
+}
+
+enum mem_op  { 
+    mem_read, 
+    mem_write 
+}
+
+struct mem_req {
+    op   : mem_op,
+    addr : logic[64], 
+    data : logic[512]
+}
+
+struct mem_rsp {
+    data : logic[512] 
+}
+
+chan memory_ch {
+    left req  : (mem_req@#1) @dyn-@dyn,
+    right rsp : (mem_rsp@#1) @dyn-@dyn
+}

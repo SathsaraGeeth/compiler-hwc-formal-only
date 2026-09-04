@@ -1,0 +1,8 @@
+mir.version 1
+
+machine @bad_state() -> (out : 4s<8>) {
+^entry:
+  %out : 4s<8> = state_read @missing
+  yield %out
+}
+endmachine

@@ -1,0 +1,5 @@
+Top level design units:
+    delayed_handshake
+
+eir.version 1
+

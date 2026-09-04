@@ -1,0 +1,18 @@
+Top level design units:
+    directory_muexc
+
+1 sort bitvec 1
+2 input 1 i_clk
+3 const 1 0
+4 state 1 formal_initialized
+5 const 1 1
+6 state 1 muexc_cache_req_accepted.clock_previous
+7 eq 1 6 2
+8 or 1 4 7
+9 init 1 4 3
+10 next 1 4 5
+11 next 1 6 2
+12 output 3 f_req_ready_0
+13 output 3 f_req_ready_1
+14 constraint 8 muexc_cache_req_accepted.initial_clock
+15 bad 3 muexc_cache_req_accepted

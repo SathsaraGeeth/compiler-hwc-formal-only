@@ -1,0 +1,84 @@
+Top level design units:
+    btor2_pipeline
+
+1 sort bitvec 1
+2 sort bitvec 2
+3 input 1 clk
+4 input 1 rst_n
+5 input 1 request
+6 const 1 0
+7 state 1 formal_initialized
+8 const 1 1
+9 state 1 btor2_pipeline.grant
+10 state 1 btor2_pipeline.clk_prev
+11 eq 1 10 3
+12 or 1 7 11
+13 not 1 10
+14 and 1 13 3
+15 not 1 4
+16 and 1 14 15
+17 ite 1 16 6 9
+18 and 1 14 4
+19 ite 1 18 5 17
+20 state 1 request_protocol.safety.clock_previous
+21 eq 1 20 3
+22 or 1 7 21
+23 not 1 20
+24 and 1 23 3
+25 state 1 sva_history_0
+26 ite 1 24 5 25
+27 and 1 24 4
+28 not 1 25
+29 and 1 9 28
+30 and 1 27 29
+31 state 1 request_protocol.reactivity.clock_previous
+32 eq 1 31 3
+33 or 1 7 32
+34 not 1 31
+35 and 1 34 3
+36 and 1 35 4
+37 input 2 request_protocol.reactivity.edge
+38 state 1 request_protocol.reactivity.state_0
+39 state 1 request_protocol.reactivity.state_1
+40 const 2 00
+41 eq 1 37 40
+42 and 1 38 41
+43 const 2 01
+44 eq 1 37 43
+45 not 1 9
+46 and 1 5 45
+47 and 1 44 46
+48 and 1 38 47
+49 const 2 10
+50 eq 1 37 49
+51 and 1 50 45
+52 and 1 39 51
+53 or 1 42 48
+54 or 1 53 52
+55 not 1 36
+56 or 1 55 54
+57 ite 1 36 42 38
+58 ite 1 15 8 57
+59 or 1 48 52
+60 ite 1 36 59 39
+61 ite 1 15 6 60
+62 and 1 36 39
+63 init 1 7 6
+64 next 1 7 8
+65 next 1 9 19
+66 next 1 10 3
+67 next 1 20 3
+68 init 1 25 6
+69 next 1 25 26
+70 next 1 31 3
+71 init 1 38 8
+72 next 1 38 58
+73 init 1 39 6
+74 next 1 39 61
+75 output 9 grant
+76 constraint 12 btor2_pipeline.clk_prev.initial_edge
+77 constraint 22 request_protocol.safety.initial_clock
+78 bad 30 request_protocol.safety
+79 constraint 33 request_protocol.reactivity.initial_clock
+80 constraint 56 request_protocol.reactivity.transition
+81 justice 1 62 request_protocol.reactivity

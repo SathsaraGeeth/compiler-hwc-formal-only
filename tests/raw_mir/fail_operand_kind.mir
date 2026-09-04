@@ -1,0 +1,8 @@
+mir.version 1
+
+machine @bad_operand(%a : 4s<8>) -> (out : 4s<4>) {
+^entry:
+  %out : 4s<4> = slice %a, %a, 4
+  yield %out
+}
+endmachine

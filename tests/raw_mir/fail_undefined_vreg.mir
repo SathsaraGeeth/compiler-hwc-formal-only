@@ -1,0 +1,8 @@
+mir.version 1
+
+machine @bad_use(%a : 4s<8>) -> (out : 4s<8>) {
+^entry:
+  %out : 4s<8> = add %a, %missing
+  yield %out
+}
+endmachine

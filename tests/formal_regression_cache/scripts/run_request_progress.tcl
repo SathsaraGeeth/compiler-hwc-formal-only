@@ -1,0 +1,7 @@
+read_file -f files_request_progress.f
+set_top directory_request_progress
+create_clock i_clk
+set_reset i_rst_n -active_low
+set_engine pdr
+set_max_depth 80
+prove accepted_request_eventually_gets_matching_response

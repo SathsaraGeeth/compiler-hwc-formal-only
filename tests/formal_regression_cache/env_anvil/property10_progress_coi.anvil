@@ -1,0 +1,33 @@
+enum progress_op { get_s, get_m, release }
+
+struct progress_req {
+    trans_id : logic[8],
+    op       : progress_op
+}
+
+struct progress_rsp { trans_id : logic[8] }
+
+chan progress_ch {
+    left  req : (progress_req@#1) @dyn-@dyn,
+    right rsp : (progress_rsp@#1) @dyn-@dyn
+}
+
+proc request_progress_coi(cache : left progress_ch) {
+    reg response : progress_rsp;
+    reg noop     : logic;
+
+    loop {
+        if ready cache.req {
+            let request = recv cache.req >>
+            if ((request.op == progress_op::get_s) ||
+                (request.op == progress_op::get_m)) {
+                set response.trans_id := request.trans_id >>
+                send cache.rsp(*response)
+            } else {
+                set noop := *noop
+            }
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

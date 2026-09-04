@@ -1,0 +1,50 @@
+Top level design units:
+    adder_uvm_tb
+
+0000:  d0200002  state_read x1, 2 <@add.clk_prev> : width 1
+0001:  e0000000  literal (continuation)
+0002:  2c410000  not x2, x1
+0003:  d8200003  import_read x1, 3 <clk> : width 1
+0004:  e0000000  literal (continuation)
+0005:  24620800  and x3, x2, x1
+0006:  d4200002  state_write 2 <@add.clk_prev>, x1 : width 1
+0007:  e0000000  literal (continuation)
+0008:  d0200001  state_read x1, 1 <@add.carry> : width 1
+0009:  e0000000  literal (continuation)
+000a:  d0470000  state_read x2, 0 <@add.sum> : width 8
+000b:  e0000000  literal (continuation)
+000c:  5c811000  concat x4, x1, x2
+000d:  d8270004  import_read x1, 4 <a> : width 8
+000e:  e0000000  literal (continuation)
+000f:  60410008  zext x2, x1, width 9
+0010:  d8270005  import_read x1, 5 <b> : width 8
+0011:  e0000000  literal (continuation)
+0012:  60810008  zext x4, x1, width 9
+0013:  0c222000  add x1, x2, x4
+0014:  804101c0  slice x2, x1, start 0, width 8
+0015:  d0870000  state_read x4, 0 <@add.sum> : width 8
+0016:  e0000000  literal (continuation)
+0017:  64c30007  sext x6, x3, width 8
+0018:  2ce60000  not x7, x6
+0019:  25043800  and x8, x4, x7
+001a:  24e23000  and x7, x2, x6
+001b:  28a83800  or x5, x8, x7
+001c:  dca70006  export_write 6 <sum>, x5 : width 8
+001d:  e0000000  literal (continuation)
+001e:  80410008  slice x2, x1, start 8, width 1
+001f:  d0200001  state_read x1, 1 <@add.carry> : width 1
+0020:  e0000000  literal (continuation)
+0021:  64c30000  sext x6, x3, width 1
+0022:  2ce60000  not x7, x6
+0023:  25013800  and x8, x1, x7
+0024:  24e23000  and x7, x2, x6
+0025:  28883800  or x4, x8, x7
+0026:  dc800007  export_write 7 <carry>, x4 : width 1
+0027:  e0000000  literal (continuation)
+0028:  d4800001  state_write 1 <@add.carry>, x4 : width 1
+0029:  e0000000  literal (continuation)
+002a:  d4a70000  state_write 0 <@add.sum>, x5 : width 8
+002b:  e0000000  literal (continuation)
+002c:  04000000  commit
+002d:  04000000  commit
+002e:  08000000  yield

@@ -1,0 +1,8 @@
+/INSTALL/
+/external/
+/docs/development/
+/emulation/
+/vir/
+/tests/**/formal-work/
+/tests/**/work/
+/tests/**/*.log

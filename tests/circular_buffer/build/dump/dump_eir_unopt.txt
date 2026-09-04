@@ -1,0 +1,225 @@
+Top level design units:
+    circular_buffer_auto_tb
+
+eir.version 1
+
+module @buff_mem(%i_clk : 4s<1>, %i_we : 4s<1>, %i_wr_addr : 4s<2>, %i_din : 4s<8>, %i_rd_addr : 4s<2>) -> (o_dout : 4s<8>) {
+  state @o_dout : 4s<8>
+  state @mem[3] : 4s<8>
+  state @mem[2] : 4s<8>
+  state @mem[1] : 4s<8>
+  state @mem[0] : 4s<8>
+  state @i_clk_prev : 4s<1>
+  %0 : 4s<1> = state_read @i_clk_prev
+  %1 : 4s<1> = not %0
+  %2 : 4s<1> = and %1, %i_clk
+  state_write @i_clk_prev, %i_clk
+  %3 : 4s<1> = and %2, %i_we
+  %4 : 4s<8> = state_read @mem[0]
+  %5 : 4s<8> = state_read @mem[1]
+  %6 : 4s<1> = eq %i_wr_addr, 4s<2>'0x1
+  %7 : 4s<8> = mux %6, %4, %5
+  %8 : 4s<8> = state_read @mem[2]
+  %9 : 4s<1> = eq %i_wr_addr, 4s<2>'0x2
+  %10 : 4s<8> = mux %9, %7, %8
+  %11 : 4s<8> = state_read @mem[3]
+  %12 : 4s<1> = eq %i_wr_addr, 4s<2>'0x3
+  %13 : 4s<8> = mux %12, %10, %11
+  %14 : 4s<8> = state_read @mem[0]
+  %15 : 4s<1> = eq %i_wr_addr, 4s<2>'0x0
+  %16 : 4s<1> = and %3, %15
+  %17 : 4s<8> = mux %16, %14, %i_din
+  %18 : 4s<8> = state_read @mem[1]
+  %19 : 4s<1> = eq %i_wr_addr, 4s<2>'0x1
+  %20 : 4s<1> = and %3, %19
+  %21 : 4s<8> = mux %20, %18, %i_din
+  %22 : 4s<8> = state_read @mem[2]
+  %23 : 4s<1> = eq %i_wr_addr, 4s<2>'0x2
+  %24 : 4s<1> = and %3, %23
+  %25 : 4s<8> = mux %24, %22, %i_din
+  %26 : 4s<8> = state_read @mem[3]
+  %27 : 4s<1> = eq %i_wr_addr, 4s<2>'0x3
+  %28 : 4s<1> = and %3, %27
+  %29 : 4s<8> = mux %28, %26, %i_din
+  %30 : 4s<8> = state_read @o_dout
+  %31 : 4s<8> = state_read @mem[0]
+  %32 : 4s<8> = state_read @mem[1]
+  %33 : 4s<1> = eq %i_rd_addr, 4s<2>'0x1
+  %34 : 4s<8> = mux %33, %31, %32
+  %35 : 4s<8> = state_read @mem[2]
+  %36 : 4s<1> = eq %i_rd_addr, 4s<2>'0x2
+  %37 : 4s<8> = mux %36, %34, %35
+  %38 : 4s<8> = state_read @mem[3]
+  %39 : 4s<1> = eq %i_rd_addr, 4s<2>'0x3
+  %40 : 4s<8> = mux %39, %37, %38
+  %41 : 4s<8> = state_read @o_dout
+  %42 : 4s<8> = mux %2, %41, %40
+  state_write @o_dout, %42
+  state_write @mem[3], %29
+  state_write @mem[2], %25
+  state_write @mem[1], %21
+  state_write @mem[0], %17
+  yield %42
+}
+endmodule
+
+module @circular_buffer(%i_clk : 4s<1>, %i_rst_n : 4s<1>, %i_deq_valid : 4s<1>, %i_enq_tail_data : 4s<8>, %i_enq_valid : 4s<1>, %i_clr_n : 4s<1>) -> (o_head_data : 4s<8>, o_deq_ready : 4s<1>, o_enq_ready : 4s<1>, o_full : 4s<1>, o_empty : 4s<1>, o_level : 4s<3>) {
+  state @o_deq_ready : 4s<1>
+  state @r_count : 4s<3>
+  state @r_tail_ptr : 4s<2>
+  state @r_head_ptr : 4s<2>
+  state @r_bypass_data : 4s<8>
+  state @r_bypass_en : 4s<1>
+  state @i_clk_prev : 4s<1>
+  state @i_rst_n_prev : 4s<1>
+  %0 : 4s<1> = state_read @o_deq_ready
+  %1 : 4s<1> = and %0, %i_deq_valid
+  %2 : 4s<3> = state_read @r_count
+  %3 : 4s<1> = eq %2, 4s<3>'0x4
+  %4 : 4s<3> = state_read @r_count
+  %5 : 4s<1> = eq %4, 4s<3>'0x0
+  %6 : 4s<3> = state_read @r_count
+  %7 : 4s<1> = not %3
+  %8 : 4s<2> = state_read @r_head_ptr
+  %9 : 4s<2> = state_read @r_head_ptr
+  %10 : 4s<2> = add %9, 4s<2>'0x1
+  %11 : 4s<2> = mux %1, %8, %10
+  %12 : 4s<2> = state_read @r_tail_ptr
+  %13 = instance @u_buff_mem, @buff_mem(%i_clk, %17, %12, %i_enq_tail_data, %11)
+  %14 : 4s<1> = state_read @r_bypass_en
+  %15 : 4s<8> = state_read @r_bypass_data
+  %16 : 4s<8> = mux %14, %13, %15
+  %17 : 4s<1> = and %7, %i_enq_valid
+  %18 : 4s<2> = concat %17, %1
+  %19 : 4s<3> = state_read @r_count
+  %20 : 4s<1> = eq %18, 4s<2>'0x1
+  %21 : 4s<1> = or 4s<1>'0x0, %20
+  %22 : 4s<1> = or 4s<1>'0x0, %21
+  %23 : 4s<3> = state_read @r_count
+  %24 : 4s<3> = sub %23, 4s<3>'0x1
+  %25 : 4s<3> = mux %21, %19, %24
+  %26 : 4s<1> = eq %18, 4s<2>'0x2
+  %27 : 4s<1> = or 4s<1>'0x0, %26
+  %28 : 4s<1> = or %22, %27
+  %29 : 4s<3> = state_read @r_count
+  %30 : 4s<3> = add %29, 4s<3>'0x1
+  %31 : 4s<3> = mux %27, %25, %30
+  %32 : 4s<1> = state_read @i_clk_prev
+  %33 : 4s<1> = not %32
+  %34 : 4s<1> = and %33, %i_clk
+  state_write @i_clk_prev, %i_clk
+  %35 : 4s<1> = or 4s<1>'0x0, %34
+  %36 : 4s<1> = state_read @i_rst_n_prev
+  %37 : 4s<1> = not %i_rst_n
+  %38 : 4s<1> = and %37, %36
+  state_write @i_rst_n_prev, %i_rst_n
+  %39 : 4s<1> = or %35, %38
+  %40 : 4s<1> = not %i_rst_n
+  %41 : 4s<1> = and %39, %40
+  %42 : 4s<1> = state_read @r_bypass_en
+  %43 : 4s<1> = state_read @r_bypass_en
+  %44 : 4s<1> = mux %41, %43, 4s<1>'0x0
+  %45 : 4s<8> = state_read @r_bypass_data
+  %46 : 4s<8> = state_read @r_bypass_data
+  %47 : 4s<8> = mux %41, %46, 4s<8>'0x0
+  %48 : 4s<1> = not %40
+  %49 : 4s<1> = and %39, %48
+  %50 : 4s<1> = not %i_clr_n
+  %51 : 4s<1> = and %49, %50
+  %52 : 4s<1> = state_read @r_bypass_en
+  %53 : 4s<1> = mux %51, %44, 4s<1>'0x0
+  %54 : 4s<8> = state_read @r_bypass_data
+  %55 : 4s<8> = mux %51, %47, 4s<8>'0x0
+  %56 : 4s<1> = not %50
+  %57 : 4s<1> = and %49, %56
+  %58 : 4s<1> = state_read @r_bypass_en
+  %59 : 4s<2> = state_read @r_tail_ptr
+  %60 : 4s<1> = eq %59, %11
+  %61 : 4s<1> = and %17, %60
+  %62 : 4s<1> = mux %57, %53, %61
+  %63 : 4s<8> = state_read @r_bypass_data
+  %64 : 4s<8> = mux %57, %55, %i_enq_tail_data
+  %65 : 4s<1> = state_read @i_clk_prev
+  %66 : 4s<1> = not %65
+  %67 : 4s<1> = and %66, %i_clk
+  state_write @i_clk_prev, %i_clk
+  %68 : 4s<1> = or 4s<1>'0x0, %67
+  %69 : 4s<1> = state_read @i_rst_n_prev
+  %70 : 4s<1> = not %i_rst_n
+  %71 : 4s<1> = and %70, %69
+  state_write @i_rst_n_prev, %i_rst_n
+  %72 : 4s<1> = or %68, %71
+  %73 : 4s<1> = not %i_rst_n
+  %74 : 4s<1> = and %72, %73
+  %75 : 4s<2> = state_read @r_head_ptr
+  %76 : 4s<2> = state_read @r_head_ptr
+  %77 : 4s<2> = mux %74, %76, 4s<2>'0x0
+  %78 : 4s<2> = state_read @r_tail_ptr
+  %79 : 4s<2> = state_read @r_tail_ptr
+  %80 : 4s<2> = mux %74, %79, 4s<2>'0x0
+  %81 : 4s<3> = state_read @r_count
+  %82 : 4s<3> = state_read @r_count
+  %83 : 4s<3> = mux %74, %82, 4s<3>'0x0
+  %84 : 4s<1> = state_read @o_deq_ready
+  %85 : 4s<1> = state_read @o_deq_ready
+  %86 : 4s<1> = mux %74, %85, 4s<1>'0x0
+  %87 : 4s<1> = not %73
+  %88 : 4s<1> = and %72, %87
+  %89 : 4s<1> = not %i_clr_n
+  %90 : 4s<1> = and %88, %89
+  %91 : 4s<2> = state_read @r_head_ptr
+  %92 : 4s<2> = mux %90, %77, 4s<2>'0x0
+  %93 : 4s<2> = state_read @r_tail_ptr
+  %94 : 4s<2> = mux %90, %80, 4s<2>'0x0
+  %95 : 4s<3> = state_read @r_count
+  %96 : 4s<3> = mux %90, %83, 4s<3>'0x0
+  %97 : 4s<1> = state_read @o_deq_ready
+  %98 : 4s<1> = mux %90, %86, 4s<1>'0x0
+  %99 : 4s<1> = not %89
+  %100 : 4s<1> = and %88, %99
+  %101 : 4s<3> = state_read @r_count
+  %102 : 4s<3> = mux %100, %96, %31
+  %103 : 4s<1> = state_read @o_deq_ready
+  %104 : 4s<1> = ne %31, 4s<3>'0x0
+  %105 : 4s<1> = mux %100, %98, %104
+  %106 : 4s<2> = concat %17, %1
+  %107 : 4s<1> = eq %106, 4s<2>'0x1
+  %108 : 4s<1> = or 4s<1>'0x0, %107
+  %109 : 4s<1> = or 4s<1>'0x0, %108
+  %110 : 4s<1> = and %100, %108
+  %111 : 4s<2> = state_read @r_head_ptr
+  %112 : 4s<2> = state_read @r_head_ptr
+  %113 : 4s<2> = add %112, 4s<2>'0x1
+  %114 : 4s<2> = mux %110, %92, %113
+  %115 : 4s<1> = eq %106, 4s<2>'0x2
+  %116 : 4s<1> = or 4s<1>'0x0, %115
+  %117 : 4s<1> = or %109, %116
+  %118 : 4s<1> = and %100, %116
+  %119 : 4s<2> = state_read @r_tail_ptr
+  %120 : 4s<2> = state_read @r_tail_ptr
+  %121 : 4s<2> = add %120, 4s<2>'0x1
+  %122 : 4s<2> = mux %118, %94, %121
+  %123 : 4s<1> = eq %106, 4s<2>'0x3
+  %124 : 4s<1> = or 4s<1>'0x0, %123
+  %125 : 4s<1> = or %117, %124
+  %126 : 4s<1> = and %100, %124
+  %127 : 4s<2> = state_read @r_head_ptr
+  %128 : 4s<2> = state_read @r_head_ptr
+  %129 : 4s<2> = add %128, 4s<2>'0x1
+  %130 : 4s<2> = mux %126, %114, %129
+  %131 : 4s<2> = state_read @r_tail_ptr
+  %132 : 4s<2> = state_read @r_tail_ptr
+  %133 : 4s<2> = add %132, 4s<2>'0x1
+  %134 : 4s<2> = mux %126, %122, %133
+  %135 : 4s<1> = not %125
+  %136 : 4s<1> = and %100, %135
+  state_write @o_deq_ready, %105
+  state_write @r_count, %102
+  state_write @r_tail_ptr, %134
+  state_write @r_head_ptr, %130
+  state_write @r_bypass_data, %64
+  state_write @r_bypass_en, %62
+  yield %16, %105, %7, %3, %5, %6
+}
+endmodule
+

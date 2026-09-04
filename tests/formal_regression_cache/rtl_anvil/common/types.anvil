@@ -1,0 +1,186 @@
+enum cpu_op {
+    cpu_load,
+    cpu_store
+}
+
+enum mesi_state {
+    mesi_i,
+    mesi_is,
+    mesi_im,
+    mesi_s,
+    mesi_e,
+    mesi_m
+}
+
+struct cpu_req {
+    addr  : logic[64],
+    id    : logic[8],
+    op    : cpu_op,
+    wdata : logic[64],
+    wstrb : logic[8]
+}
+
+struct cpu_rsp {
+    id    : logic[8],
+    rdata : logic[64]
+}
+
+struct decoded_addr {
+    tag   : logic[50],
+    index : logic[8],
+    word  : logic[3],
+    byte  : logic[3]
+}
+
+struct decoded_dir_addr {
+    tag   : logic[48],
+    index : logic[10]
+}
+
+func decode_addr(addr) {
+    decoded_addr::  {
+    tag   = addr[14+:50];
+    index = addr[6+:8];
+    word  = addr[3+:3];
+    byte  = addr[0+:3]
+    }
+}
+
+func decode_dir_addr(addr) {
+    decoded_dir_addr:: {
+    tag   = addr[16+:48];
+    index = addr[6+:10]
+    }
+}
+
+func shift_word(word, byte) {
+    if (byte == 3'b000) {
+        word
+    }
+    else if (byte == 3'b001) {
+        #flat{8'b0, word[8+:56]} 
+    }
+    else if (byte == 3'b010) {
+        #flat{16'b0, word[16+:48]}
+    }
+    else if (byte == 3'b011) {
+        #flat{24'b0, word[24+:40]}
+    }
+    else if (byte == 3'b100) {
+        #flat{32'b0, word[32+:32]}
+    }
+    else if (byte == 3'b101) {
+        #flat{40'b0, word[40+:24]} 
+    }
+    else if (byte == 3'b110) {
+        #flat{48'b0, word[48+:16]}
+    }
+    else {
+        #flat{56'b0, word[56+:8]}
+    }
+}
+
+func line_word(line, word, byte) {
+    let selected =
+    if (word == 3'b000) { 
+        line[0+:64] 
+    }
+    else if (word == 3'b001) {
+        line[64+:64] 
+    }
+    else if (word == 3'b010) {
+        line[128+:64]
+    }
+    else if (word == 3'b011) {
+        line[192+:64]
+    }
+    else if (word == 3'b100) {
+        line[256+:64]
+    }
+    else if (word == 3'b101) {
+        line[320+:64] 
+    }
+    else if (word == 3'b110) {
+        line[384+:64] 
+    }
+    else {
+        line[448+:64]
+    };
+    call shift_word(selected, byte)
+}
+
+func merge_byte(old_byte, new_byte, enable) {
+    if (enable == 1'b1) {
+        new_byte
+    } else {
+        old_byte
+    }
+}
+
+func merge_word(old_word, new_word, wstrb) {
+    let b0 = call merge_byte(old_word[0+:8],  new_word[0+:8],  wstrb[0]);
+    let b1 = call merge_byte(old_word[8+:8],  new_word[8+:8],  wstrb[1]);
+    let b2 = call merge_byte(old_word[16+:8], new_word[16+:8], wstrb[2]);
+    let b3 = call merge_byte(old_word[24+:8], new_word[24+:8], wstrb[3]);
+    let b4 = call merge_byte(old_word[32+:8], new_word[32+:8], wstrb[4]);
+    let b5 = call merge_byte(old_word[40+:8], new_word[40+:8], wstrb[5]);
+    let b6 = call merge_byte(old_word[48+:8], new_word[48+:8], wstrb[6]);
+    let b7 = call merge_byte(old_word[56+:8], new_word[56+:8], wstrb[7]);
+    #flat{b7, b6, b5, b4, b3, b2, b1, b0}
+}
+
+func write_line_word(line, word, wdata, wstrb) {
+    let merged =
+        if (word == 3'b000) {
+            call merge_word(line[0+:64], wdata, wstrb)
+        }
+        else if (word == 3'b001) {
+            call merge_word(line[64+:64], wdata, wstrb)
+        }
+        else if (word == 3'b010) {
+            call merge_word(line[128+:64], wdata, wstrb)
+        }
+        else if (word == 3'b011) {
+            call merge_word(line[192+:64], wdata, wstrb)
+        }
+        else if (word == 3'b100) {
+            call merge_word(line[256+:64], wdata, wstrb)
+        }
+        else if (word == 3'b101) {
+            call merge_word(line[320+:64], wdata, wstrb)
+        }
+        else if (word == 3'b110) {
+            call merge_word(line[384+:64], wdata, wstrb)
+        }
+        else {
+            call merge_word(line[448+:64], wdata, wstrb)
+        };
+
+    if (word == 3'b000) { #flat{line[64+:448], merged} }
+    else if (word == 3'b001) {
+        #flat{line[128+:384], merged, line[0+:64]}
+    }
+    else if (word == 3'b010) {
+        #flat{line[192+:320], merged, line[0+:128]}
+    }
+    else if (word == 3'b011) {
+        #flat{line[256+:256], merged, line[0+:192]}
+    }
+    else if (word == 3'b100) {
+        #flat{line[320+:192], merged, line[0+:256]}
+    }
+    else if (word == 3'b101) {
+        #flat{line[384+:128], merged, line[0+:320]}
+    }
+    else if (word == 3'b110) {
+        #flat{line[448+:64], merged, line[0+:384]}
+    }
+    else { 
+        #flat{merged, line[0+:448]} 
+    }
+}
+
+chan cpu_cache_ch {
+    left req  : (cpu_req@#1) @dyn-@dyn,
+    right rsp : (cpu_rsp@#1) @dyn-@dyn
+}

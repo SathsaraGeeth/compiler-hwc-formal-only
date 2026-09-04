@@ -1,0 +1,12 @@
+mir.version 1
+
+machine @accumulate(%enable : 4s<1>, %input : 4s<8>) -> (value : 4s<8>) {
+  state @value : 4s<8>
+^entry:
+  %old : 4s<8> = state_read @value
+  %sum : 4s<8> = add %old, %input
+  %next : 4s<8> = mux %enable, %old, %sum
+  state_write @value, %next
+  yield %next
+}
+endmachine

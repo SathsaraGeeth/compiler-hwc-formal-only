@@ -1,0 +1,8 @@
+Top level design units:
+    circular_buffer_properties
+
+btor2.hir {
+  assert flags_match_level {
+    safety = ((o_level LessThanEqual 3'b100) -> (((o_empty Equality (o_level Equality 3'b0)) LogicalAnd (o_full Equality (o_level Equality 3'b100))) LogicalAnd (o_enq_ready Equality LogicalNot(o_full))))
+  }
+}

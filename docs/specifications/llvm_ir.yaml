@@ -1,0 +1,337 @@
+# LLVM_IR.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+#
+# Version 1.0
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation
+#
+#
+# Comments:
+# 1. SSA based typed low level IR for software compilation
+# 2. References:
+#    a. /mnt/fileserver/prj/dmctp/compiler/llvm-project/llvm/docs/LangRef.rst
+#    b. https://llvm.org/docs/LangRef.html
+#    c. /mnt/fileserver/prj/dmctp/compiler/llvm-project/llvm/include/llvm/IR/Instruction.def
+#
+
+datatypes:
+  - name: void
+    description: no value
+  - name: integer
+    format: "i<N>"
+    examples: ["i1", "i8", "i32", "i64"]
+  - name: floating_point
+    variants: ["half", "bfloat", "float", "double", "fp128", "x86_fp80", "ppc_fp128"]
+  - name: pointer
+    format: "ptr addrspace(N)"
+    description: opaque pointer in an optional address space
+  - name: vector
+    format: "<N x type>"
+    description: fixed width vector
+  - name: scalable_vector
+    format: "<vscale x N x type>"
+    description: runtime-scaled vector
+  - name: array
+    format: "[N x type]"
+  - name: structure
+    format: "{type, ...}"
+  - name: packed_structure
+    format: "<{type, ...}>"
+  - name: function
+    format: "result_type (parameter_type, ...)"
+  - name: label
+    description: basic block reference
+  - name: token
+    description: non-copyable value used by selected instructions
+  - name: metadata
+    description: non-first-class compiler metadata value
+
+values:
+  - name: SSA temporary
+    examples: ["%value", "%0", "%1"]
+  - name: global value
+    examples: ["@global", "@function"]
+  - name: integer constant
+    examples: ["0", "1", "-1", "42"]
+  - name: floating point constant
+    examples: ["0.0", "1.0", "0x3FF0000000000000"]
+  - name: boolean constant
+    examples: ["true", "false"]
+  - name: null pointer constant
+    format: "null"
+  - name: zero initializer
+    format: "zeroinitializer"
+  - name: undefined value
+    format: "undef"
+  - name: poison value
+    format: "poison"
+  - name: aggregate constant
+    examples: ["[i32 1, i32 2]", "{i32 1, i1 true}"]
+
+terminators:
+  - name: ret
+    format: "ret type %value"
+  - name: br
+    format: "br i1 %condition, label %true, label %false"
+  - name: switch
+    format: "switch type %value, label %default [type value, label %target ...]"
+  - name: indirectbr
+    format: "indirectbr ptr %address, [label %target, ...]"
+  - name: invoke
+    format: "%dst = invoke type @function(arguments) to label %normal unwind label %exception"
+  - name: callbr
+    format: "%dst = callbr type @function(arguments) to label %fallthrough [label %target, ...]"
+  - name: resume
+    format: "resume type %exception"
+  - name: catchswitch
+    format: "%dst = catchswitch within %parent [label %handler, ...] unwind label %target"
+  - name: catchret
+    format: "catchret from %catchpad to label %target"
+  - name: cleanupret
+    format: "cleanupret from %cleanuppad unwind label %target"
+  - name: unreachable
+    format: "unreachable"
+
+unary:
+  - name: fneg
+    format: "%dst = fneg float_type %src"
+
+arithmetic:
+  - name: add
+    format: "%dst = add integer_type %src1, %src2"
+  - name: fadd
+    format: "%dst = fadd float_type %src1, %src2"
+  - name: sub
+    format: "%dst = sub integer_type %src1, %src2"
+  - name: fsub
+    format: "%dst = fsub float_type %src1, %src2"
+  - name: mul
+    format: "%dst = mul integer_type %src1, %src2"
+  - name: fmul
+    format: "%dst = fmul float_type %src1, %src2"
+  - name: udiv
+    format: "%dst = udiv integer_type %src1, %src2"
+  - name: sdiv
+    format: "%dst = sdiv integer_type %src1, %src2"
+  - name: fdiv
+    format: "%dst = fdiv float_type %src1, %src2"
+  - name: urem
+    format: "%dst = urem integer_type %src1, %src2"
+  - name: srem
+    format: "%dst = srem integer_type %src1, %src2"
+  - name: frem
+    format: "%dst = frem float_type %src1, %src2"
+
+bit_operations:
+  - name: shl
+    format: "%dst = shl integer_type %src1, %src2"
+  - name: lshr
+    format: "%dst = lshr integer_type %src1, %src2"
+  - name: ashr
+    format: "%dst = ashr integer_type %src1, %src2"
+  - name: and
+    format: "%dst = and integer_type %src1, %src2"
+  - name: or
+    format: "%dst = or integer_type %src1, %src2"
+  - name: xor
+    format: "%dst = xor integer_type %src1, %src2"
+
+vector_operations:
+  - name: extractelement
+    format: "%dst = extractelement vector_type %vector, integer_type %index"
+  - name: insertelement
+    format: "%dst = insertelement vector_type %vector, element_type %value, integer_type %index"
+  - name: shufflevector
+    format: "%dst = shufflevector vector_type %src1, vector_type %src2, mask_type %mask"
+
+aggregate_operations:
+  - name: extractvalue
+    format: "%dst = extractvalue aggregate_type %aggregate, index, ..."
+  - name: insertvalue
+    format: "%dst = insertvalue aggregate_type %aggregate, element_type %value, index, ..."
+
+memory:
+  - name: alloca
+    format: "%dst = alloca type, integer_type %count, align N"
+    description: allocates memory in the current stack frame
+  - name: load
+    format: "%dst = load type, ptr %address, align N"
+  - name: store
+    format: "store type %value, ptr %address, align N"
+  - name: fence
+    format: "fence ordering"
+  - name: cmpxchg
+    format: "%dst = cmpxchg ptr %address, type %compare, type %new success_order failure_order"
+  - name: atomicrmw
+    format: "%dst = atomicrmw operation ptr %address, type %value ordering"
+  - name: getelementptr
+    format: "%dst = getelementptr element_type, ptr %base, index_type %index, ..."
+    description: computes an address without accessing memory
+
+conversion:
+  - name: trunc
+    format: "%dst = trunc integer_type %src to integer_type"
+  - name: zext
+    format: "%dst = zext integer_type %src to integer_type"
+  - name: sext
+    format: "%dst = sext integer_type %src to integer_type"
+  - name: fptrunc
+    format: "%dst = fptrunc float_type %src to float_type"
+  - name: fpext
+    format: "%dst = fpext float_type %src to float_type"
+  - name: fptoui
+    format: "%dst = fptoui float_type %src to integer_type"
+  - name: fptosi
+    format: "%dst = fptosi float_type %src to integer_type"
+  - name: uitofp
+    format: "%dst = uitofp integer_type %src to float_type"
+  - name: sitofp
+    format: "%dst = sitofp integer_type %src to float_type"
+  - name: ptrtoint
+    format: "%dst = ptrtoint ptr %src to integer_type"
+  - name: ptrtoaddr
+    format: "%dst = ptrtoaddr ptr %src to integer_type"
+  - name: inttoptr
+    format: "%dst = inttoptr integer_type %src to ptr"
+  - name: bitcast
+    format: "%dst = bitcast source_type %src to destination_type"
+  - name: addrspacecast
+    format: "%dst = addrspacecast ptr %src to ptr addrspace(N)"
+
+comparison:
+  - name: icmp
+    format: "%dst = icmp predicate integer_or_pointer_type %src1, %src2"
+    predicates: ["eq", "ne", "ugt", "uge", "ult", "ule", "sgt", "sge", "slt", "sle"]
+  - name: fcmp
+    format: "%dst = fcmp predicate float_type %src1, %src2"
+    predicates: ["false", "oeq", "ogt", "oge", "olt", "ole", "one", "ord", "ueq", "ugt", "uge", "ult", "ule", "une", "uno", "true"]
+
+ssa_and_control:
+  - name: phi
+    format: "%dst = phi type [%value, %predecessor], ..."
+    description: selects the value associated with the predecessor block
+  - name: select
+    format: "%dst = select i1 %condition, type %true, type %false"
+  - name: freeze
+    format: "%dst = freeze type %src"
+    description: converts undef or poison into a fixed but arbitrary value
+
+functions:
+  - name: call
+    format: "%dst = call result_type @function(arguments)"
+  - name: va_arg
+    format: "%dst = va_arg ptr %list, type"
+
+exception_handling:
+  - name: landingpad
+    format: "%dst = landingpad result_type clause, ..."
+  - name: catchpad
+    format: "%dst = catchpad within %parent [arguments]"
+  - name: cleanuppad
+    format: "%dst = cleanuppad within %parent [arguments]"
+
+globals:
+  - name: global_variable
+    format: "@name = global type initializer"
+  - name: constant_global
+    format: "@name = constant type initializer"
+  - name: alias
+    format: "@name = alias aliasee_type, ptr @aliasee"
+  - name: ifunc
+    format: "@name = ifunc function_type, ptr @resolver"
+
+hierarchy:
+  - name: module
+    format: |
+      ; module contents
+      target triple = "target-triple"
+      ...
+    description: top level translation unit containing global definitions and declarations
+  - name: function_definition
+    format: |
+      define result_type @name(parameter_type %parameter, ...) {
+      entry:
+        ...
+      }
+    description: defines a control-flow graph of basic blocks
+  - name: function_declaration
+    format: "declare result_type @name(parameter_type, ...)"
+  - name: basic_block
+    format: |
+      label:
+        ...
+        terminator
+    description: sequential instruction list with one final terminator
+
+metadata:
+  - name: metadata_attachment
+    format: "instruction, !kind !N"
+  - name: metadata_node
+    format: "!N = !{metadata, ...}"
+  - name: named_metadata
+    format: "!name = !{!N, ...}"
+
+reserved_keywords:
+  - define
+  - declare
+  - global
+  - constant
+  - type
+  - label
+  - metadata
+  - attributes
+  - comdat
+  - target
+  - source_filename
+  - module
+  - asm
+  - gc
+  - personality
+
+examples:
+  - name: integer arithmetic
+    source: |
+      define i32 @add_and_double(i32 %a, i32 %b) {
+      entry:
+        %sum = add i32 %a, %b
+        %result = shl i32 %sum, 1
+        ret i32 %result
+      }
+
+  - name: conditional selection
+    source: |
+      define i32 @unsigned_min(i32 %a, i32 %b) {
+      entry:
+        %condition = icmp ult i32 %a, %b
+        %result = select i1 %condition, i32 %a, i32 %b
+        ret i32 %result
+      }
+
+  - name: control flow and phi
+    source: |
+      define i32 @absolute(i32 %value) {
+      entry:
+        %negative = icmp slt i32 %value, 0
+        br i1 %negative, label %negate, label %merge
+      negate:
+        %negated = sub i32 0, %value
+        br label %merge
+      merge:
+        %result = phi i32 [%negated, %negate], [%value, %entry]
+        ret i32 %result
+      }
+
+  - name: memory access
+    source: |
+      define i32 @load_second(ptr %array) {
+      entry:
+        %address = getelementptr i32, ptr %array, i64 1
+        %value = load i32, ptr %address, align 4
+        ret i32 %value
+      }

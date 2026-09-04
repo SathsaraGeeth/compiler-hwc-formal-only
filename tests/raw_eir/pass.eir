@@ -1,0 +1,7 @@
+eir.version 1
+
+module @raw_adder(%a : 4s<8>, %b : 4s<8>) -> (sum : 4s<8>) {
+  %sum : 4s<8> = add %a, %b
+  yield %sum
+}
+endmodule

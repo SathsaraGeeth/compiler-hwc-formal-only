@@ -1,0 +1,374 @@
+# BTOR2.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+#
+# Version 1.0
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation
+#
+#
+# Comments:
+# 1. Transition system IR for the formal backend
+# 2. Implements a higher-level temporal IR, a lower-level BTOR2 IR,
+#    and four-state encoding
+# 3. References:
+#    a. Aina Niemetz, Mathias Preiner, Clifford Wolf and Armin Biere,
+#       "BTOR2, BtorMC and Boolector 3.0," FMCAD 2018
+#    b. https://github.com/Boolector/btor2tools
+#    c. https://github.com/stanford-centaur/pono
+# 4. A program written in this IR is a transition system
+#    TS = (S, I, Init, Next, C, B), where
+#    S    - state variables,
+#    I    - input variables,
+#    Init - initial state relation,
+#    Next - next state relation,
+#    C    - constraints,
+#    B    - bad states predicate
+# 5. High-level Example:
+#    G(X(count) = ite(reset, 0, ite(enable, count + 1, count))) AND G(count != 15)
+#    in btor2,
+#
+#    count_0 = 0
+#    count_{t+1} = reset_t ? 0 : enable_t ? count_t + 1 : count_t
+#    bad_t = (count_t = 15)
+# 6. This is SSA like
+#    ID opcode sort operand operand
+#    6  or     1    3       2
+#    (similar to %6 = or %3, %2)
+#    can assume "combinational expression graph topologically ordered"
+# 7. Lower level Primitives:
+#    a. bad         check  G(!p)
+#    b. fair        check  GF(p)
+#    ...
+#    c. justice     check  GF(p1) AND GF(p2) AND ... AND GF(pn)
+#    d. constraint  assume G(p)
+# 8. Manna-Pnueli Property Classification
+# +-------------+----------------------------+
+# | Class       | Form                       |
+# +-------------+----------------------------+
+# | Safety      | G p                        |
+# +-------------+----------------------------+
+# | Guarantee   | F p                        |
+# +-------------+----------------------------+
+# | Obligation  | (G p) OR (F q)             |
+# +-------------+----------------------------+
+# | Recurrence  | GF p                       |
+# +-------------+----------------------------+
+# | Persistence | FG p                       |
+# +-------------+----------------------------+
+# | Reactivity  | AND_i (GF p_i OR FG q_i)   |
+# +-------------+----------------------------+
+# 9. High level IR uses Manna-Pnueli classification as primitive properties
+#    Lower level IR uses bad, fair, justice and primive properties
+#    SVA/LTL -> higher-level property IR -> lower-level BTOR2 IR -> solver
+#
+
+levels:
+  - name: higher_level
+    namespace: emul::btor2::hir
+    purpose: preserve temporal meaning before transition-system encoding
+    contains:
+      - temporal property operations
+      - directive kind, clock, disable condition, and property name
+      - one reserved Manna-Pnueli opcode per property
+    excludes:
+      - numeric node IDs
+      - explicit monitor state
+      - concrete bad, fair, or justice statements
+
+  - name: lower_level
+    namespace: emul::btor2
+    purpose: represent the concrete solver-facing transition system
+    contains:
+      - topologically ordered bit-vector operations
+      - input and state declarations
+      - init and next relations
+      - output, constraint, bad, fair, and justice statements
+    excludes:
+      - LTL temporal operators
+      - SVA sequence syntax
+
+lowering_pipeline:
+  - stage: source_to_higher_level
+    input: elaborated SVA or LTL directive
+    output: higher-level property operation
+    action: replace LTL temporal operators with one reserved higher-level opcode
+  - stage: higher_to_lower_level
+    input: higher-level property module plus the hardware transition system
+    output: lower-level BTOR2 module
+    action: build finite-state monitors and emit constraints or objectives
+  - stage: lower_level_to_text
+    input: verified lower-level BTOR2 module
+    output: line-oriented BTOR2 text
+    action: assign numeric IDs and serialize in dependency order
+
+higher_level_properties:
+  - name: safety
+    format: "safety(p)"
+    source_form: "G p"
+    lower_level_form: "bad(!p)"
+  - name: guarantee
+    format: "guarantee(p)"
+    source_form: "F p"
+    lower_level_form: "monitor seen_p, where seen_p' = seen_p OR p; then use justice/fair on seen_p"
+  - name: obligation
+    format: "obligation(p, q)"
+    source_form: "(G p) OR (F q)"
+    lower_level_form: "monitor/automaton plus justice"
+  - name: recurrence
+    format: "recurrence(p)"
+    source_form: "GF p"
+    lower_level_form: "fair(p) or justice(1, p)"
+  - name: persistence
+    format: "persistence(p)"
+    source_form: "FG p"
+    lower_level_form: "counterexample automaton for GF(!p), with justice/fair on !p"
+  - name: reactivity
+    format: "reactivity(p_i, q_i...)"
+    source_form: "AND_i (GF p_i OR FG q_i)"
+    lower_level_form: "generalized Buchi automaton plus justice acceptance conditions"
+
+higher_level_reserved_keywords:
+  - safety
+  - guarantee
+  - obligation
+  - recurrence
+  - persistence
+  - reactivity
+
+lower_level_ir:
+  syntax: SSA-like transition-system graph
+  sections:
+    - grammar
+    - datatypes
+    - values
+    - outputs
+    - logic
+    - arithmetic
+    - comparison
+    - bit_operations
+    - state
+    - properties
+    - four_state_encoding
+    - four_state_rules
+    - verification
+
+grammar:
+  - name: line
+    format: "id opcode operands... [symbol]"
+    description: one BTOR2 declaration, operation, transition, or property
+  - name: comment
+    format: "; text"
+    description: ignored text extending to the end of the line
+  - name: identifier
+    format: "positive decimal integer"
+    description: unique ID assigned to a sort, value, or statement
+  - name: symbol
+    format: "[A-Za-z0-9_.]+"
+    description: optional human-readable name
+
+datatypes:
+  - name: bitvec
+    format: "id sort bitvec width"
+    description: two-state bit-vector sort with a positive width
+  - name: boolean
+    format: "id sort bitvec 1"
+    description: one-bit bit-vector used as a Boolean value
+
+values:
+  - name: input
+    format: "id input sort [symbol]"
+    description: unconstrained value supplied by the environment
+  - name: state
+    format: "id state sort [symbol]"
+    description: value retained across transition-system steps
+  - name: const
+    format: "id const sort binary_bits"
+    description: binary constant whose bit count equals the sort width
+
+outputs:
+  - name: output
+    format: "id output value [symbol]"
+    description: exposes a value in a witness or generated model interface
+
+logic:
+  - name: and
+    format: "id and sort left right"
+  - name: or
+    format: "id or sort left right"
+  - name: xor
+    format: "id xor sort left right"
+  - name: not
+    format: "id not sort value"
+  - name: ite
+    format: "id ite sort condition true_value false_value"
+    description: selects between equal-width values using a Boolean condition
+  - name: redand
+    format: "id redand boolean_sort value"
+  - name: redor
+    format: "id redor boolean_sort value"
+  - name: redxor
+    format: "id redxor boolean_sort value"
+
+arithmetic:
+  - name: add
+    format: "id add sort left right"
+  - name: sub
+    format: "id sub sort left right"
+  - name: mul
+    format: "id mul sort left right"
+  - name: udiv
+    format: "id udiv sort left right"
+  - name: urem
+    format: "id urem sort left right"
+  - name: sll
+    format: "id sll sort value amount"
+  - name: srl
+    format: "id srl sort value amount"
+  - name: sra
+    format: "id sra sort value amount"
+
+comparison:
+  - name: eq
+    format: "id eq boolean_sort left right"
+  - name: neq
+    format: "id neq boolean_sort left right"
+  - name: ult
+    format: "id ult boolean_sort left right"
+  - name: ulte
+    format: "id ulte boolean_sort left right"
+  - name: ugt
+    format: "id ugt boolean_sort left right"
+  - name: ugte
+    format: "id ugte boolean_sort left right"
+  - name: slt
+    format: "id slt boolean_sort left right"
+  - name: slte
+    format: "id slte boolean_sort left right"
+  - name: sgt
+    format: "id sgt boolean_sort left right"
+  - name: sgte
+    format: "id sgte boolean_sort left right"
+
+bit_operations:
+  - name: slice
+    format: "id slice sort value upper lower"
+    description: extracts the inclusive bit range from upper to lower
+  - name: concat
+    format: "id concat sort high low"
+    description: concatenates high above low
+  - name: uext
+    format: "id uext sort value extension"
+    description: extends a value with zero bits
+  - name: sext
+    format: "id sext sort value extension"
+    description: extends a value by repeating its sign bit
+
+state:
+  - name: init
+    format: "id init sort state value"
+    description: assigns the optional initial value of a state
+  - name: next
+    format: "id next sort state value"
+    description: assigns the required next value of a state
+
+properties:
+  - name: constraint
+    format: "id constraint condition [symbol]"
+    description: restricts legal transition-system executions
+  - name: bad
+    format: "id bad condition [symbol]"
+    description: identifies a reachable safety violation
+  - name: cover
+    format: "id cover condition [symbol]"
+    description: identifies a reachability target in the HWC IR
+  - name: fair
+    format: "id fair condition [symbol]"
+    description: requires the condition to hold infinitely often on fair executions
+  - name: justice
+    format: "id justice count condition... [symbol]"
+    description: requires every listed condition to recur infinitely often
+
+four_state_encoding:
+  - name: data
+    width: N
+    description: known zero or one payload
+  - name: xmask
+    width: N
+    description: one marks an unknown bit
+  - name: zmask
+    width: N
+    description: one marks a high-impedance bit
+  - name: invariant
+    format: "(xmask & zmask) == 0"
+    description: a bit cannot be unknown and high-impedance simultaneously
+
+four_state_rules:
+  - name: input
+    description: the encoding invariant is emitted as a BTOR2 constraint
+  - name: logic
+    description: controlling known values can suppress unknown operands
+  - name: arithmetic
+    description: an unknown operand conservatively makes the result unknown
+  - name: comparison
+    description: an unknown operand makes the Boolean result unknown
+  - name: mux
+    description: a known selector chooses one value; an unknown selector produces X
+  - name: state
+    description: data, xmask, and zmask use matching independent state variables
+  - name: z_result
+    description: value-preserving operations retain Z; other operations propagate X
+
+verification:
+  - identifiers are unique positive integers
+  - every referenced identifier is defined earlier
+  - every bit-vector width is positive
+  - constant bit count equals the result sort width
+  - operation operands match the required count and width
+  - ite conditions are Boolean and both alternatives have equal width
+  - slice bounds are ordered and inside the source width
+  - extension result width is not smaller than the source width
+  - init and next values match the state width
+  - each state has at most one init and exactly one next relation
+  - constraint, bad, cover, fair, and justice conditions are Boolean
+  - every justice property contains at least one condition
+
+lower_level_reserved_keywords:
+  - sort
+  - bitvec
+  - input
+  - state
+  - const
+  - init
+  - next
+  - output
+  - constraint
+  - bad
+  - cover
+  - fair
+  - justice
+
+examples:
+  - name: safety transition system
+    source: |
+      1 sort bitvec 1
+      2 input 1 enable
+      3 state 1 active
+      4 const 1 0
+      5 init 1 3 4
+      6 or 1 3 2
+      7 next 1 3 6
+      8 not 1 3
+      9 bad 8 active_is_false
+
+  - name: liveness transition system
+    source: |
+      1 sort bitvec 1
+      2 input 1 request
+      3 input 1 grant
+      4 justice 1 3 grant_recurs

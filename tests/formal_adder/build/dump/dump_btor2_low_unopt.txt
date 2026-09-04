@@ -1,0 +1,52 @@
+Top level design units:
+    formal_adder_properties
+
+1 sort bitvec 8
+2 sort bitvec 1
+3 sort bitvec 9
+4 input 1 a.data
+5 const 1 00000000
+6 const 1 00000000
+7 input 1 a.xmask
+8 input 1 a.zmask
+9 and 1 7 8
+10 redor 2 9
+11 not 2 10
+12 input 1 b.data
+13 const 1 00000000
+14 const 1 00000000
+15 input 1 b.xmask
+16 input 1 b.zmask
+17 and 1 15 16
+18 redor 2 17
+19 not 2 18
+20 uext 3 4 1
+21 uext 3 7 1
+22 uext 3 8 1
+23 uext 3 12 1
+24 uext 3 15 1
+25 uext 3 16 1
+26 or 3 24 25
+27 redor 2 26
+28 or 3 21 22
+29 redor 2 28
+30 or 2 29 27
+31 add 3 20 23
+32 const 3 111111111
+33 const 3 000000000
+34 ite 3 30 32 33
+35 const 3 000000000
+36 slice 1 31 7 0
+37 slice 1 34 7 0
+38 slice 1 35 7 0
+39 slice 2 31 8 8
+40 slice 2 34 8 8
+41 slice 2 35 8 8
+42 output 36 sum.data
+43 output 37 sum.xmask
+44 output 38 sum.zmask
+45 output 39 carry.data
+46 output 40 carry.xmask
+47 output 41 carry.zmask
+48 constraint 11 a.valid
+49 constraint 19 b.valid

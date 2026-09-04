@@ -1,0 +1,13 @@
+eir.version 1
+
+module @add8(%a : 4s<8>, %b : 4s<8>) -> (out : 4s<8>) {
+  %sum : 4s<8> = add %a, %b
+  yield %sum
+}
+endmodule
+
+module @top(%a : 4s<8>, %b : 4s<8>) -> (out : 4s<8>) {
+  %child = instance @u_add, @add8(%a, %b)
+  yield %child
+}
+endmodule

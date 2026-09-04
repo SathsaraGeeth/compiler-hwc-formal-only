@@ -1,0 +1,3 @@
+Top level design units:
+    btor2_pipeline
+

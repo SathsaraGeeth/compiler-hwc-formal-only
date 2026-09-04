@@ -1,0 +1,8 @@
+mir.version 1
+
+machine @bad_terminator(%a : 4s<8>) -> (out : 4s<8>) {
+^entry:
+  yield %a
+  %dead : 4s<8> = add %a, %a
+}
+endmachine

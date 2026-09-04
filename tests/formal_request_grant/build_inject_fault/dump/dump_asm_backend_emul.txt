@@ -1,0 +1,125 @@
+Top level design units:
+    formal_request_grant_properties
+
+0000:  d0210000  state_read x1, 0 <@request_grant_fsm.state> : width 2
+0001:  e0000000  literal (continuation)
+0002:  cc410000  li x2, 0 : width 2
+0003:  e0000000  literal (continuation)
+0004:  44611000  eq x3, x1, x2
+0005:  d0210000  state_read x1, 0 <@request_grant_fsm.state> : width 2
+0006:  e0000000  literal (continuation)
+0007:  cc410002  li x2, 2 : width 2
+0008:  e0000000  literal (continuation)
+0009:  44811000  eq x4, x1, x2
+000a:  28232000  or x1, x3, x4
+000b:  dc200005  export_write 5 <ready>, x1 : width 1
+000c:  e0000000  literal (continuation)
+000d:  d0210000  state_read x1, 0 <@request_grant_fsm.state> : width 2
+000e:  e0000000  literal (continuation)
+000f:  cc410000  li x2, 0 : width 2
+0010:  e0000000  literal (continuation)
+0011:  48611000  ne x3, x1, x2
+0012:  dc600006  export_write 6 <busy>, x3 : width 1
+0013:  e0000000  literal (continuation)
+0014:  d0210000  state_read x1, 0 <@request_grant_fsm.state> : width 2
+0015:  e0000000  literal (continuation)
+0016:  cc410002  li x2, 2 : width 2
+0017:  e0000000  literal (continuation)
+0018:  44611000  eq x3, x1, x2
+0019:  dc600007  export_write 7 <grant>, x3 : width 1
+001a:  e0000000  literal (continuation)
+001b:  d0200001  state_read x1, 1 <@request_grant_fsm.clk_prev> : width 1
+001c:  e0000000  literal (continuation)
+001d:  2c410000  not x2, x1
+001e:  d8200002  import_read x1, 2 <clk> : width 1
+001f:  e0000000  literal (continuation)
+0020:  24620800  and x3, x2, x1
+0021:  d4200001  state_write 1 <@request_grant_fsm.clk_prev>, x1 : width 1
+0022:  e0000000  literal (continuation)
+0023:  d8200003  import_read x1, 3 <rst_n> : width 1
+0024:  e0000000  literal (continuation)
+0025:  2c410000  not x2, x1
+0026:  24231000  and x1, x3, x2
+0027:  d0810000  state_read x4, 0 <@request_grant_fsm.state> : width 2
+0028:  e0000000  literal (continuation)
+0029:  cca10000  li x5, 0 : width 2
+002a:  e0000000  literal (continuation)
+002b:  64e10001  sext x7, x1, width 2
+002c:  2d070000  not x8, x7
+002d:  25244000  and x9, x4, x8
+002e:  25053800  and x8, x5, x7
+002f:  28c94000  or x6, x9, x8
+0030:  2c220000  not x1, x2
+0031:  24430800  and x2, x3, x1
+0032:  d0210000  state_read x1, 0 <@request_grant_fsm.state> : width 2
+0033:  e0000000  literal (continuation)
+0034:  cc610000  li x3, 0 : width 2
+0035:  e0000000  literal (continuation)
+0036:  44811800  eq x4, x1, x3
+0037:  cc600000  li x3, 0 : width 1
+0038:  e0000000  literal (continuation)
+0039:  28a32000  or x5, x3, x4
+003a:  cc600000  li x3, 0 : width 1
+003b:  e0000000  literal (continuation)
+003c:  28832800  or x4, x3, x5
+003d:  24622800  and x3, x2, x5
+003e:  d8a00004  import_read x5, 4 <request> : width 1
+003f:  e0000000  literal (continuation)
+0040:  cce10000  li x7, 0 : width 2
+0041:  e0000000  literal (continuation)
+0042:  cd010001  li x8, 1 : width 2
+0043:  e0000000  literal (continuation)
+0044:  65450001  sext x10, x5, width 2
+0045:  2d6a0000  not x11, x10
+0046:  25875800  and x12, x7, x11
+0047:  25685000  and x11, x8, x10
+0048:  292c5800  or x9, x12, x11
+0049:  64e30001  sext x7, x3, width 2
+004a:  2d070000  not x8, x7
+004b:  25464000  and x10, x6, x8
+004c:  25093800  and x8, x9, x7
+004d:  28aa4000  or x5, x10, x8
+004e:  cc610001  li x3, 1 : width 2
+004f:  e0000000  literal (continuation)
+0050:  44c11800  eq x6, x1, x3
+0051:  cc600000  li x3, 0 : width 1
+0052:  e0000000  literal (continuation)
+0053:  28e33000  or x7, x3, x6
+0054:  28643800  or x3, x4, x7
+0055:  24823800  and x4, x2, x7
+0056:  ccc10002  li x6, 2 : width 2
+0057:  e0000000  literal (continuation)
+0058:  65040001  sext x8, x4, width 2
+0059:  2d280000  not x9, x8
+005a:  25454800  and x10, x5, x9
+005b:  25264000  and x9, x6, x8
+005c:  28ea4800  or x7, x10, x9
+005d:  cc810002  li x4, 2 : width 2
+005e:  e0000000  literal (continuation)
+005f:  44a12000  eq x5, x1, x4
+0060:  cc200000  li x1, 0 : width 1
+0061:  e0000000  literal (continuation)
+0062:  28812800  or x4, x1, x5
+0063:  28232000  or x1, x3, x4
+0064:  24622000  and x3, x2, x4
+0065:  cc810000  li x4, 0 : width 2
+0066:  e0000000  literal (continuation)
+0067:  64c30001  sext x6, x3, width 2
+0068:  2d060000  not x8, x6
+0069:  25274000  and x9, x7, x8
+006a:  25043000  and x8, x4, x6
+006b:  28a94000  or x5, x9, x8
+006c:  2c610000  not x3, x1
+006d:  24221800  and x1, x2, x3
+006e:  cc410000  li x2, 0 : width 2
+006f:  e0000000  literal (continuation)
+0070:  64810001  sext x4, x1, width 2
+0071:  2cc40000  not x6, x4
+0072:  24e53000  and x7, x5, x6
+0073:  24c22000  and x6, x2, x4
+0074:  28673000  or x3, x7, x6
+0075:  d4610000  state_write 0 <@request_grant_fsm.state>, x3 : width 2
+0076:  e0000000  literal (continuation)
+0077:  04000000  commit
+0078:  04000000  commit
+0079:  08000000  yield

@@ -1,0 +1,109 @@
+/* Case II: four entry request and response FIFOs owned by the fetcher. */
+
+type fetch_word = logic[8];
+
+chan memiface {
+    left  req : (fetch_word@#1) @dyn-@dyn,
+    right rsp : (fetch_word@#1) @dyn-@dyn
+}
+
+proc imem(memory: left memiface) {
+    reg response : fetch_word;
+
+    loop {
+        let request = recv memory.req >>
+        set response := request >>
+        send memory.rsp(*response) >>
+        cycle 1
+    }
+}
+
+proc fetcher(memory: right memiface) {
+    reg req0 : fetch_word;
+    reg req1 : fetch_word;
+    reg req2 : fetch_word;
+    reg req3 : fetch_word;
+    reg req_output : fetch_word;
+    reg req_count : logic[3];
+
+    reg rsp0 : fetch_word;
+    reg rsp1 : fetch_word;
+    reg rsp2 : fetch_word;
+    reg rsp3 : fetch_word;
+    reg rsp_count : logic[3];
+
+    reg next_request : fetch_word;
+
+    loop {
+        if ready memory.rsp {
+            let response = recv memory.rsp >>
+            if (*rsp_count == 3'd0) {
+                set rsp0 := response
+            } else {
+                if (*rsp_count == 3'd1) {
+                    set rsp1 := response
+                } else {
+                    if (*rsp_count == 3'd2) {
+                        set rsp2 := response
+                    } else {
+                        set rsp3 := response
+                    }
+                }
+            };
+            set rsp_count := *rsp_count + 3'd1;
+            cycle 1
+        } else {
+            if (*rsp_count != 3'd0) {
+                dprint "rsp=%h" (*rsp0);
+                set rsp0 := *rsp1;
+                set rsp1 := *rsp2;
+                set rsp2 := *rsp3;
+                set rsp_count := *rsp_count - 3'd1;
+                cycle 1
+            } else {
+                if (*req_count != 3'd0) {
+                    set req_output := *req0 >>
+                    try send memory.req(*req_output) {
+                        set req0 := *req1;
+                        set req1 := *req2;
+                        set req2 := *req3;
+                        set req_count := *req_count - 3'd1;
+                        cycle 1
+                    } else {
+                        if (*req_count != 3'd4) {
+                            if (*req_count == 3'd1) {
+                                set req1 := *next_request
+                            } else {
+                                if (*req_count == 3'd2) {
+                                    set req2 := *next_request
+                                } else {
+                                    set req3 := *next_request
+                                }
+                            };
+                            set next_request := *next_request + <(8'd1)::fetch_word>;
+                            set req_count := *req_count + 3'd1;
+                            cycle 1
+                        } else {
+                            cycle 1
+                        }
+                    }
+                } else {
+                    set req0 := *next_request;
+                    set next_request := *next_request + <(8'd1)::fetch_word>;
+                    set req_count := 3'd1;
+                    cycle 1
+                }
+            }
+        }
+    }
+}
+
+proc case_ii() {
+    chan memory -- fetch : memiface;
+    spawn imem(memory);
+    spawn fetcher(fetch);
+
+    loop {
+        cycle 1
+    }
+}

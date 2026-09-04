@@ -1,0 +1,21 @@
+read_file -f sva_shapes.f
+set_top sva_shapes
+create_clock clk
+set_reset rst_n -active_low
+set_formal_property p_local
+dump_btor2_high_unopt
+dump_btor2_low_opt
+set_formal_property p_unbounded_delay
+dump_btor2_high_unopt
+dump_btor2_low_opt
+set_formal_property p_unbounded_repeat
+dump_btor2_low_opt
+set_formal_property p_nonconsecutive
+dump_btor2_high_unopt
+dump_btor2_low_opt
+set_formal_property p_goto
+dump_btor2_low_opt
+set_formal_property p_zero_repeat
+dump_btor2_low_opt
+set_formal_property p_large_delay
+dump_btor2_low_opt

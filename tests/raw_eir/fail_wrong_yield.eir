@@ -1,0 +1,6 @@
+eir.version 1
+
+module @wrong_yield(%a : 4s<8>) -> (first : 4s<8>, second : 4s<8>) {
+  yield %a
+}
+endmodule

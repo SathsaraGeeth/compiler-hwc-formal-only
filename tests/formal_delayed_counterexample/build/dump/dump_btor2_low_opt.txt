@@ -1,0 +1,64 @@
+Top level design units:
+    delayed_handshake
+
+1 sort bitvec 1
+2 sort bitvec 5
+3 sort bitvec 4
+4 input 1 clk
+5 input 1 rst_n
+6 input 1 request
+7 const 1 0
+8 state 1 formal_initialized
+9 const 1 1
+10 state 1 delayed_handshake.grant
+11 state 2 delayed_handshake.request_pipeline
+12 state 1 delayed_handshake.clk_prev
+13 eq 1 12 4
+14 or 1 8 13
+15 not 1 12
+16 and 1 15 4
+17 not 1 5
+18 and 1 16 17
+19 const 2 00000
+20 ite 2 18 19 11
+21 ite 1 18 7 10
+22 and 1 16 5
+23 slice 3 11 3 0
+24 concat 2 23 6
+25 ite 2 22 24 20
+26 slice 1 11 4 4
+27 ite 1 22 26 21
+28 state 1 request_gets_timely_grant.clock_previous
+29 eq 1 28 4
+30 or 1 8 29
+31 not 1 28
+32 and 1 31 4
+33 and 1 32 5
+34 not 1 10
+35 state 1 request_gets_timely_grant.age_1
+36 state 1 request_gets_timely_grant.age_2
+37 state 1 request_gets_timely_grant.age_3
+38 ite 1 32 6 35
+39 ite 1 17 7 38
+40 ite 1 32 35 36
+41 ite 1 17 7 40
+42 ite 1 32 36 37
+43 ite 1 17 7 42
+44 and 1 37 34
+45 and 1 33 44
+46 init 1 8 7
+47 next 1 8 9
+48 next 1 10 27
+49 next 2 11 25
+50 next 1 12 4
+51 next 1 28 4
+52 init 1 35 7
+53 next 1 35 39
+54 init 1 36 7
+55 next 1 36 41
+56 init 1 37 7
+57 next 1 37 43
+58 output 10 grant
+59 constraint 14 delayed_handshake.clk_prev.initial_edge
+60 constraint 30 request_gets_timely_grant.initial_clock
+61 bad 45 request_gets_timely_grant

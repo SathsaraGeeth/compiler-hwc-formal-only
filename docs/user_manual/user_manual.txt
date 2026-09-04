@@ -1,0 +1,39 @@
+1. How to get help.
+hwc -help
+
+
+2. filelist.f
+an example filelist.f can be found docs/user_manual/dummy_scripts/filelist.f
+all the paths should be relative to the location of filelist.f
+the filelist.f is recommended to place at the root
+
+
+3. Run simulation/emulation.
+hwc -f run_sim.tcl
+hwc -f run_uvm.tcl
+
+export HWC_FPGA_SERVER=HOST:PORT    (192.168.1.177:19000)
+
+
+4. Run formal verification.
+hwc -f run_formal.tcl
+
+
+5. See the internal representations.
+dump_elb_design            : dump the elobarated AST (hardware design, host design, and bindings)
+dump_eir_unopt             : dump the synthesizable, unoptimized intermediate representation
+dump_vir_unopt             : dump the unsynthesizable, unoptimized intermediate representation
+dump_eir_opt               : dump the synthesizable, optimized intermediate representation
+dump_vir_opt               : dump the unsynthesizable, optimized intermediate representation
+dump_mir                   : dump the mir representation
+dump_btor2_high_unopt      : dump BTOR2 HIR, unoptimized
+dump_btor2_high_opt        : dump BTOR2 HIR, optimized
+dump_btor2_low_unopt       : dump BTOR2 low IR, unoptimized
+dump_btor2_low_opt         : dump BTOR2 low IR, optimized
+dump_asm backend=<backend> : dump the assembly representation for the specified backend (e.g. emul, cpu (reserved))
+
+
+6. Flags
+-norun                     : suppress simulate, emulate, prove, and cover execution
+-meta                      : dump the internal meta information related to the option you already specified (if applicable)
+

@@ -1,0 +1,28 @@
+/* Case I: zero cycle payload lifetime, dynamic synchronization. */
+
+type fetch_req = logic[8];
+type fetch_rsp = logic[8];
+
+chan memiface {
+    left  req : (fetch_req@#0) @dyn-@dyn,
+    right rsp : (fetch_rsp@#0) @dyn-@dyn
+}
+
+proc imem(ep: left memiface) {
+    loop {
+        let req = recv ep.req >>
+        send ep.rsp(<(8'h2a)::fetch_rsp>) >>
+        cycle 5
+    }
+}
+
+proc case_i() {
+    chan memory -- fetch : memiface;
+    spawn imem(memory);
+
+    loop {
+        send fetch.req(<(8'h2a)::fetch_req>) >>
+        let rsp = recv fetch.rsp >>
+        cycle 5
+    }
+}

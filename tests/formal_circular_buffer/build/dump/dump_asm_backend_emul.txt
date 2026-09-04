@@ -1,0 +1,493 @@
+Top level design units:
+    circular_buffer_properties
+
+0000:  d0200000  state_read x1, 0 <@circular_buffer.o_deq_ready> : width 1
+0001:  e0000000  literal (continuation)
+0002:  d8400010  import_read x2, 16 <i_deq_valid> : width 1
+0003:  e0000000  literal (continuation)
+0004:  24611000  and x3, x1, x2
+0005:  d0220001  state_read x1, 1 <@circular_buffer.r_count> : width 3
+0006:  e0000000  literal (continuation)
+0007:  cc420004  li x2, 4 : width 3
+0008:  e0000000  literal (continuation)
+0009:  44811000  eq x4, x1, x2
+000a:  dc800014  export_write 20 <o_full>, x4 : width 1
+000b:  e0000000  literal (continuation)
+000c:  d0220001  state_read x1, 1 <@circular_buffer.r_count> : width 3
+000d:  e0000000  literal (continuation)
+000e:  cc420000  li x2, 0 : width 3
+000f:  e0000000  literal (continuation)
+0010:  44a11000  eq x5, x1, x2
+0011:  dca00015  export_write 21 <o_empty>, x5 : width 1
+0012:  e0000000  literal (continuation)
+0013:  2c240000  not x1, x4
+0014:  dc200016  export_write 22 <o_enq_ready>, x1 : width 1
+0015:  e0000000  literal (continuation)
+0016:  d0410003  state_read x2, 3 <@circular_buffer.r_head_ptr> : width 2
+0017:  e0000000  literal (continuation)
+0018:  cc810001  li x4, 1 : width 2
+0019:  e0000000  literal (continuation)
+001a:  0ca22000  add x5, x2, x4
+001b:  d0410003  state_read x2, 3 <@circular_buffer.r_head_ptr> : width 2
+001c:  e0000000  literal (continuation)
+001d:  64c30001  sext x6, x3, width 2
+001e:  2ce60000  not x7, x6
+001f:  25023800  and x8, x2, x7
+0020:  24e53000  and x7, x5, x6
+0021:  28883800  or x4, x8, x7
+0022:  d040000d  state_read x2, 13 <@circular_buffer.u_buff_mem.i_clk_prev> : width 1
+0023:  e0000000  literal (continuation)
+0024:  2ca20000  not x5, x2
+0025:  d840000e  import_read x2, 14 <i_clk> : width 1
+0026:  e0000000  literal (continuation)
+0027:  24c51000  and x6, x5, x2
+0028:  d440000d  state_write 13 <@circular_buffer.u_buff_mem.i_clk_prev>, x2 : width 1
+0029:  e0000000  literal (continuation)
+002a:  d0a10002  state_read x5, 2 <@circular_buffer.r_tail_ptr> : width 2
+002b:  e0000000  literal (continuation)
+002c:  cce10001  li x7, 1 : width 2
+002d:  e0000000  literal (continuation)
+002e:  45053800  eq x8, x5, x7
+002f:  d0e7000c  state_read x7, 12 <@circular_buffer.u_buff_mem.mem[0]> : width 8
+0030:  e0000000  literal (continuation)
+0031:  d127000b  state_read x9, 11 <@circular_buffer.u_buff_mem.mem[1]> : width 8
+0032:  e0000000  literal (continuation)
+0033:  65680007  sext x11, x8, width 8
+0034:  2d8b0000  not x12, x11
+0035:  25a76000  and x13, x7, x12
+0036:  25895800  and x12, x9, x11
+0037:  294d6000  or x10, x13, x12
+0038:  cce10002  li x7, 2 : width 2
+0039:  e0000000  literal (continuation)
+003a:  45053800  eq x8, x5, x7
+003b:  d0e7000a  state_read x7, 10 <@circular_buffer.u_buff_mem.mem[2]> : width 8
+003c:  e0000000  literal (continuation)
+003d:  65680007  sext x11, x8, width 8
+003e:  2d8b0000  not x12, x11
+003f:  25aa6000  and x13, x10, x12
+0040:  25875800  and x12, x7, x11
+0041:  292d6000  or x9, x13, x12
+0042:  cce10003  li x7, 3 : width 2
+0043:  e0000000  literal (continuation)
+0044:  45053800  eq x8, x5, x7
+0045:  d0e70009  state_read x7, 9 <@circular_buffer.u_buff_mem.mem[3]> : width 8
+0046:  e0000000  literal (continuation)
+0047:  65680007  sext x11, x8, width 8
+0048:  2d8b0000  not x12, x11
+0049:  25a96000  and x13, x9, x12
+004a:  25875800  and x12, x7, x11
+004b:  294d6000  or x10, x13, x12
+004c:  cce10000  li x7, 0 : width 2
+004d:  e0000000  literal (continuation)
+004e:  45053800  eq x8, x5, x7
+004f:  cce10001  li x7, 1 : width 2
+0050:  e0000000  literal (continuation)
+0051:  45253800  eq x9, x5, x7
+0052:  cce10002  li x7, 2 : width 2
+0053:  e0000000  literal (continuation)
+0054:  45453800  eq x10, x5, x7
+0055:  cce10003  li x7, 3 : width 2
+0056:  e0000000  literal (continuation)
+0057:  45653800  eq x11, x5, x7
+0058:  cca10001  li x5, 1 : width 2
+0059:  e0000000  literal (continuation)
+005a:  44e42800  eq x7, x4, x5
+005b:  d0a7000c  state_read x5, 12 <@circular_buffer.u_buff_mem.mem[0]> : width 8
+005c:  e0000000  literal (continuation)
+005d:  d187000b  state_read x12, 11 <@circular_buffer.u_buff_mem.mem[1]> : width 8
+005e:  e0000000  literal (continuation)
+005f:  65c70007  sext x14, x7, width 8
+0060:  2dee0000  not x15, x14
+0061:  26057800  and x16, x5, x15
+0062:  25ec7000  and x15, x12, x14
+0063:  29b07800  or x13, x16, x15
+0064:  cca10002  li x5, 2 : width 2
+0065:  e0000000  literal (continuation)
+0066:  44e42800  eq x7, x4, x5
+0067:  d0a7000a  state_read x5, 10 <@circular_buffer.u_buff_mem.mem[2]> : width 8
+0068:  e0000000  literal (continuation)
+0069:  65c70007  sext x14, x7, width 8
+006a:  2dee0000  not x15, x14
+006b:  260d7800  and x16, x13, x15
+006c:  25e57000  and x15, x5, x14
+006d:  29907800  or x12, x16, x15
+006e:  cca10003  li x5, 3 : width 2
+006f:  e0000000  literal (continuation)
+0070:  44e42800  eq x7, x4, x5
+0071:  d0a70009  state_read x5, 9 <@circular_buffer.u_buff_mem.mem[3]> : width 8
+0072:  e0000000  literal (continuation)
+0073:  65c70007  sext x14, x7, width 8
+0074:  2dee0000  not x15, x14
+0075:  260c7800  and x16, x12, x15
+0076:  25e57000  and x15, x5, x14
+0077:  29b07800  or x13, x16, x15
+0078:  d0a70008  state_read x5, 8 <@circular_buffer.u_buff_mem.o_dout> : width 8
+0079:  e0000000  literal (continuation)
+007a:  65860007  sext x12, x6, width 8
+007b:  2dcc0000  not x14, x12
+007c:  25e57000  and x15, x5, x14
+007d:  25cd6000  and x14, x13, x12
+007e:  28ef7000  or x7, x15, x14
+007f:  d4e70008  state_write 8 <@circular_buffer.u_buff_mem.o_dout>, x7 : width 8
+0080:  e0000000  literal (continuation)
+0081:  d0a00005  state_read x5, 5 <@circular_buffer.r_bypass_en> : width 1
+0082:  e0000000  literal (continuation)
+0083:  d1870004  state_read x12, 4 <@circular_buffer.r_bypass_data> : width 8
+0084:  e0000000  literal (continuation)
+0085:  65c50007  sext x14, x5, width 8
+0086:  2dee0000  not x15, x14
+0087:  26077800  and x16, x7, x15
+0088:  25ec7000  and x15, x12, x14
+0089:  29b07800  or x13, x16, x15
+008a:  dda70017  export_write 23 <o_head_data>, x13 : width 8
+008b:  e0000000  literal (continuation)
+008c:  d8a00012  import_read x5, 18 <i_enq_valid> : width 1
+008d:  e0000000  literal (continuation)
+008e:  24e12800  and x7, x1, x5
+008f:  5c271800  concat x1, x7, x3
+0090:  cca10001  li x5, 1 : width 2
+0091:  e0000000  literal (continuation)
+0092:  45812800  eq x12, x1, x5
+0093:  cca00000  li x5, 0 : width 1
+0094:  e0000000  literal (continuation)
+0095:  29a56000  or x13, x5, x12
+0096:  cca00000  li x5, 0 : width 1
+0097:  e0000000  literal (continuation)
+0098:  29856800  or x12, x5, x13
+0099:  d0a20001  state_read x5, 1 <@circular_buffer.r_count> : width 3
+009a:  e0000000  literal (continuation)
+009b:  cdc20001  li x14, 1 : width 3
+009c:  e0000000  literal (continuation)
+009d:  11e57000  sub x15, x5, x14
+009e:  d0a20001  state_read x5, 1 <@circular_buffer.r_count> : width 3
+009f:  e0000000  literal (continuation)
+00a0:  660d0002  sext x16, x13, width 3
+00a1:  2e300000  not x17, x16
+00a2:  26458800  and x18, x5, x17
+00a3:  262f8000  and x17, x15, x16
+00a4:  29d28800  or x14, x18, x17
+00a5:  cca10002  li x5, 2 : width 2
+00a6:  e0000000  literal (continuation)
+00a7:  45a12800  eq x13, x1, x5
+00a8:  cc200000  li x1, 0 : width 1
+00a9:  e0000000  literal (continuation)
+00aa:  28a16800  or x5, x1, x13
+00ab:  282c2800  or x1, x12, x5
+00ac:  d0220001  state_read x1, 1 <@circular_buffer.r_count> : width 3
+00ad:  e0000000  literal (continuation)
+00ae:  cd820001  li x12, 1 : width 3
+00af:  e0000000  literal (continuation)
+00b0:  0da16000  add x13, x1, x12
+00b1:  65850002  sext x12, x5, width 3
+00b2:  2dec0000  not x15, x12
+00b3:  260e7800  and x16, x14, x15
+00b4:  25ed6000  and x15, x13, x12
+00b5:  28307800  or x1, x16, x15
+00b6:  d0a00006  state_read x5, 6 <@circular_buffer.i_clk_prev> : width 1
+00b7:  e0000000  literal (continuation)
+00b8:  2d850000  not x12, x5
+00b9:  24ac1000  and x5, x12, x2
+00ba:  d4400006  state_write 6 <@circular_buffer.i_clk_prev>, x2 : width 1
+00bb:  e0000000  literal (continuation)
+00bc:  cd800000  li x12, 0 : width 1
+00bd:  e0000000  literal (continuation)
+00be:  29ac2800  or x13, x12, x5
+00bf:  d8a0000f  import_read x5, 15 <i_rst_n> : width 1
+00c0:  e0000000  literal (continuation)
+00c1:  2d850000  not x12, x5
+00c2:  d1c00007  state_read x14, 7 <@circular_buffer.i_rst_n_prev> : width 1
+00c3:  e0000000  literal (continuation)
+00c4:  25ec7000  and x15, x12, x14
+00c5:  d4a00007  state_write 7 <@circular_buffer.i_rst_n_prev>, x5 : width 1
+00c6:  e0000000  literal (continuation)
+00c7:  298d7800  or x12, x13, x15
+00c8:  2da50000  not x13, x5
+00c9:  25cc6800  and x14, x12, x13
+00ca:  d1e00005  state_read x15, 5 <@circular_buffer.r_bypass_en> : width 1
+00cb:  e0000000  literal (continuation)
+00cc:  ce000000  li x16, 0 : width 1
+00cd:  e0000000  literal (continuation)
+00ce:  664e0000  sext x18, x14, width 1
+00cf:  2e720000  not x19, x18
+00d0:  268f9800  and x20, x15, x19
+00d1:  26709000  and x19, x16, x18
+00d2:  2a349800  or x17, x20, x19
+00d3:  d1e70004  state_read x15, 4 <@circular_buffer.r_bypass_data> : width 8
+00d4:  e0000000  literal (continuation)
+00d5:  ce070000  li x16, 0 : width 8
+00d6:  e0000000  literal (continuation)
+00d7:  666e0007  sext x19, x14, width 8
+00d8:  2e930000  not x20, x19
+00d9:  26afa000  and x21, x15, x20
+00da:  26909800  and x20, x16, x19
+00db:  2a55a000  or x18, x21, x20
+00dc:  2dcd0000  not x14, x13
+00dd:  25ac7000  and x13, x12, x14
+00de:  d9800013  import_read x12, 19 <i_clr_n> : width 1
+00df:  e0000000  literal (continuation)
+00e0:  2dcc0000  not x14, x12
+00e1:  25ed7000  and x15, x13, x14
+00e2:  ce000000  li x16, 0 : width 1
+00e3:  e0000000  literal (continuation)
+00e4:  668f0000  sext x20, x15, width 1
+00e5:  2eb40000  not x21, x20
+00e6:  26d1a800  and x22, x17, x21
+00e7:  26b0a000  and x21, x16, x20
+00e8:  2a76a800  or x19, x22, x21
+00e9:  ce070000  li x16, 0 : width 8
+00ea:  e0000000  literal (continuation)
+00eb:  668f0007  sext x20, x15, width 8
+00ec:  2eb40000  not x21, x20
+00ed:  26d2a800  and x22, x18, x21
+00ee:  26b0a000  and x21, x16, x20
+00ef:  2a36a800  or x17, x22, x21
+00f0:  2dee0000  not x15, x14
+00f1:  25cd7800  and x14, x13, x15
+00f2:  d1a10002  state_read x13, 2 <@circular_buffer.r_tail_ptr> : width 2
+00f3:  e0000000  literal (continuation)
+00f4:  45ed2000  eq x15, x13, x4
+00f5:  24877800  and x4, x7, x15
+00f6:  65ee0000  sext x15, x14, width 1
+00f7:  2e0f0000  not x16, x15
+00f8:  26538000  and x18, x19, x16
+00f9:  26047800  and x16, x4, x15
+00fa:  29b28000  or x13, x18, x16
+00fb:  d8870011  import_read x4, 17 <i_enq_tail_data> : width 8
+00fc:  e0000000  literal (continuation)
+00fd:  660e0007  sext x16, x14, width 8
+00fe:  2e500000  not x18, x16
+00ff:  26719000  and x19, x17, x18
+0100:  26448000  and x18, x4, x16
+0101:  29f39000  or x15, x19, x18
+0102:  d1c00006  state_read x14, 6 <@circular_buffer.i_clk_prev> : width 1
+0103:  e0000000  literal (continuation)
+0104:  2e0e0000  not x16, x14
+0105:  25d01000  and x14, x16, x2
+0106:  d4400006  state_write 6 <@circular_buffer.i_clk_prev>, x2 : width 1
+0107:  e0000000  literal (continuation)
+0108:  cc400000  li x2, 0 : width 1
+0109:  e0000000  literal (continuation)
+010a:  2a027000  or x16, x2, x14
+010b:  2c450000  not x2, x5
+010c:  d1c00007  state_read x14, 7 <@circular_buffer.i_rst_n_prev> : width 1
+010d:  e0000000  literal (continuation)
+010e:  26227000  and x17, x2, x14
+010f:  d4a00007  state_write 7 <@circular_buffer.i_rst_n_prev>, x5 : width 1
+0110:  e0000000  literal (continuation)
+0111:  28508800  or x2, x16, x17
+0112:  2dc50000  not x14, x5
+0113:  24a27000  and x5, x2, x14
+0114:  d2010003  state_read x16, 3 <@circular_buffer.r_head_ptr> : width 2
+0115:  e0000000  literal (continuation)
+0116:  ce210000  li x17, 0 : width 2
+0117:  e0000000  literal (continuation)
+0118:  66650001  sext x19, x5, width 2
+0119:  2e930000  not x20, x19
+011a:  26b0a000  and x21, x16, x20
+011b:  26919800  and x20, x17, x19
+011c:  2a55a000  or x18, x21, x20
+011d:  d2010002  state_read x16, 2 <@circular_buffer.r_tail_ptr> : width 2
+011e:  e0000000  literal (continuation)
+011f:  ce210000  li x17, 0 : width 2
+0120:  e0000000  literal (continuation)
+0121:  66850001  sext x20, x5, width 2
+0122:  2eb40000  not x21, x20
+0123:  26d0a800  and x22, x16, x21
+0124:  26b1a000  and x21, x17, x20
+0125:  2a76a800  or x19, x22, x21
+0126:  d2020001  state_read x16, 1 <@circular_buffer.r_count> : width 3
+0127:  e0000000  literal (continuation)
+0128:  ce220000  li x17, 0 : width 3
+0129:  e0000000  literal (continuation)
+012a:  66a50002  sext x21, x5, width 3
+012b:  2ed50000  not x22, x21
+012c:  26f0b000  and x23, x16, x22
+012d:  26d1a800  and x22, x17, x21
+012e:  2a97b000  or x20, x23, x22
+012f:  d2000000  state_read x16, 0 <@circular_buffer.o_deq_ready> : width 1
+0130:  e0000000  literal (continuation)
+0131:  ce200000  li x17, 0 : width 1
+0132:  e0000000  literal (continuation)
+0133:  66c50000  sext x22, x5, width 1
+0134:  2ef60000  not x23, x22
+0135:  2710b800  and x24, x16, x23
+0136:  26f1b000  and x23, x17, x22
+0137:  2ab8b800  or x21, x24, x23
+0138:  2cae0000  not x5, x14
+0139:  25c22800  and x14, x2, x5
+013a:  2c4c0000  not x2, x12
+013b:  24ae1000  and x5, x14, x2
+013c:  cd810000  li x12, 0 : width 2
+013d:  e0000000  literal (continuation)
+013e:  66250001  sext x17, x5, width 2
+013f:  2ed10000  not x22, x17
+0140:  26f2b000  and x23, x18, x22
+0141:  26cc8800  and x22, x12, x17
+0142:  2a17b000  or x16, x23, x22
+0143:  cd810000  li x12, 0 : width 2
+0144:  e0000000  literal (continuation)
+0145:  66450001  sext x18, x5, width 2
+0146:  2ed20000  not x22, x18
+0147:  26f3b000  and x23, x19, x22
+0148:  26cc9000  and x22, x12, x18
+0149:  2a37b000  or x17, x23, x22
+014a:  cd820000  li x12, 0 : width 3
+014b:  e0000000  literal (continuation)
+014c:  66650002  sext x19, x5, width 3
+014d:  2ed30000  not x22, x19
+014e:  26f4b000  and x23, x20, x22
+014f:  26cc9800  and x22, x12, x19
+0150:  2a57b000  or x18, x23, x22
+0151:  cd800000  li x12, 0 : width 1
+0152:  e0000000  literal (continuation)
+0153:  66850000  sext x20, x5, width 1
+0154:  2ed40000  not x22, x20
+0155:  26f5b000  and x23, x21, x22
+0156:  26cca000  and x22, x12, x20
+0157:  2a77b000  or x19, x23, x22
+0158:  2ca20000  not x5, x2
+0159:  244e2800  and x2, x14, x5
+015a:  65820002  sext x12, x2, width 3
+015b:  2dcc0000  not x14, x12
+015c:  26927000  and x20, x18, x14
+015d:  25c16000  and x14, x1, x12
+015e:  28b47000  or x5, x20, x14
+015f:  cd820000  li x12, 0 : width 3
+0160:  e0000000  literal (continuation)
+0161:  49c16000  ne x14, x1, x12
+0162:  65820000  sext x12, x2, width 1
+0163:  2e4c0000  not x18, x12
+0164:  26939000  and x20, x19, x18
+0165:  264e6000  and x18, x14, x12
+0166:  28349000  or x1, x20, x18
+0167:  dc200018  export_write 24 <o_deq_ready>, x1 : width 1
+0168:  e0000000  literal (continuation)
+0169:  5d871800  concat x12, x7, x3
+016a:  cc610001  li x3, 1 : width 2
+016b:  e0000000  literal (continuation)
+016c:  45cc1800  eq x14, x12, x3
+016d:  cc600000  li x3, 0 : width 1
+016e:  e0000000  literal (continuation)
+016f:  2a437000  or x18, x3, x14
+0170:  cc600000  li x3, 0 : width 1
+0171:  e0000000  literal (continuation)
+0172:  29c39000  or x14, x3, x18
+0173:  24629000  and x3, x2, x18
+0174:  d2410003  state_read x18, 3 <@circular_buffer.r_head_ptr> : width 2
+0175:  e0000000  literal (continuation)
+0176:  ce610001  li x19, 1 : width 2
+0177:  e0000000  literal (continuation)
+0178:  0e929800  add x20, x18, x19
+0179:  66630001  sext x19, x3, width 2
+017a:  2eb30000  not x21, x19
+017b:  26d0a800  and x22, x16, x21
+017c:  26b49800  and x21, x20, x19
+017d:  2a56a800  or x18, x22, x21
+017e:  cc610002  li x3, 2 : width 2
+017f:  e0000000  literal (continuation)
+0180:  460c1800  eq x16, x12, x3
+0181:  cc600000  li x3, 0 : width 1
+0182:  e0000000  literal (continuation)
+0183:  2a638000  or x19, x3, x16
+0184:  286e9800  or x3, x14, x19
+0185:  25c29800  and x14, x2, x19
+0186:  d2010002  state_read x16, 2 <@circular_buffer.r_tail_ptr> : width 2
+0187:  e0000000  literal (continuation)
+0188:  ce610001  li x19, 1 : width 2
+0189:  e0000000  literal (continuation)
+018a:  0e909800  add x20, x16, x19
+018b:  666e0001  sext x19, x14, width 2
+018c:  2eb30000  not x21, x19
+018d:  26d1a800  and x22, x17, x21
+018e:  26b49800  and x21, x20, x19
+018f:  2a16a800  or x16, x22, x21
+0190:  cdc10003  li x14, 3 : width 2
+0191:  e0000000  literal (continuation)
+0192:  462c7000  eq x17, x12, x14
+0193:  cd800000  li x12, 0 : width 1
+0194:  e0000000  literal (continuation)
+0195:  29cc8800  or x14, x12, x17
+0196:  29837000  or x12, x3, x14
+0197:  24627000  and x3, x2, x14
+0198:  d1c10003  state_read x14, 3 <@circular_buffer.r_head_ptr> : width 2
+0199:  e0000000  literal (continuation)
+019a:  ce210001  li x17, 1 : width 2
+019b:  e0000000  literal (continuation)
+019c:  0e6e8800  add x19, x14, x17
+019d:  66230001  sext x17, x3, width 2
+019e:  2e910000  not x20, x17
+019f:  26b2a000  and x21, x18, x20
+01a0:  26938800  and x20, x19, x17
+01a1:  29d5a000  or x14, x21, x20
+01a2:  d2210002  state_read x17, 2 <@circular_buffer.r_tail_ptr> : width 2
+01a3:  e0000000  literal (continuation)
+01a4:  ce410001  li x18, 1 : width 2
+01a5:  e0000000  literal (continuation)
+01a6:  0e719000  add x19, x17, x18
+01a7:  66430001  sext x18, x3, width 2
+01a8:  2e920000  not x20, x18
+01a9:  26b0a000  and x21, x16, x20
+01aa:  26939000  and x20, x19, x18
+01ab:  2a35a000  or x17, x21, x20
+01ac:  2c6c0000  not x3, x12
+01ad:  25821800  and x12, x2, x3
+01ae:  d4200000  state_write 0 <@circular_buffer.o_deq_ready>, x1 : width 1
+01af:  e0000000  literal (continuation)
+01b0:  d4a20001  state_write 1 <@circular_buffer.r_count>, x5 : width 3
+01b1:  e0000000  literal (continuation)
+01b2:  d6210002  state_write 2 <@circular_buffer.r_tail_ptr>, x17 : width 2
+01b3:  e0000000  literal (continuation)
+01b4:  d5c10003  state_write 3 <@circular_buffer.r_head_ptr>, x14 : width 2
+01b5:  e0000000  literal (continuation)
+01b6:  d5e70004  state_write 4 <@circular_buffer.r_bypass_data>, x15 : width 8
+01b7:  e0000000  literal (continuation)
+01b8:  d5a00005  state_write 5 <@circular_buffer.r_bypass_en>, x13 : width 1
+01b9:  e0000000  literal (continuation)
+01ba:  24263800  and x1, x6, x7
+01bb:  24414000  and x2, x1, x8
+01bc:  d067000c  state_read x3, 12 <@circular_buffer.u_buff_mem.mem[0]> : width 8
+01bd:  e0000000  literal (continuation)
+01be:  64c20007  sext x6, x2, width 8
+01bf:  2ce60000  not x7, x6
+01c0:  25033800  and x8, x3, x7
+01c1:  24e43000  and x7, x4, x6
+01c2:  28a83800  or x5, x8, x7
+01c3:  24414800  and x2, x1, x9
+01c4:  d067000b  state_read x3, 11 <@circular_buffer.u_buff_mem.mem[1]> : width 8
+01c5:  e0000000  literal (continuation)
+01c6:  64e20007  sext x7, x2, width 8
+01c7:  2d070000  not x8, x7
+01c8:  25234000  and x9, x3, x8
+01c9:  25043800  and x8, x4, x7
+01ca:  28c94000  or x6, x9, x8
+01cb:  24415000  and x2, x1, x10
+01cc:  d067000a  state_read x3, 10 <@circular_buffer.u_buff_mem.mem[2]> : width 8
+01cd:  e0000000  literal (continuation)
+01ce:  65020007  sext x8, x2, width 8
+01cf:  2d280000  not x9, x8
+01d0:  25434800  and x10, x3, x9
+01d1:  25244000  and x9, x4, x8
+01d2:  28ea4800  or x7, x10, x9
+01d3:  24415800  and x2, x1, x11
+01d4:  d0270009  state_read x1, 9 <@circular_buffer.u_buff_mem.mem[3]> : width 8
+01d5:  e0000000  literal (continuation)
+01d6:  65020007  sext x8, x2, width 8
+01d7:  2d280000  not x9, x8
+01d8:  25414800  and x10, x1, x9
+01d9:  25244000  and x9, x4, x8
+01da:  286a4800  or x3, x10, x9
+01db:  d4670009  state_write 9 <@circular_buffer.u_buff_mem.mem[3]>, x3 : width 8
+01dc:  e0000000  literal (continuation)
+01dd:  d4e7000a  state_write 10 <@circular_buffer.u_buff_mem.mem[2]>, x7 : width 8
+01de:  e0000000  literal (continuation)
+01df:  d4c7000b  state_write 11 <@circular_buffer.u_buff_mem.mem[1]>, x6 : width 8
+01e0:  e0000000  literal (continuation)
+01e1:  d4a7000c  state_write 12 <@circular_buffer.u_buff_mem.mem[0]>, x5 : width 8
+01e2:  e0000000  literal (continuation)
+01e3:  04000000  commit
+01e4:  d0220001  state_read x1, 1 <@circular_buffer.r_count> : width 3
+01e5:  e0000000  literal (continuation)
+01e6:  dc220019  export_write 25 <o_level>, x1 : width 3
+01e7:  e0000000  literal (continuation)
+01e8:  04000000  commit
+01e9:  08000000  yield

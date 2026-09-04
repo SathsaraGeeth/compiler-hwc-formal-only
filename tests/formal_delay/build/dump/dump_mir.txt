@@ -1,0 +1,21 @@
+Top level design units:
+    delayed_ack_properties
+
+mir.version 1
+
+machine @delayed_ack(%clk : 4s<1>, %req : 4s<1>) -> (ack : 4s<1>) {
+  state @delayed_ack.ack : 4s<1>
+  state @delayed_ack.clk_prev : 4s<1>
+^entry:
+  %0 : 4s<1> = state_read @delayed_ack.clk_prev
+  %1 : 4s<1> = not %0
+  %2 : 4s<1> = and %1, %clk
+  state_write @delayed_ack.clk_prev, %clk
+  %3 : 4s<1> = state_read @delayed_ack.ack
+  %4 : 4s<1> = state_read @delayed_ack.ack
+  %5 : 4s<1> = mux %2, %4, %req
+  state_write @delayed_ack.ack, %5
+  yield %5
+}
+endmachine
+

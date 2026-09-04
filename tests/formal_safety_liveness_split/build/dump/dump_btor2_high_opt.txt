@@ -1,0 +1,9 @@
+Top level design units:
+    safety_liveness_split
+
+btor2.hir {
+  assert trivial_safety_and_liveness {
+    safety = G((signature Equality state))
+    guarantee = F((signature Equality state))
+  }
+}

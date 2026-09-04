@@ -1,0 +1,7 @@
+eir.version 1
+
+module @top(%a : 4s<8>) -> (out : 4s<8>) {
+  %child = instance @u0, @missing_module(%a)
+  yield %child
+}
+endmodule

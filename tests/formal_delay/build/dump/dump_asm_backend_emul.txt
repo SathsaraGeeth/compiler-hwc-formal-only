@@ -1,0 +1,27 @@
+Top level design units:
+    delayed_ack_properties
+
+0000:  d0200001  state_read x1, 1 <@delayed_ack.clk_prev> : width 1
+0001:  e0000000  literal (continuation)
+0002:  2c410000  not x2, x1
+0003:  d8200002  import_read x1, 2 <clk> : width 1
+0004:  e0000000  literal (continuation)
+0005:  24620800  and x3, x2, x1
+0006:  d4200001  state_write 1 <@delayed_ack.clk_prev>, x1 : width 1
+0007:  e0000000  literal (continuation)
+0008:  d0200000  state_read x1, 0 <@delayed_ack.ack> : width 1
+0009:  e0000000  literal (continuation)
+000a:  d8400003  import_read x2, 3 <req> : width 1
+000b:  e0000000  literal (continuation)
+000c:  64a30000  sext x5, x3, width 1
+000d:  2cc50000  not x6, x5
+000e:  24e13000  and x7, x1, x6
+000f:  24c22800  and x6, x2, x5
+0010:  28873000  or x4, x7, x6
+0011:  dc800004  export_write 4 <ack>, x4 : width 1
+0012:  e0000000  literal (continuation)
+0013:  d4800000  state_write 0 <@delayed_ack.ack>, x4 : width 1
+0014:  e0000000  literal (continuation)
+0015:  04000000  commit
+0016:  04000000  commit
+0017:  08000000  yield

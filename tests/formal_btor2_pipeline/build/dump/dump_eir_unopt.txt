@@ -1,0 +1,5 @@
+Top level design units:
+    btor2_pipeline
+
+eir.version 1
+

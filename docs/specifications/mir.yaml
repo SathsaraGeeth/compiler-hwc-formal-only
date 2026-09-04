@@ -1,0 +1,117 @@
+# mir.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+# Version 1.0
+#
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation (FROZEN)
+#
+#
+# Comments:
+# 1. Non SSA based IR for synthesizable HDL
+# 2. Comes after SSA destruction and before code generation
+# 3. MIR has basic blocks (unlike EIR)
+#
+
+mir:
+  value_types:
+    - name: value
+      fields:
+        - name: bits
+          width: 32
+        - name: xmask
+          width: 32
+        - name: zmask
+          width: 32
+        - name: width_minus_1
+          width: 5
+
+  registers:
+    - name: virtual_register
+      format: "r<N>"
+      description: non SSA register, values are mutable
+    - name: state_register
+      format: "s<N>"
+      description: persistent hardware state reference
+
+  blocks:
+    - name: basic_block
+      format: block @name {
+                ...
+              }
+      description: sequential list of MIR instructions
+                   no SSA
+                   instructions execute in order
+
+  instructions:
+    - name: move
+      format: "mov rdst, rsrc"
+    - name: load_constant
+      format: "li rdst, constant"
+    - name: and
+      format: "and rdst, r1, r2"
+    - name: or
+      format: "or rdst, r1, r2"
+    - name: xor
+      format: "xor rdst, r1, r2"
+    - name: not
+      format: "not rdst, r1"
+    - name: mux
+      format: "mux rdst, sel, false, true"
+    - name: add
+      format: "add rdst, r1, r2"
+    - name: sub
+      format: "sub rdst, r1, r2"
+    - name: mul
+      format: "mul rdst, r1, r2"
+    - name: shl
+      format: "shl rdst, r1, r2"
+    - name: lshr
+      format: "lshr rdst, r1, r2"
+    - name: ashr
+      format: "ashr rdst, r1, r2"
+    - name: slice
+      format: "slice rdst, rsrc, start, width"
+    - name: concat
+      format: "concat rdst, r1, r2"
+    - name: zext
+      format: "zext rdst, rsrc"
+    - name: sext
+      format: "sext rdst, rsrc"
+    - name: state_read
+      format: "load_state rdst, state_id"
+    - name: state_write
+      format: "store_state state_id, rsrc"
+    - name: commit
+      format: "commit"
+      description: atomically publish all pending state writes
+    - name: import_read
+      format: "import_read rdst, endpoint_id"
+    - name: export_write
+      format: "export_write endpoint_id, rsrc"
+    - name: yield
+      format: "yield"
+
+  program:
+    format: function @name {
+              registers:
+                ...
+              blocks:
+                block0:
+                  ...
+            }
+
+  lowering_rules:
+    - source: "SSA value"
+      target: "virtual register"
+    - source: "phi"
+      target: "parallel copy"
+      description: SSA destruction inserts copies at block boundaries
+    - source: "comb region"
+      target: "basic block"
+      description: combinational dependency order becomes instruction order

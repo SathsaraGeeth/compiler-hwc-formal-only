@@ -1,0 +1,8 @@
+Top level design units:
+    formal_adder_properties
+
+btor2.hir {
+  assert adder_correct {
+    safety = ((carry, sum) Equality ((1'b0, a) Add (1'b0, b)))
+  }
+}

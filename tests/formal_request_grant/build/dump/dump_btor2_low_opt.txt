@@ -1,0 +1,128 @@
+Top level design units:
+    formal_request_grant_properties
+
+1 sort bitvec 1
+2 sort bitvec 2
+3 input 1 clk
+4 input 1 rst_n
+5 input 1 request
+6 const 1 0
+7 state 1 formal_initialized
+8 const 1 1
+9 state 2 request_grant_fsm.state
+10 state 1 request_grant_fsm.clk_prev
+11 eq 1 10 3
+12 or 1 7 11
+13 const 2 00
+14 eq 1 9 13
+15 neq 1 9 13
+16 const 2 10
+17 eq 1 9 16
+18 not 1 10
+19 and 1 18 3
+20 not 1 4
+21 and 1 19 20
+22 ite 2 21 13 9
+23 and 1 19 4
+24 and 1 23 14
+25 const 2 01
+26 ite 2 5 25 13
+27 ite 2 24 26 22
+28 eq 1 9 25
+29 or 1 14 28
+30 and 1 23 28
+31 ite 2 30 16 27
+32 or 1 29 17
+33 and 1 23 17
+34 ite 2 33 13 31
+35 not 1 32
+36 and 1 23 35
+37 ite 2 36 13 34
+38 state 1 request_grant_contract.safety.clock_previous
+39 eq 1 38 3
+40 or 1 7 39
+41 not 1 38
+42 and 1 41 3
+43 not 1 14
+44 eq 1 15 43
+45 and 1 42 4
+46 not 1 44
+47 and 1 45 46
+48 state 1 request_grant_contract.safety.state_0
+49 state 1 request_grant_contract.safety.state_1
+50 not 1 15
+51 not 1 17
+52 and 1 50 17
+53 and 1 14 17
+54 and 1 15 53
+55 or 1 52 54
+56 and 1 49 55
+57 and 1 50 51
+58 and 1 14 51
+59 or 1 58 43
+60 and 1 15 59
+61 or 1 57 60
+62 and 1 49 61
+63 or 1 48 56
+64 or 1 63 62
+65 not 1 45
+66 or 1 65 64
+67 ite 1 45 63 48
+68 ite 1 20 6 67
+69 ite 1 45 62 49
+70 ite 1 20 8 69
+71 and 1 45 48
+72 state 1 request_grant_contract.reactivity.clock_previous
+73 eq 1 72 3
+74 or 1 7 73
+75 not 1 72
+76 and 1 75 3
+77 and 1 76 4
+78 input 2 request_grant_contract.reactivity.edge
+79 state 1 request_grant_contract.reactivity.state_0
+80 state 1 request_grant_contract.reactivity.state_1
+81 eq 1 78 13
+82 and 1 79 81
+83 eq 1 78 25
+84 and 1 5 14
+85 and 1 51 84
+86 and 1 83 85
+87 and 1 79 86
+88 eq 1 78 16
+89 and 1 88 51
+90 and 1 80 89
+91 or 1 82 87
+92 or 1 91 90
+93 not 1 77
+94 or 1 93 92
+95 ite 1 77 82 79
+96 ite 1 20 8 95
+97 or 1 87 90
+98 ite 1 77 97 80
+99 ite 1 20 6 98
+100 and 1 77 80
+101 init 1 7 6
+102 next 1 7 8
+103 next 2 9 37
+104 next 1 10 3
+105 next 1 38 3
+106 init 1 48 6
+107 next 1 48 68
+108 init 1 49 8
+109 next 1 49 70
+110 next 1 72 3
+111 init 1 79 8
+112 next 1 79 96
+113 init 1 80 6
+114 next 1 80 99
+115 output 14 ready
+116 output 15 busy
+117 output 17 grant
+118 constraint 12 request_grant_fsm.clk_prev.initial_edge
+119 constraint 40 request_grant_contract.safety.initial_clock
+120 bad 47 request_grant_contract.safety
+121 constraint 66 request_grant_contract.safety.transition
+122 justice 1 71 request_grant_contract.safety
+123 constraint 74 request_grant_contract.reactivity.initial_clock
+124 constraint 94 request_grant_contract.reactivity.transition
+125 justice 1 100 request_grant_contract.reactivity

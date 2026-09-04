@@ -1,0 +1,127 @@
+import "../common/types.anvil"
+import "../coherency/protocol.anvil"
+
+proc cache<cache_id : int>(
+    cpu       : left cpu_cache_ch,
+    directory : right cache_directory_ch
+) {
+    reg tags              : logic[256][50];
+    reg states            : mesi_state[256];
+    reg lines             : logic[256][512];
+    reg line_addresses    : logic[256][64];
+    reg cpu_response      : cpu_rsp;
+    reg current_request   : cpu_req;
+    reg current_snoop     : snoop_req;
+    reg coherence_request : coh_req;
+    reg snoop_response    : snoop_rsp;
+    reg noop              : logic;
+
+    loop {
+        if ready directory.snoop {
+            let snoop = recv directory.snoop >>
+            set current_snoop := snoop >>
+            let address = call decode_addr(*current_snoop.addr);
+
+            if (((*states[address.index] == mesi_state::mesi_s) ||
+                 (*states[address.index] == mesi_state::mesi_e) ||
+                 (*states[address.index] == mesi_state::mesi_m)) &&
+                (*tags[address.index] == address.tag)) {
+                
+                set snoop_response.trans_id := *current_snoop.trans_id;
+                set snoop_response.present := 1'b1;
+                set snoop_response.dirty := *states[address.index] == mesi_state::mesi_m;
+                set snoop_response.data := *lines[address.index];
+                
+                if *current_snoop.op == snoop_op::snoop_invalidate {
+                    set snoop_response.op := ack_op::ack_invalidate;
+                    set states[address.index] := mesi_state::mesi_i
+                } else {
+                    set snoop_response.op := ack_op::ack_downgrade;
+                    set states[address.index] := mesi_state::mesi_s
+                }
+
+            } else {
+                set snoop_response.trans_id := *current_snoop.trans_id;
+                set snoop_response.op := ack_op::ack_not_present;
+                set snoop_response.present := 1'b0;
+                set snoop_response.dirty := 1'b0;
+                set snoop_response.data := 512'b0
+            } >>
+
+            send directory.snoop_rsp(*snoop_response)
+
+        } else if ready cpu.req {
+
+            let request = recv cpu.req >>
+            set current_request := request >>
+            let address = call decode_addr(*current_request.addr);
+            let hit = ((*states[address.index] == mesi_state::mesi_s) ||
+                       (*states[address.index] == mesi_state::mesi_e) ||
+                       (*states[address.index] == mesi_state::mesi_m)) &&
+                      (*tags[address.index] == address.tag);
+
+            if (hit && *current_request.op == cpu_op::cpu_load) {
+                set cpu_response.id := *current_request.id;
+                set cpu_response.rdata := call line_word(
+                    *lines[address.index], address.word, address.byte)
+
+            } else if (hit && *current_request.op == cpu_op::cpu_store &&
+                       ((*states[address.index] == mesi_state::mesi_m) ||
+                        (*states[address.index] == mesi_state::mesi_e))) {
+
+                set cpu_response.id := *current_request.id;
+                set cpu_response.rdata := call line_word(
+                    *lines[address.index], address.word, address.byte);
+                set lines[address.index] := call write_line_word(
+                    *lines[address.index], address.word,
+                    *current_request.wdata, *current_request.wstrb);
+                set states[address.index] := mesi_state::mesi_m
+            } else {
+                if ((*states[address.index] == mesi_state::mesi_m) && (hit == 1'b0)) {
+                    set coherence_request.requester := 1'b0;
+                    set coherence_request.trans_id := *current_request.id;
+                    set coherence_request.op := coh_op::coh_writeback;
+                    set coherence_request.addr := *line_addresses[address.index];
+                    set coherence_request.data := *lines[address.index] >>
+                    send directory.req(*coherence_request) >>
+                    let writeback_response = recv directory.rsp >>
+                    set cpu_response.rdata := writeback_response.data[0+:64]
+                } else {
+                    set noop := 1'b0
+                } >>
+                set coherence_request.requester := 1'b0;
+                set coherence_request.trans_id := *current_request.id;
+                if *current_request.op == cpu_op::cpu_store {
+                    set coherence_request.op := coh_op::coh_get_m;
+                    set states[address.index] := mesi_state::mesi_im
+                } else {
+                    set coherence_request.op := coh_op::coh_get_s;
+                    set states[address.index] := mesi_state::mesi_is
+                };
+                set coherence_request.addr := *current_request.addr;
+                set coherence_request.data := 512'b0 >>
+                send directory.req(*coherence_request) >>
+                let grant = recv directory.rsp >>
+                set tags[address.index] := address.tag;
+                set line_addresses[address.index] := *current_request.addr;
+                set states[address.index] := grant.state;
+                set lines[address.index] := grant.data;
+                set cpu_response.id := *current_request.id;
+                set cpu_response.rdata := call line_word(
+                    grant.data, address.word, address.byte) >>
+                cycle 1 >>
+                if *current_request.op == cpu_op::cpu_store {
+                    set lines[address.index] := call write_line_word(
+                        *lines[address.index], address.word,
+                        *current_request.wdata, *current_request.wstrb);
+                    set states[address.index] := mesi_state::mesi_m
+                } else {
+                    set noop := 1'b0
+                }
+            } >>
+            send cpu.rsp(*cpu_response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

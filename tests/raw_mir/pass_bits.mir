@@ -1,0 +1,10 @@
+mir.version 1
+
+machine @bit_pipeline(%a : 4s<4>, %b : 4s<4>) -> (out : 4s<8>) {
+^entry:
+  %joined : 4s<8> = concat %a, %b
+  %wide : 4s<16> = zext %joined
+  %out : 4s<8> = slice %wide, 0, 8
+  yield %out
+}
+endmachine

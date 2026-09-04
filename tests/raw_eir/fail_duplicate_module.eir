@@ -1,0 +1,11 @@
+eir.version 1
+
+module @duplicate() {
+  yield
+}
+endmodule
+
+module @duplicate() {
+  yield
+}
+endmodule

@@ -1,0 +1,19 @@
+Top level design units:
+    safety_liveness_split
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+define void @"safety_liveness_split.combinational"() {
+entry:
+  ret void
+}
+
+define void @"safety_liveness_split.clocked"() {
+entry:
+  ret void
+}
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+

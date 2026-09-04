@@ -1,0 +1,8 @@
+eir.version 1
+
+module @duplicate_ssa(%a : 4s<8>) -> (out : 4s<8>) {
+  %x : 4s<8> = add %a, %a
+  %x : 4s<8> = add %x, %a
+  yield %x
+}
+endmodule

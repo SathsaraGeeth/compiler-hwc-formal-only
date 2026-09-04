@@ -1,0 +1,32 @@
+Top level design units:
+    adder_tb
+
+mir.version 1
+
+machine @add(%clk : 4s<1>, %a : 4s<8>, %b : 4s<8>) -> (sum : 4s<8>, carry : 4s<1>) {
+  state @add.sum : 4s<8>
+  state @add.carry : 4s<1>
+  state @add.clk_prev : 4s<1>
+^entry:
+  %0 : 4s<1> = state_read @add.clk_prev
+  %1 : 4s<1> = not %0
+  %2 : 4s<1> = and %1, %clk
+  state_write @add.clk_prev, %clk
+  %3 : 4s<1> = state_read @add.carry
+  %4 : 4s<8> = state_read @add.sum
+  %5 : 4s<9> = concat %3, %4
+  %6 : 4s<9> = zext %a
+  %7 : 4s<9> = zext %b
+  %8 : 4s<9> = add %6, %7
+  %9 : 4s<8> = slice %8, 0, 8
+  %10 : 4s<8> = state_read @add.sum
+  %11 : 4s<8> = mux %2, %10, %9
+  %12 : 4s<1> = slice %8, 8, 1
+  %13 : 4s<1> = state_read @add.carry
+  %14 : 4s<1> = mux %2, %13, %12
+  state_write @add.carry, %14
+  state_write @add.sum, %11
+  yield %11, %14
+}
+endmachine
+

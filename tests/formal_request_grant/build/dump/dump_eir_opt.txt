@@ -1,0 +1,54 @@
+Top level design units:
+    formal_request_grant_properties
+
+eir.version 1
+
+module @request_grant_fsm(%clk : 4s<1>, %rst_n : 4s<1>, %request : 4s<1>) -> (ready : 4s<1>, busy : 4s<1>, grant : 4s<1>) {
+  state @request_grant_fsm.state : 4s<2>
+  state @request_grant_fsm.clk_prev : 4s<1>
+  %0 : 4s<2> = state_read @request_grant_fsm.state
+  %1 : 4s<1> = eq %0, 4s<2>'0x0
+  %2 : 4s<2> = state_read @request_grant_fsm.state
+  %3 : 4s<1> = ne %2, 4s<2>'0x0
+  %4 : 4s<2> = state_read @request_grant_fsm.state
+  %5 : 4s<1> = eq %4, 4s<2>'0x2
+  %6 : 4s<1> = state_read @request_grant_fsm.clk_prev
+  %7 : 4s<1> = not %6
+  %8 : 4s<1> = and %7, %clk
+  state_write @request_grant_fsm.clk_prev, %clk
+  %9 : 4s<1> = not %rst_n
+  %10 : 4s<1> = and %8, %9
+  %11 : 4s<2> = state_read @request_grant_fsm.state
+  %12 : 4s<2> = state_read @request_grant_fsm.state
+  %13 : 4s<2> = mux %10, %12, 4s<2>'0x0
+  %14 : 4s<1> = not %9
+  %15 : 4s<1> = and %8, %14
+  %16 : 4s<2> = state_read @request_grant_fsm.state
+  %17 : 4s<1> = eq %16, 4s<2>'0x0
+  %18 : 4s<1> = or 4s<1>'0x0, %17
+  %19 : 4s<1> = or 4s<1>'0x0, %18
+  %20 : 4s<1> = and %15, %18
+  %21 : 4s<2> = state_read @request_grant_fsm.state
+  %22 : 4s<2> = mux %request, 4s<2>'0x0, 4s<2>'0x1
+  %23 : 4s<2> = mux %20, %13, %22
+  %24 : 4s<1> = eq %16, 4s<2>'0x1
+  %25 : 4s<1> = or 4s<1>'0x0, %24
+  %26 : 4s<1> = or %19, %25
+  %27 : 4s<1> = and %15, %25
+  %28 : 4s<2> = state_read @request_grant_fsm.state
+  %29 : 4s<2> = mux %27, %23, 4s<2>'0x2
+  %30 : 4s<1> = eq %16, 4s<2>'0x2
+  %31 : 4s<1> = or 4s<1>'0x0, %30
+  %32 : 4s<1> = or %26, %31
+  %33 : 4s<1> = and %15, %31
+  %34 : 4s<2> = state_read @request_grant_fsm.state
+  %35 : 4s<2> = mux %33, %29, 4s<2>'0x0
+  %36 : 4s<1> = not %32
+  %37 : 4s<1> = and %15, %36
+  %38 : 4s<2> = state_read @request_grant_fsm.state
+  %39 : 4s<2> = mux %37, %35, 4s<2>'0x0
+  state_write @request_grant_fsm.state, %39
+  yield %1, %3, %5
+}
+endmodule
+

@@ -1,0 +1,185 @@
+import "protocol.anvil"
+
+proc directory (cache0 : left cache_directory_ch,
+                cache1 : left cache_directory_ch,
+                memory : right memory_ch) 
+{
+
+    reg valids          : logic[1024];
+    reg tags            : logic[1024][48];
+    reg sharers         : logic[1024][2];
+    reg owner_valids    : logic[1024];
+    reg owners          : logic[1024];
+    reg memory_request  : mem_req;
+    reg response        : coh_rsp;
+    reg snoop_request   : snoop_req;
+    reg current_request : coh_req;
+    reg noop            : logic;
+
+    loop {
+        if ready cache0.req {
+            let request = recv cache0.req >>
+            set current_request := request >>
+            set response.trans_id := *current_request.trans_id;
+            let address = call decode_dir_addr(*current_request.addr);
+            let dir_index = *current_request.addr[6+:10];
+            if *current_request.op == coh_op::coh_writeback {
+                set memory_request.op := mem_op::mem_write;
+                set memory_request.addr := *current_request.addr;
+                set memory_request.data := *current_request.data >>
+                send memory.req(*memory_request) >>
+                let memory_response = recv memory.rsp >>
+                set valids[dir_index] := 1'b0;
+                set sharers[dir_index] := 2'b00;
+                set owner_valids[dir_index] := 1'b0;
+                set response.op := grant_op::grant_writeback_done;
+                set response.state := mesi_state::mesi_i;
+                set response.data := memory_response.data
+            } else {
+                set memory_request.op := mem_op::mem_read;
+                set memory_request.addr := *current_request.addr;
+                set memory_request.data := 512'b0 >>
+                send memory.req(*memory_request) >>
+                let memory_response = recv memory.rsp >>
+                set response.data := memory_response.data;
+                if ((*valids[dir_index] == 1'b1) &&
+                    (*tags[dir_index] == address.tag) &&
+                    ((*sharers[dir_index][1] == 1'b1) ||
+                     ((*owner_valids[dir_index] == 1'b1) &&
+                      (*owners[dir_index] == 1'b1)))) {
+                    if *current_request.op == coh_op::coh_get_m {
+                    set snoop_request.op := snoop_op::snoop_invalidate
+                    } else {
+                        set snoop_request.op := snoop_op::snoop_downgrade
+                    };
+                    set snoop_request.trans_id := *current_request.trans_id;
+                    set snoop_request.addr := *current_request.addr >>
+                    send cache1.snoop(*snoop_request) >>
+                    let snoop_response = recv cache1.snoop_rsp >>
+                    if snoop_response.present && snoop_response.dirty {
+                        set memory_request.op := mem_op::mem_write;
+                        set memory_request.data := snoop_response.data >>
+                        send memory.req(*memory_request) >>
+                        let write_response = recv memory.rsp >>
+                        set response.data := write_response.data
+                    } else {
+                        set noop := 1'b0
+                    }
+                } else {
+                    set noop := 1'b0
+                } >>
+                if *current_request.op == coh_op::coh_get_m {
+                    set valids[dir_index] := 1'b1;
+                    set tags[dir_index] := address.tag;
+                    set sharers[dir_index] := 2'b00;
+                    set owner_valids[dir_index] := 1'b1;
+                    set owners[dir_index] := 1'b0;
+                    set response.op := grant_op::grant_m;
+                    set response.state := mesi_state::mesi_m
+                } else if ((*valids[dir_index] == 1'b0) || (*tags[dir_index] != address.tag)) {
+                    set valids[dir_index] := 1'b1;
+                    set tags[dir_index] := address.tag;
+                    set sharers[dir_index] := 2'b00;
+                    set owner_valids[dir_index] := 1'b1;
+                    set owners[dir_index] := 1'b0;
+                    set response.op := grant_op::grant_e;
+                    set response.state := mesi_state::mesi_e
+                } else {
+                    if ((*owner_valids[dir_index] == 1'b1) &&
+                        (*owners[dir_index] == 1'b1)) {
+                        set sharers[dir_index] := 2'b11
+                    } else {
+                        set sharers[dir_index] := *sharers[dir_index] | 2'b01
+                    };
+                    set owner_valids[dir_index] := 1'b0;
+                    set response.op := grant_op::grant_s;
+                    set response.state := mesi_state::mesi_s
+                }
+            } >>
+            send cache0.rsp(*response)
+        } else if ready cache1.req {
+            let request = recv cache1.req >>
+            set current_request := request >>
+            set response.trans_id := *current_request.trans_id;
+            let address = call decode_dir_addr(*current_request.addr);
+            let dir_index = *current_request.addr[6+:10];
+            if *current_request.op == coh_op::coh_writeback {
+                set memory_request.op := mem_op::mem_write;
+                set memory_request.addr := *current_request.addr;
+                set memory_request.data := *current_request.data >>
+                send memory.req(*memory_request) >>
+                let memory_response = recv memory.rsp >>
+                set valids[dir_index] := 1'b0;
+                set sharers[dir_index] := 2'b00;
+                set owner_valids[dir_index] := 1'b0;
+                set response.op := grant_op::grant_writeback_done;
+                set response.state := mesi_state::mesi_i;
+                set response.data := memory_response.data
+            } else {
+                set memory_request.op := mem_op::mem_read;
+                set memory_request.addr := *current_request.addr;
+                set memory_request.data := 512'b0 >>
+                send memory.req(*memory_request) >>
+                let memory_response = recv memory.rsp >>
+                set response.data := memory_response.data;
+                if ((*valids[dir_index] == 1'b1) &&
+                    (*tags[dir_index] == address.tag) &&
+                    ((*sharers[dir_index][0] == 1'b1) ||
+                     ((*owner_valids[dir_index] == 1'b1) &&
+                      (*owners[dir_index] == 1'b0)))) {
+                    if *current_request.op == coh_op::coh_get_m {
+                        set snoop_request.op := snoop_op::snoop_invalidate
+                    } else {
+                        set snoop_request.op := snoop_op::snoop_downgrade
+                    };
+                    set snoop_request.trans_id := *current_request.trans_id;
+                    set snoop_request.addr := *current_request.addr >>
+                    send cache0.snoop(*snoop_request) >>
+                    let snoop_response = recv cache0.snoop_rsp >>
+                    if snoop_response.present && snoop_response.dirty {
+                        set memory_request.op := mem_op::mem_write;
+                        set memory_request.data := snoop_response.data >>
+                        send memory.req(*memory_request) >>
+                        let write_response = recv memory.rsp >>
+                        set response.data := write_response.data
+                    } else {
+                        set noop := 1'b0
+                    }
+                } else {
+                    set noop := 1'b0
+                } >>
+                if *current_request.op == coh_op::coh_get_m {
+                    set valids[dir_index] := 1'b1;
+                    set tags[dir_index] := address.tag;
+                    set sharers[dir_index] := 2'b00;
+                    set owner_valids[dir_index] := 1'b1;
+                    set owners[dir_index] := 1'b1;
+                    set response.op := grant_op::grant_m;
+                    set response.state := mesi_state::mesi_m
+                } else if ((*valids[dir_index] == 1'b0) ||
+                            (*tags[dir_index] != address.tag)) {
+                    set valids[dir_index] := 1'b1;
+                    set tags[dir_index] := address.tag;
+                    set sharers[dir_index] := 2'b00;
+                    set owner_valids[dir_index] := 1'b1;
+                    set owners[dir_index] := 1'b1;
+                    set response.op := grant_op::grant_e;
+                    set response.state := mesi_state::mesi_e
+                } else {
+                    if ((*owner_valids[dir_index] == 1'b1) &&
+                        (*owners[dir_index] == 1'b0)) {
+                        set sharers[dir_index] := 2'b11
+                    } else {
+                        set sharers[dir_index] := *sharers[dir_index] | 2'b10
+                    };
+                    set owner_valids[dir_index] := 1'b0;
+                    set response.op := grant_op::grant_s;
+                    set response.state := mesi_state::mesi_s
+                }
+            } >>
+            send cache1.rsp(*response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

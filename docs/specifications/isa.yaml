@@ -1,0 +1,475 @@
+# isa.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+# Version 1.0
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation (FROZEN)
+#
+# Comments:
+#
+
+isa:
+  instruction_width: 32
+  data_width: 32
+  state_width: 32
+  
+regfile:
+  count: 32
+  registers:
+    - name: x0
+      index: 0
+      description: zero, hardwired
+    - name: x1_through_x31
+      indexes: "1:31"
+      description: general purpose registers
+  value_format:
+    fields:
+      - name: bits
+        width: 32
+        description: data bits
+      - name: xmask
+        width: 32
+        description: X mask
+      - name: zmask
+        width: 32
+        description: Z mask
+      - name: width_minus_1
+        width: 5
+        description: width_minus_1 of the value in bits
+
+instruction_encoding:
+  R4:
+    description: up to four register operation
+    examples: add, sub, mul, shl, lshr, ashr, and, or, not, xor, mux
+              redand, redor, redxor, eq, ne, slt, sle, ult, ule
+              concat
+    fields:
+      - name: opcode
+        bits: "31:26"
+        width: 6
+      - name: rd
+        bits: "25:21"
+        width: 5
+      - name: rs1
+        bits: "20:16"
+        width: 5
+      - name: rs2
+        bits: "15:11"
+        width: 5
+      - name: rs3
+        bits: "10:6"
+        width: 5
+      - name: reserved
+        bits: "5:0"
+        width: 6
+  
+  R2I:
+    description: 2 registers + immediate index
+    examples: slice(I=start6, width_minus_one5),
+              addi, subi, muli, 
+              shli, lshri, ashri, andi, ori, xori, redandi, 
+              redori, redxori, eqi, nei, slti, slei, ulti, ulei,
+              zext, sext (I=width_minus_one5)
+    fields:
+      - name: opcode
+        bits: "31:26"
+        width: 6
+      - name: rd
+        bits: "25:21"
+        width: 5
+      - name: rs1
+        bits: "20:16"
+        width: 5
+      - name: immediate
+        bits: "15:0"
+        width: 16
+
+  RI:
+    description: register + immediate index
+    examples: li, 
+              state_read, state_write,      (done by the core.sv)
+              import_read, export_write     (done by the host.sv)
+              (I=width_minus_one5+value17)
+    fields:
+      - name: opcode
+        bits: "31:26"
+        width: 6
+      - name: reg
+        bits: "25:21"
+        width: 5
+      - name: immediate
+        bits: "20:0"
+        width: 21
+
+  I:
+    description: immediate only - used to chain with *I types if needed
+    examples: literal
+    fields:
+      - name: opcode
+        bits: "31:26"
+        width: 6
+      - name: immediate
+        bits: "25:0"
+        width: 26
+  
+  0:
+    description: no operands
+    examples: noop, commit, yield
+    fields:
+      - name: opcode
+        bits: "31:26"
+        width: 6
+
+
+instructions:
+  - name: nop
+    opcode: 0x00
+    format: ZERO
+    description: no operation
+
+  - name: commit
+    opcode: 0x01
+    format: ZERO
+    description: atomically commit pending state writes
+
+  - name: yield
+    opcode: 0x02
+    format: ZERO
+    description: terminate current execution task
+
+  - name: add
+    opcode: 0x03
+    format: R4
+    description: rd = rs1 + rs2
+
+  - name: sub
+    opcode: 0x04
+    format: R4
+    description: rd = rs1 - rs2
+
+  - name: mul
+    opcode: 0x05
+    format: R4
+    description: rd = rs1 * rs2
+
+  - name: shl
+    opcode: 0x06
+    format: R4
+    description: logical left shift
+
+  - name: lshr
+    opcode: 0x07
+    format: R4
+    description: logical right shift
+
+  - name: ashr
+    opcode: 0x08
+    format: R4
+    description: arithmetic right shift
+
+  - name: and
+    opcode: 0x09
+    format: R4
+    description: bitwise AND
+
+  - name: or
+    opcode: 0x0a
+    format: R4
+    description: bitwise OR
+
+  - name: not
+    opcode: 0x0b
+    format: R4
+    description: bitwise NOT
+
+  - name: xor
+    opcode: 0x0c
+    format: R4
+    description: bitwise XOR
+
+  - name: mux
+    opcode: 0x0d
+    format: R4
+    encoding:
+      rs1: select
+      rs2: false_value
+      rs3: true_value
+    description: conditional value selection
+
+  - name: redand
+    opcode: 0x0e
+    format: R4
+    description: reduction AND
+
+  - name: redor
+    opcode: 0x0f
+    format: R4
+    description: reduction OR
+
+  - name: redxor
+    opcode: 0x10
+    format: R4
+    description: reduction XOR
+
+  - name: eq
+    opcode: 0x11
+    format: R4
+    description: equality comparison
+
+  - name: ne
+    opcode: 0x12
+    format: R4
+    description: inequality comparison
+
+  - name: slt
+    opcode: 0x13
+    format: R4
+    description: signed less than
+
+  - name: sle
+    opcode: 0x14
+    format: R4
+    description: signed less or equal
+
+  - name: ult
+    opcode: 0x15
+    format: R4
+    description: unsigned less than
+
+  - name: ule
+    opcode: 0x16
+    format: R4
+    description: unsigned less or equal
+
+  - name: concat
+    opcode: 0x17
+    format: R4
+    description: concatenate rs1 above rs2
+
+  - name: slice
+    opcode: 0x20
+    format: R2I
+    encoding:
+      immediate:
+        bits_5_0: start
+        bits_10_6: width_minus_1
+    description: extract bit range
+
+  - name: addi
+    opcode: 0x21
+    format: R2I
+    description: add immediate
+
+  - name: subi
+    opcode: 0x22
+    format: R2I
+    description: subtract immediate
+
+  - name: muli
+    opcode: 0x23
+    format: R2I
+    description: multiply immediate
+
+  - name: shli
+    opcode: 0x24
+    format: R2I
+    description: left shift immediate
+
+  - name: lshri
+    opcode: 0x25
+    format: R2I
+    description: logical right shift immediate
+
+  - name: ashri
+    opcode: 0x26
+    format: R2I
+    description: arithmetic right shift immediate
+
+  - name: andi
+    opcode: 0x27
+    format: R2I
+    description: AND immediate
+
+  - name: ori
+    opcode: 0x28
+    format: R2I
+    description: OR immediate
+
+  - name: xori
+    opcode: 0x29
+    format: R2I
+    description: XOR immediate
+
+  - name: redandi
+    opcode: 0x2a
+    format: R2I
+    description: reduction AND immediate
+
+  - name: redori
+    opcode: 0x2b
+    format: R2I
+    description: reduction OR immediate
+
+  - name: redxori
+    opcode: 0x2c
+    format: R2I
+    description: reduction XOR immediate
+
+  - name: eqi
+    opcode: 0x2d
+    format: R2I
+    description: equality immediate
+
+  - name: nei
+    opcode: 0x2e
+    format: R2I
+    description: inequality immediate
+
+  - name: slti
+    opcode: 0x2f
+    format: R2I
+    description: signed less than immediate
+
+  - name: slei
+    opcode: 0x30
+    format: R2I
+    description: signed less equal immediate
+
+  - name: ulti
+    opcode: 0x31
+    format: R2I
+    description: unsigned less than immediate
+
+  - name: ulei
+    opcode: 0x32
+    format: R2I
+    description: unsigned less equal immediate
+
+  - name: zext
+    opcode: 0x18
+    format: R2I
+    encoding:
+      immediate:
+        width_minus_1: bits_4_0
+    description: zero extend
+
+  - name: sext
+    opcode: 0x19
+    format: R2I
+    encoding:
+      immediate:
+        width_minus_1: bits_4_0
+    description: sign extend
+
+  - name: li
+    opcode: 0x33
+    format: RI
+    encoding:
+      reg: destination
+      immediate:
+        width_minus_1: bits_20_16
+        payload: bits_15_0
+    description: load value payload, need another I instruction
+
+  - name: state_read
+    opcode: 0x34
+    format: RI
+    encoding:
+      reg: destination
+      width_minus_1: bits_20_16
+      state_id: bits_15_0
+    description: read committed state, need another I instructio
+
+  - name: state_write
+    opcode: 0x35
+    format: RI
+    encoding:
+      reg: source
+      width_minus_1: bits_20_16
+      state_id: bits_15_0
+    description: write pending state, need another I instruction
+
+  - name: import_read
+    opcode: 0x36
+    format: RI
+    encoding:
+      reg: destination
+      width_minus_1: bits_20_16
+      state_id: bits_15_0
+    description: read host input, need another I instruction
+
+  - name: export_write
+    opcode: 0x37
+    format: RI
+    encoding:
+      reg: source
+      width_minus_1: bits_20_16
+      state_id: bits_15_0
+    description: write host output, need another I instruction
+
+  - name: literal
+    opcode: 0x38
+    format: I
+    encoding:
+      payload: bits_25_0
+    description: literal value, need another I instruction
+
+opcode_map:
+  0x00: nop
+  0x01: commit
+  0x02: yield
+  0x03: add
+  0x04: sub
+  0x05: mul
+  0x06: shl
+  0x07: lshr
+  0x08: ashr
+  0x09: and
+  0x0a: or
+  0x0b: not
+  0x0c: xor
+  0x0d: mux
+  0x0e: redand
+  0x0f: redor
+  0x10: redxor
+  0x11: eq
+  0x12: ne
+  0x13: slt
+  0x14: sle
+  0x15: ult
+  0x16: ule
+  0x17: concat
+  0x18: zext
+  0x19: sext
+  0x20: slice
+  0x21: addi
+  0x22: subi
+  0x23: muli
+  0x24: shli
+  0x25: lshri
+  0x26: ashri
+  0x27: andi
+  0x28: ori
+  0x29: xori
+  0x2a: redandi
+  0x2b: redori
+  0x2c: redxori
+  0x2d: eqi
+  0x2e: nei
+  0x2f: slti
+  0x30: slei
+  0x31: ulti
+  0x32: ulei
+  0x33: li
+  0x34: state_read
+  0x35: state_write
+  0x36: import_read
+  0x37: export_write
+  0x38: literal
+  0x39-0x3f: reserved
+  

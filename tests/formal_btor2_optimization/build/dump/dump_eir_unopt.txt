@@ -1,0 +1,5 @@
+Top level design units:
+    formal_btor2_optimization
+
+eir.version 1
+

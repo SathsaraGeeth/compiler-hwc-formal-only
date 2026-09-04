@@ -1,0 +1,116 @@
+Top level design units:
+    btor2_pipeline
+
+1 sort bitvec 1
+2 sort bitvec 2
+3 input 1 clk
+4 input 1 rst_n
+5 input 1 request
+6 const 1 0
+7 state 1 formal_initialized
+8 const 1 1
+9 state 1 btor2_pipeline.grant
+10 state 1 btor2_pipeline.clk_prev
+11 eq 1 10 3
+12 or 1 7 11
+13 not 1 10
+14 and 1 13 3
+15 not 1 4
+16 and 1 14 15
+17 const 1 0
+18 ite 1 16 17 9
+19 not 1 15
+20 and 1 14 19
+21 ite 1 20 5 18
+22 state 1 request_protocol.safety.clock_previous
+23 eq 1 22 3
+24 or 1 7 23
+25 not 1 22
+26 and 1 25 3
+27 const 1 0
+28 state 1 sva_history_0
+29 ite 1 26 5 28
+30 not 1 4
+31 not 1 30
+32 and 1 26 31
+33 not 1 28
+34 and 1 9 33
+35 and 1 9 28
+36 and 1 32 34
+37 and 1 32 35
+38 state 1 request_protocol.reactivity.clock_previous
+39 eq 1 38 3
+40 or 1 7 39
+41 not 1 38
+42 and 1 41 3
+43 not 1 4
+44 not 1 43
+45 and 1 42 44
+46 input 2 request_protocol.reactivity.edge
+47 const 1 0
+48 const 1 1
+49 state 1 request_protocol.reactivity.state_0
+50 state 1 request_protocol.reactivity.state_1
+51 const 2 00
+52 eq 1 46 51
+53 const 1 1
+54 and 1 52 53
+55 and 1 49 54
+56 const 2 01
+57 eq 1 46 56
+58 not 1 5
+59 const 1 0
+60 and 1 58 59
+61 not 1 9
+62 const 1 1
+63 and 1 61 62
+64 const 1 0
+65 and 1 9 64
+66 or 1 63 65
+67 and 1 5 66
+68 or 1 60 67
+69 and 1 57 68
+70 and 1 49 69
+71 const 2 10
+72 eq 1 46 71
+73 not 1 9
+74 const 1 1
+75 and 1 73 74
+76 const 1 0
+77 and 1 9 76
+78 or 1 75 77
+79 and 1 72 78
+80 and 1 50 79
+81 or 1 47 55
+82 or 1 81 70
+83 or 1 82 80
+84 not 1 45
+85 or 1 84 83
+86 or 1 47 55
+87 ite 1 45 86 49
+88 ite 1 43 48 87
+89 or 1 47 70
+90 or 1 89 80
+91 ite 1 45 90 50
+92 ite 1 43 47 91
+93 or 1 47 50
+94 and 1 45 93
+95 init 1 7 6
+96 next 1 7 8
+97 next 1 9 21
+98 next 1 10 3
+99 next 1 22 3
+100 init 1 28 27
+101 next 1 28 29
+102 next 1 38 3
+103 init 1 49 48
+104 next 1 49 88
+105 init 1 50 47
+106 next 1 50 92
+107 output 9 grant
+108 constraint 12 btor2_pipeline.clk_prev.initial_edge
+109 constraint 24 request_protocol.safety.initial_clock
+110 bad 36 request_protocol.safety
+111 constraint 40 request_protocol.reactivity.initial_clock
+112 constraint 85 request_protocol.reactivity.transition
+113 justice 1 94 request_protocol.reactivity

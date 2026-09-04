@@ -1,0 +1,19 @@
+Top level design units:
+    formal_request_grant_properties
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+define void @"formal_request_grant_properties.combinational"() {
+entry:
+  ret void
+}
+
+define void @"formal_request_grant_properties.clocked"() {
+entry:
+  ret void
+}
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+

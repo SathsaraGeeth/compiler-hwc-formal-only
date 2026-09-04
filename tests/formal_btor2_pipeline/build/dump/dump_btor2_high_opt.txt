@@ -1,0 +1,9 @@
+Top level design units:
+    btor2_pipeline
+
+btor2.hir {
+  assert request_protocol {
+    safety = G((grant -> $past(request)))
+    reactivity = G((request -> F(grant)))
+  }
+}

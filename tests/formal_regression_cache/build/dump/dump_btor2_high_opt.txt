@@ -1,0 +1,8 @@
+Top level design units:
+    directory_muexc
+
+btor2.hir {
+  assert muexc_cache_req_accepted {
+    safety = G(LogicalNot(((f_req_valid_0 LogicalAnd f_req_ready_0) LogicalAnd (f_req_valid_1 LogicalAnd f_req_ready_1))))
+  }
+}

@@ -1,0 +1,13 @@
+read_file -f files.f
+set_top multiclock_bridge
+create_clock clk_source
+create_clock clk_destination
+set_reset rst_n -active_low
+set_engine bmc
+set_formal_backend btormc
+set_max_depth 16
+set_formal_work_directory work/formal
+set_formal_timeout 2m
+set_expected_result bounded
+
+prove destination_pulse_follows_synchronizer

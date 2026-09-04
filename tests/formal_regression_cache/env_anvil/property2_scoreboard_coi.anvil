@@ -1,0 +1,26 @@
+import "../../../../rtl_anvil/common/types.anvil"
+import "../../../../rtl_anvil/coherency/protocol.anvil"
+
+proc cache_system_scoreboard_coi(
+    cpu0 : left cpu_cache_ch,
+    cpu1 : left cpu_cache_ch
+) {
+    reg response : cpu_rsp;
+    reg noop     : logic;
+
+    loop {
+        if ready cpu0.req {
+            let request = recv cpu0.req >>
+            set response.id := request.id;
+            set response.rdata := 64'b0 >>
+            send cpu0.rsp(*response)
+        } else if ready cpu1.req {
+            let request = recv cpu1.req >>
+            set response.id := request.id;
+            set response.rdata := 64'b0 >>
+            send cpu1.rsp(*response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

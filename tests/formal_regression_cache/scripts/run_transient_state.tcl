@@ -1,0 +1,7 @@
+read_file -f files_transient_state.f
+set_top cache_transient_state
+create_clock i_clk
+set_reset i_rst_n -active_low
+set_engine bmc
+set_max_depth 8
+prove transient_state_stable_until_completion

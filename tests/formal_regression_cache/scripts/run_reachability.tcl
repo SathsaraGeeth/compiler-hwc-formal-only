@@ -1,0 +1,11 @@
+read_file -f files_reachability.f
+set_top directory_reachability
+create_clock i_clk
+set_reset i_rst_n -active_low
+set_formal_task reachability
+set_engine bmc
+set_max_depth 12
+cover reach_direct_grant_path
+cover reach_snoop_ack_grant_path
+cover reach_both_clients_accepted
+cover reach_bus_lock_response

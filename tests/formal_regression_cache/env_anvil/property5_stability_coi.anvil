@@ -1,0 +1,22 @@
+import "../../../../rtl_anvil/common/types.anvil"
+
+chan stability_ch {
+    left  req : (cpu_req@#1) @dyn-@dyn,
+    right rsp : (cpu_rsp@#1) @dyn-@dyn
+}
+
+proc channel_stability_coi(port : left stability_ch) {
+    reg response : cpu_rsp;
+    reg noop     : logic;
+
+    loop {
+        if ready port.req {
+            let request = recv port.req >>
+            set response.id := request.id;
+            set response.rdata := request.wdata >>
+            send port.rsp(*response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

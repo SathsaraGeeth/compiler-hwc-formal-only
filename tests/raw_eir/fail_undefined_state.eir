@@ -1,0 +1,7 @@
+eir.version 1
+
+module @undefined_state(%a : 4s<8>) -> (out : 4s<8>) {
+  %x : 4s<8> = state_read @missing
+  yield %x
+}
+endmodule

@@ -1,0 +1,7 @@
+mir.version 1
+
+machine @bad_yield(%a : 4s<8>) -> (first : 4s<8>, second : 4s<8>) {
+^entry:
+  yield %a
+}
+endmachine

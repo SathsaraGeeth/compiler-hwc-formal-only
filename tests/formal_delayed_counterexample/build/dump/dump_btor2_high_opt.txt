@@ -1,0 +1,8 @@
+Top level design units:
+    delayed_handshake
+
+btor2.hir {
+  assert request_gets_timely_grant {
+    safety = (request -> (##[3:3] grant))
+  }
+}

@@ -1,0 +1,70 @@
+/* Case IV: one entry request and response FIFOs owned by the fetcher. */
+
+type fetch_word = logic[8];
+
+chan memiface {
+    left  req : (fetch_word@#1) @dyn-@dyn,
+    right rsp : (fetch_word@#1) @dyn-@dyn
+}
+
+proc imem(memory: left memiface) {
+    reg response : fetch_word;
+
+    loop {
+        let request = recv memory.req >>
+        set response := request >>
+        send memory.rsp(*response) >>
+        cycle 1
+    }
+}
+
+proc fetcher(memory: right memiface) {
+    reg req_data : fetch_word;
+    reg req_output : fetch_word;
+    reg req_full : logic;
+
+    reg rsp_data : fetch_word;
+    reg rsp_full : logic;
+
+    reg next_request : fetch_word;
+
+    loop {
+        if ready memory.rsp {
+            let response = recv memory.rsp >>
+            set rsp_data := response;
+            set rsp_full := 1'b1;
+            cycle 1
+        } else {
+            if (*rsp_full == 1'b1) {
+                dprint "rsp=%h" (*rsp_data);
+                set rsp_full := 1'b0;
+                cycle 1
+            } else {
+                if (*req_full == 1'b1) {
+                    set req_output := *req_data >>
+                    try send memory.req(*req_output) {
+                        set req_full := 1'b0;
+                        cycle 1
+                    } else {
+                        cycle 1
+                    }
+                } else {
+                    set req_data := *next_request;
+                    set next_request := *next_request + <(8'd1)::fetch_word>;
+                    set req_full := 1'b1;
+                    cycle 1
+                }
+            }
+        }
+    }
+}
+
+proc case_iv() {
+    chan memory -- fetch : memiface;
+    spawn imem(memory);
+    spawn fetcher(fetch);
+
+    loop {
+        cycle 1
+    }
+}

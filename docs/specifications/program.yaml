@@ -1,0 +1,88 @@
+# program.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+# Version 1.1
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation
+# 1.1     | Define the EIR/LLVM VIR split and section payloads
+#
+
+format: EIRC executable
+extension: .eip
+byte_order: little
+alignment: 8
+
+program:
+  hardware: EIR -> target ISA
+  host: VIR -> LLVM IR
+  execution: LLVM host code invokes the runtime ABI, which transports values to the target
+
+header:
+  size: 64
+  magic: "7f 45 49 52 43 45 58 45"
+  fields:
+    major: {offset: 8, type: u16, value: 1}
+    minor: {offset: 10, type: u16, value: 0}
+    header_size: {offset: 12, type: u16, value: 64}
+    section_header_size: {offset: 14, type: u16, value: 32}
+    section_count: {offset: 16, type: u16}
+    section_table_offset: {offset: 24, type: u64}
+    file_size: {offset: 32, type: u64}
+
+section_header:
+  size: 32
+  fields:
+    type: {offset: 0, type: u32}
+    flags: {offset: 4, type: u32}
+    file_offset: {offset: 8, type: u64}
+    byte_size: {offset: 16, type: u64}
+    entry_size: {offset: 24, type: u32}
+    entry_count: {offset: 28, type: u32}
+
+sections:
+  1:
+    name: strings
+    entry_size: 1
+    content: NUL-terminated UTF-8 strings
+    requirements:
+      - byte 0 is NUL
+      - every binding name_offset identifies a terminated string
+  2:
+    name: isa
+    entry_size: 8
+    content: target ISA instruction words
+    source: EIR -> MIR -> target encoding
+  3:
+    name: bindings
+    entry_size: 16
+    content: hardware/host boundary binding records
+  4:
+    name: vir
+    entry_size: 1
+    content: UTF-8 LLVM IR assembly
+    source: elaborated host design -> VIR
+    requirements:
+      - accepted by the stock LLVM assembler and compiler
+
+# All sections begin at an 8-byte-aligned file offset. byte_size excludes
+# alignment padding. entry_count * entry_size must equal byte_size.
+
+binding:
+  size: 16
+  fields:
+    name_offset: {offset: 0, type: u32}
+    address: {offset: 4, type: u32}
+    width: {offset: 8, type: u16}
+    kind: {offset: 10, type: u8, values: {1: import, 2: export, 3: state}}
+    four_state: {offset: 11, type: u8}
+    reserved: {offset: 12, type: bytes, size: 4, value: 0}
+
+compatibility:
+  legacy_files_may_share_magic: true
+  identification: Validate version and header sizes, not magic alone.
+  note: Files with a different header layout or version are legacy artifacts and must be regenerated.

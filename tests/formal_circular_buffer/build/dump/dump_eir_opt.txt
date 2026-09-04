@@ -1,0 +1,219 @@
+Top level design units:
+    circular_buffer_properties
+
+eir.version 1
+
+module @circular_buffer(%i_clk : 4s<1>, %i_rst_n : 4s<1>, %i_deq_valid : 4s<1>, %i_enq_tail_data : 4s<8>, %i_enq_valid : 4s<1>, %i_clr_n : 4s<1>) -> (o_head_data : 4s<8>, o_deq_ready : 4s<1>, o_enq_ready : 4s<1>, o_full : 4s<1>, o_empty : 4s<1>, o_level : 4s<3>) {
+  state @circular_buffer.o_deq_ready : 4s<1>
+  state @circular_buffer.r_count : 4s<3>
+  state @circular_buffer.r_tail_ptr : 4s<2>
+  state @circular_buffer.r_head_ptr : 4s<2>
+  state @circular_buffer.r_bypass_data : 4s<8>
+  state @circular_buffer.r_bypass_en : 4s<1>
+  state @circular_buffer.i_clk_prev : 4s<1>
+  state @circular_buffer.i_rst_n_prev : 4s<1>
+  state @circular_buffer.u_buff_mem.o_dout : 4s<8>
+  state @circular_buffer.u_buff_mem.mem[3] : 4s<8>
+  state @circular_buffer.u_buff_mem.mem[2] : 4s<8>
+  state @circular_buffer.u_buff_mem.mem[1] : 4s<8>
+  state @circular_buffer.u_buff_mem.mem[0] : 4s<8>
+  state @circular_buffer.u_buff_mem.i_clk_prev : 4s<1>
+  %0 : 4s<1> = state_read @circular_buffer.o_deq_ready
+  %1 : 4s<1> = and %0, %i_deq_valid
+  %2 : 4s<3> = state_read @circular_buffer.r_count
+  %3 : 4s<1> = eq %2, 4s<3>'0x4
+  %4 : 4s<3> = state_read @circular_buffer.r_count
+  %5 : 4s<1> = eq %4, 4s<3>'0x0
+  %6 : 4s<3> = state_read @circular_buffer.r_count
+  %7 : 4s<1> = not %3
+  %8 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %9 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %10 : 4s<2> = add %9, 4s<2>'0x1
+  %11 : 4s<2> = mux %1, %8, %10
+  %12 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %136 : 4s<1> = state_read @circular_buffer.u_buff_mem.i_clk_prev
+  %137 : 4s<1> = not %136
+  %138 : 4s<1> = and %137, %i_clk
+  state_write @circular_buffer.u_buff_mem.i_clk_prev, %i_clk
+  %140 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[0]
+  %141 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[1]
+  %142 : 4s<1> = eq %12, 4s<2>'0x1
+  %143 : 4s<8> = mux %142, %140, %141
+  %144 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[2]
+  %145 : 4s<1> = eq %12, 4s<2>'0x2
+  %146 : 4s<8> = mux %145, %143, %144
+  %147 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[3]
+  %148 : 4s<1> = eq %12, 4s<2>'0x3
+  %149 : 4s<8> = mux %148, %146, %147
+  %150 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[0]
+  %151 : 4s<1> = eq %12, 4s<2>'0x0
+  %154 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[1]
+  %155 : 4s<1> = eq %12, 4s<2>'0x1
+  %158 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[2]
+  %159 : 4s<1> = eq %12, 4s<2>'0x2
+  %162 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[3]
+  %163 : 4s<1> = eq %12, 4s<2>'0x3
+  %166 : 4s<8> = state_read @circular_buffer.u_buff_mem.o_dout
+  %167 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[0]
+  %168 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[1]
+  %169 : 4s<1> = eq %11, 4s<2>'0x1
+  %170 : 4s<8> = mux %169, %167, %168
+  %171 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[2]
+  %172 : 4s<1> = eq %11, 4s<2>'0x2
+  %173 : 4s<8> = mux %172, %170, %171
+  %174 : 4s<8> = state_read @circular_buffer.u_buff_mem.mem[3]
+  %175 : 4s<1> = eq %11, 4s<2>'0x3
+  %176 : 4s<8> = mux %175, %173, %174
+  %177 : 4s<8> = state_read @circular_buffer.u_buff_mem.o_dout
+  %178 : 4s<8> = mux %138, %177, %176
+  state_write @circular_buffer.u_buff_mem.o_dout, %178
+  %13 : 4s<1> = state_read @circular_buffer.r_bypass_en
+  %14 : 4s<8> = state_read @circular_buffer.r_bypass_data
+  %15 : 4s<8> = mux %13, %178, %14
+  %16 : 4s<1> = and %7, %i_enq_valid
+  %17 : 4s<2> = concat %16, %1
+  %18 : 4s<3> = state_read @circular_buffer.r_count
+  %19 : 4s<1> = eq %17, 4s<2>'0x1
+  %20 : 4s<1> = or 4s<1>'0x0, %19
+  %21 : 4s<1> = or 4s<1>'0x0, %20
+  %22 : 4s<3> = state_read @circular_buffer.r_count
+  %23 : 4s<3> = sub %22, 4s<3>'0x1
+  %24 : 4s<3> = mux %20, %18, %23
+  %25 : 4s<1> = eq %17, 4s<2>'0x2
+  %26 : 4s<1> = or 4s<1>'0x0, %25
+  %27 : 4s<1> = or %21, %26
+  %28 : 4s<3> = state_read @circular_buffer.r_count
+  %29 : 4s<3> = add %28, 4s<3>'0x1
+  %30 : 4s<3> = mux %26, %24, %29
+  %31 : 4s<1> = state_read @circular_buffer.i_clk_prev
+  %32 : 4s<1> = not %31
+  %33 : 4s<1> = and %32, %i_clk
+  state_write @circular_buffer.i_clk_prev, %i_clk
+  %34 : 4s<1> = or 4s<1>'0x0, %33
+  %35 : 4s<1> = state_read @circular_buffer.i_rst_n_prev
+  %36 : 4s<1> = not %i_rst_n
+  %37 : 4s<1> = and %36, %35
+  state_write @circular_buffer.i_rst_n_prev, %i_rst_n
+  %38 : 4s<1> = or %34, %37
+  %39 : 4s<1> = not %i_rst_n
+  %40 : 4s<1> = and %38, %39
+  %41 : 4s<1> = state_read @circular_buffer.r_bypass_en
+  %42 : 4s<1> = state_read @circular_buffer.r_bypass_en
+  %43 : 4s<1> = mux %40, %42, 4s<1>'0x0
+  %44 : 4s<8> = state_read @circular_buffer.r_bypass_data
+  %45 : 4s<8> = state_read @circular_buffer.r_bypass_data
+  %46 : 4s<8> = mux %40, %45, 4s<8>'0x0
+  %47 : 4s<1> = not %39
+  %48 : 4s<1> = and %38, %47
+  %49 : 4s<1> = not %i_clr_n
+  %50 : 4s<1> = and %48, %49
+  %51 : 4s<1> = state_read @circular_buffer.r_bypass_en
+  %52 : 4s<1> = mux %50, %43, 4s<1>'0x0
+  %53 : 4s<8> = state_read @circular_buffer.r_bypass_data
+  %54 : 4s<8> = mux %50, %46, 4s<8>'0x0
+  %55 : 4s<1> = not %49
+  %56 : 4s<1> = and %48, %55
+  %57 : 4s<1> = state_read @circular_buffer.r_bypass_en
+  %58 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %59 : 4s<1> = eq %58, %11
+  %60 : 4s<1> = and %16, %59
+  %61 : 4s<1> = mux %56, %52, %60
+  %62 : 4s<8> = state_read @circular_buffer.r_bypass_data
+  %63 : 4s<8> = mux %56, %54, %i_enq_tail_data
+  %64 : 4s<1> = state_read @circular_buffer.i_clk_prev
+  %65 : 4s<1> = not %64
+  %66 : 4s<1> = and %65, %i_clk
+  state_write @circular_buffer.i_clk_prev, %i_clk
+  %67 : 4s<1> = or 4s<1>'0x0, %66
+  %68 : 4s<1> = state_read @circular_buffer.i_rst_n_prev
+  %69 : 4s<1> = not %i_rst_n
+  %70 : 4s<1> = and %69, %68
+  state_write @circular_buffer.i_rst_n_prev, %i_rst_n
+  %71 : 4s<1> = or %67, %70
+  %72 : 4s<1> = not %i_rst_n
+  %73 : 4s<1> = and %71, %72
+  %74 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %75 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %76 : 4s<2> = mux %73, %75, 4s<2>'0x0
+  %77 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %78 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %79 : 4s<2> = mux %73, %78, 4s<2>'0x0
+  %80 : 4s<3> = state_read @circular_buffer.r_count
+  %81 : 4s<3> = state_read @circular_buffer.r_count
+  %82 : 4s<3> = mux %73, %81, 4s<3>'0x0
+  %83 : 4s<1> = state_read @circular_buffer.o_deq_ready
+  %84 : 4s<1> = state_read @circular_buffer.o_deq_ready
+  %85 : 4s<1> = mux %73, %84, 4s<1>'0x0
+  %86 : 4s<1> = not %72
+  %87 : 4s<1> = and %71, %86
+  %88 : 4s<1> = not %i_clr_n
+  %89 : 4s<1> = and %87, %88
+  %90 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %91 : 4s<2> = mux %89, %76, 4s<2>'0x0
+  %92 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %93 : 4s<2> = mux %89, %79, 4s<2>'0x0
+  %94 : 4s<3> = state_read @circular_buffer.r_count
+  %95 : 4s<3> = mux %89, %82, 4s<3>'0x0
+  %96 : 4s<1> = state_read @circular_buffer.o_deq_ready
+  %97 : 4s<1> = mux %89, %85, 4s<1>'0x0
+  %98 : 4s<1> = not %88
+  %99 : 4s<1> = and %87, %98
+  %100 : 4s<3> = state_read @circular_buffer.r_count
+  %101 : 4s<3> = mux %99, %95, %30
+  %102 : 4s<1> = state_read @circular_buffer.o_deq_ready
+  %103 : 4s<1> = ne %30, 4s<3>'0x0
+  %104 : 4s<1> = mux %99, %97, %103
+  %105 : 4s<2> = concat %16, %1
+  %106 : 4s<1> = eq %105, 4s<2>'0x1
+  %107 : 4s<1> = or 4s<1>'0x0, %106
+  %108 : 4s<1> = or 4s<1>'0x0, %107
+  %109 : 4s<1> = and %99, %107
+  %110 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %111 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %112 : 4s<2> = add %111, 4s<2>'0x1
+  %113 : 4s<2> = mux %109, %91, %112
+  %114 : 4s<1> = eq %105, 4s<2>'0x2
+  %115 : 4s<1> = or 4s<1>'0x0, %114
+  %116 : 4s<1> = or %108, %115
+  %117 : 4s<1> = and %99, %115
+  %118 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %119 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %120 : 4s<2> = add %119, 4s<2>'0x1
+  %121 : 4s<2> = mux %117, %93, %120
+  %122 : 4s<1> = eq %105, 4s<2>'0x3
+  %123 : 4s<1> = or 4s<1>'0x0, %122
+  %124 : 4s<1> = or %116, %123
+  %125 : 4s<1> = and %99, %123
+  %126 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %127 : 4s<2> = state_read @circular_buffer.r_head_ptr
+  %128 : 4s<2> = add %127, 4s<2>'0x1
+  %129 : 4s<2> = mux %125, %113, %128
+  %130 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %131 : 4s<2> = state_read @circular_buffer.r_tail_ptr
+  %132 : 4s<2> = add %131, 4s<2>'0x1
+  %133 : 4s<2> = mux %125, %121, %132
+  %134 : 4s<1> = not %124
+  %135 : 4s<1> = and %99, %134
+  state_write @circular_buffer.o_deq_ready, %104
+  state_write @circular_buffer.r_count, %101
+  state_write @circular_buffer.r_tail_ptr, %133
+  state_write @circular_buffer.r_head_ptr, %129
+  state_write @circular_buffer.r_bypass_data, %63
+  state_write @circular_buffer.r_bypass_en, %61
+  %139 : 4s<1> = and %138, %16
+  %152 : 4s<1> = and %139, %151
+  %153 : 4s<8> = mux %152, %150, %i_enq_tail_data
+  %156 : 4s<1> = and %139, %155
+  %157 : 4s<8> = mux %156, %154, %i_enq_tail_data
+  %160 : 4s<1> = and %139, %159
+  %161 : 4s<8> = mux %160, %158, %i_enq_tail_data
+  %164 : 4s<1> = and %139, %163
+  %165 : 4s<8> = mux %164, %162, %i_enq_tail_data
+  state_write @circular_buffer.u_buff_mem.mem[3], %165
+  state_write @circular_buffer.u_buff_mem.mem[2], %161
+  state_write @circular_buffer.u_buff_mem.mem[1], %157
+  state_write @circular_buffer.u_buff_mem.mem[0], %153
+  yield %15, %104, %7, %3, %5, %6
+}
+endmodule
+

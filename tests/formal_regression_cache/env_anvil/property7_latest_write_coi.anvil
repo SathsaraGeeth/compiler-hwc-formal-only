@@ -1,0 +1,53 @@
+struct line_request {
+    store : logic,
+    data  : logic[64]
+}
+
+struct line_response {
+    read     : logic,
+    data     : logic[64],
+    expected : logic[64]
+}
+
+chan line_ch {
+    left  req : (line_request@#1)  @dyn-@dyn,
+    right rsp : (line_response@#1) @dyn-@dyn
+}
+
+proc latest_write_coi(cpu0 : left line_ch, cpu1 : left line_ch) {
+    reg line     : logic[64];
+    reg response : line_response;
+    reg noop     : logic;
+
+    loop {
+        if ready cpu0.req {
+            let request = recv cpu0.req >>
+            if request.store {
+                set line := request.data;
+                set response.read := 1'b0;
+                set response.data := request.data;
+                set response.expected := request.data
+            } else {
+                set response.read := 1'b1;
+                set response.data := *line;
+                set response.expected := *line
+            } >>
+            send cpu0.rsp(*response)
+        } else if ready cpu1.req {
+            let request = recv cpu1.req >>
+            if request.store {
+                set line := request.data;
+                set response.read := 1'b0;
+                set response.data := request.data;
+                set response.expected := request.data
+            } else {
+                set response.read := 1'b1;
+                set response.data := *line;
+                set response.expected := *line
+            } >>
+            send cpu1.rsp(*response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

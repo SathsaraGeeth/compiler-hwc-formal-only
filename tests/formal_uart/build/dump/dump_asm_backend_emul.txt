@@ -1,0 +1,3381 @@
+Top level design units:
+    uart_formal
+
+0000:  d0210010  state_read x1, 16 <@uart.tx_buffer.r_count> : width 2
+0001:  e0000000  literal (continuation)
+0002:  6041001f  zext x2, x1, width 32
+0003:  cc3f0002  li x1, 2 : width 32
+0004:  e0000000  literal (continuation)
+0005:  44620800  eq x3, x2, x1
+0006:  dc60002d  export_write 45 <o_tx_full>, x3 : width 1
+0007:  e0000000  literal (continuation)
+0008:  d0210010  state_read x1, 16 <@uart.tx_buffer.r_count> : width 2
+0009:  e0000000  literal (continuation)
+000a:  cc410000  li x2, 0 : width 2
+000b:  e0000000  literal (continuation)
+000c:  44811000  eq x4, x1, x2
+000d:  dc80002e  export_write 46 <o_tx_empty>, x4 : width 1
+000e:  e0000000  literal (continuation)
+000f:  2c240000  not x1, x4
+0010:  2c430000  not x2, x3
+0011:  dc40002f  export_write 47 <o_enq_tx_ready>, x2 : width 1
+0012:  e0000000  literal (continuation)
+0013:  d0600012  state_read x3, 18 <@uart.tx_buffer.r_head_ptr> : width 1
+0014:  e0000000  literal (continuation)
+0015:  cc800001  li x4, 1 : width 1
+0016:  e0000000  literal (continuation)
+0017:  44a32000  eq x5, x3, x4
+0018:  d067000f  state_read x3, 15 <@uart.tx_buffer.mem_buff[0]> : width 8
+0019:  e0000000  literal (continuation)
+001a:  d087000e  state_read x4, 14 <@uart.tx_buffer.mem_buff[1]> : width 8
+001b:  e0000000  literal (continuation)
+001c:  64e50007  sext x7, x5, width 8
+001d:  2d070000  not x8, x7
+001e:  25234000  and x9, x3, x8
+001f:  25043800  and x8, x4, x7
+0020:  28c94000  or x6, x9, x8
+0021:  d0600013  state_read x3, 19 <@uart.tx_buffer.i_clk_prev> : width 1
+0022:  e0000000  literal (continuation)
+0023:  2c830000  not x4, x3
+0024:  d8600026  import_read x3, 38 <i_clk> : width 1
+0025:  e0000000  literal (continuation)
+0026:  24a41800  and x5, x4, x3
+0027:  d4600013  state_write 19 <@uart.tx_buffer.i_clk_prev>, x3 : width 1
+0028:  e0000000  literal (continuation)
+0029:  cc800000  li x4, 0 : width 1
+002a:  e0000000  literal (continuation)
+002b:  28e42800  or x7, x4, x5
+002c:  d8800027  import_read x4, 39 <i_rst_n> : width 1
+002d:  e0000000  literal (continuation)
+002e:  2ca40000  not x5, x4
+002f:  d1000014  state_read x8, 20 <@uart.tx_buffer.i_rst_n_prev> : width 1
+0030:  e0000000  literal (continuation)
+0031:  25254000  and x9, x5, x8
+0032:  d4800014  state_write 20 <@uart.tx_buffer.i_rst_n_prev>, x4 : width 1
+0033:  e0000000  literal (continuation)
+0034:  28a74800  or x5, x7, x9
+0035:  2ce40000  not x7, x4
+0036:  25053800  and x8, x5, x7
+0037:  d1200012  state_read x9, 18 <@uart.tx_buffer.r_head_ptr> : width 1
+0038:  e0000000  literal (continuation)
+0039:  cd400000  li x10, 0 : width 1
+003a:  e0000000  literal (continuation)
+003b:  65880000  sext x12, x8, width 1
+003c:  2dac0000  not x13, x12
+003d:  25c96800  and x14, x9, x13
+003e:  25aa6000  and x13, x10, x12
+003f:  296e6800  or x11, x14, x13
+0040:  d1200011  state_read x9, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0041:  e0000000  literal (continuation)
+0042:  cd400000  li x10, 0 : width 1
+0043:  e0000000  literal (continuation)
+0044:  65a80000  sext x13, x8, width 1
+0045:  2dcd0000  not x14, x13
+0046:  25e97000  and x15, x9, x14
+0047:  25ca6800  and x14, x10, x13
+0048:  298f7000  or x12, x15, x14
+0049:  d1210010  state_read x9, 16 <@uart.tx_buffer.r_count> : width 2
+004a:  e0000000  literal (continuation)
+004b:  cd410000  li x10, 0 : width 2
+004c:  e0000000  literal (continuation)
+004d:  65c80001  sext x14, x8, width 2
+004e:  2dee0000  not x15, x14
+004f:  26097800  and x16, x9, x15
+0050:  25ea7000  and x15, x10, x14
+0051:  29b07800  or x13, x16, x15
+0052:  2d070000  not x8, x7
+0053:  24e54000  and x7, x5, x8
+0054:  d8a0002b  import_read x5, 43 <i_enq_tx_valid> : width 1
+0055:  e0000000  literal (continuation)
+0056:  25022800  and x8, x2, x5
+0057:  d0400012  state_read x2, 18 <@uart.tx_buffer.r_head_ptr> : width 1
+0058:  e0000000  literal (continuation)
+0059:  60a2001f  zext x5, x2, width 32
+005a:  cc5f0001  li x2, 1 : width 32
+005b:  e0000000  literal (continuation)
+005c:  0d251000  add x9, x5, x2
+005d:  80490000  slice x2, x9, start 0, width 1
+005e:  d0a10010  state_read x5, 16 <@uart.tx_buffer.r_count> : width 2
+005f:  e0000000  literal (continuation)
+0060:  6125001f  zext x9, x5, width 32
+0061:  ccbf0001  li x5, 1 : width 32
+0062:  e0000000  literal (continuation)
+0063:  11492800  sub x10, x9, x5
+0064:  80aa0040  slice x5, x10, start 0, width 2
+0065:  d1200011  state_read x9, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0066:  e0000000  literal (continuation)
+0067:  6149001f  zext x10, x9, width 32
+0068:  cd3f0001  li x9, 1 : width 32
+0069:  e0000000  literal (continuation)
+006a:  0dca4800  add x14, x10, x9
+006b:  812e0000  slice x9, x14, start 0, width 1
+006c:  d1410010  state_read x10, 16 <@uart.tx_buffer.r_count> : width 2
+006d:  e0000000  literal (continuation)
+006e:  61ca001f  zext x14, x10, width 32
+006f:  cd5f0001  li x10, 1 : width 32
+0070:  e0000000  literal (continuation)
+0071:  0dee5000  add x15, x14, x10
+0072:  814f0040  slice x10, x15, start 0, width 2
+0073:  d1c00011  state_read x14, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0074:  e0000000  literal (continuation)
+0075:  cde00001  li x15, 1 : width 1
+0076:  e0000000  literal (continuation)
+0077:  460e7800  eq x16, x14, x15
+0078:  d1c7000f  state_read x14, 15 <@uart.tx_buffer.mem_buff[0]> : width 8
+0079:  e0000000  literal (continuation)
+007a:  d1e7000e  state_read x15, 14 <@uart.tx_buffer.mem_buff[1]> : width 8
+007b:  e0000000  literal (continuation)
+007c:  66500007  sext x18, x16, width 8
+007d:  2e720000  not x19, x18
+007e:  268e9800  and x20, x14, x19
+007f:  266f9000  and x19, x15, x18
+0080:  2a349800  or x17, x20, x19
+0081:  d1c00011  state_read x14, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0082:  e0000000  literal (continuation)
+0083:  cde00000  li x15, 0 : width 1
+0084:  e0000000  literal (continuation)
+0085:  460e7800  eq x16, x14, x15
+0086:  cde00001  li x15, 1 : width 1
+0087:  e0000000  literal (continuation)
+0088:  462e7800  eq x17, x14, x15
+0089:  d1c00012  state_read x14, 18 <@uart.tx_buffer.r_head_ptr> : width 1
+008a:  e0000000  literal (continuation)
+008b:  61ee001f  zext x15, x14, width 32
+008c:  cddf0001  li x14, 1 : width 32
+008d:  e0000000  literal (continuation)
+008e:  0e4f7000  add x18, x15, x14
+008f:  81d20000  slice x14, x18, start 0, width 1
+0090:  d1e00011  state_read x15, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0091:  e0000000  literal (continuation)
+0092:  624f001f  zext x18, x15, width 32
+0093:  cdff0001  li x15, 1 : width 32
+0094:  e0000000  literal (continuation)
+0095:  0e727800  add x19, x18, x15
+0096:  81f30000  slice x15, x19, start 0, width 1
+0097:  d2400011  state_read x18, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+0098:  e0000000  literal (continuation)
+0099:  ce600001  li x19, 1 : width 1
+009a:  e0000000  literal (continuation)
+009b:  46929800  eq x20, x18, x19
+009c:  d247000f  state_read x18, 15 <@uart.tx_buffer.mem_buff[0]> : width 8
+009d:  e0000000  literal (continuation)
+009e:  d267000e  state_read x19, 14 <@uart.tx_buffer.mem_buff[1]> : width 8
+009f:  e0000000  literal (continuation)
+00a0:  66d40007  sext x22, x20, width 8
+00a1:  2ef60000  not x23, x22
+00a2:  2712b800  and x24, x18, x23
+00a3:  26f3b000  and x23, x19, x22
+00a4:  2ab8b800  or x21, x24, x23
+00a5:  d2400011  state_read x18, 17 <@uart.tx_buffer.r_tail_ptr> : width 1
+00a6:  e0000000  literal (continuation)
+00a7:  ce600000  li x19, 0 : width 1
+00a8:  e0000000  literal (continuation)
+00a9:  46929800  eq x20, x18, x19
+00aa:  ce600001  li x19, 1 : width 1
+00ab:  e0000000  literal (continuation)
+00ac:  46b29800  eq x21, x18, x19
+00ad:  d2470015  state_read x18, 21 <@uart.r_tx_shft_reg.r_shft_reg> : width 8
+00ae:  e0000000  literal (continuation)
+00af:  82720000  slice x19, x18, start 0, width 1
+00b0:  d2400016  state_read x18, 22 <@uart.r_tx_shft_reg.i_clk_prev> : width 1
+00b1:  e0000000  literal (continuation)
+00b2:  2ed20000  not x22, x18
+00b3:  26561800  and x18, x22, x3
+00b4:  d4600016  state_write 22 <@uart.r_tx_shft_reg.i_clk_prev>, x3 : width 1
+00b5:  e0000000  literal (continuation)
+00b6:  cec00000  li x22, 0 : width 1
+00b7:  e0000000  literal (continuation)
+00b8:  2af69000  or x23, x22, x18
+00b9:  2e440000  not x18, x4
+00ba:  d2c00017  state_read x22, 23 <@uart.r_tx_shft_reg.i_rst_n_prev> : width 1
+00bb:  e0000000  literal (continuation)
+00bc:  2712b000  and x24, x18, x22
+00bd:  d4800017  state_write 23 <@uart.r_tx_shft_reg.i_rst_n_prev>, x4 : width 1
+00be:  e0000000  literal (continuation)
+00bf:  2a57c000  or x18, x23, x24
+00c0:  2ec40000  not x22, x4
+00c1:  26f2b000  and x23, x18, x22
+00c2:  d3070015  state_read x24, 21 <@uart.r_tx_shft_reg.r_shft_reg> : width 8
+00c3:  e0000000  literal (continuation)
+00c4:  cf270000  li x25, 0 : width 8
+00c5:  e0000000  literal (continuation)
+00c6:  67770007  sext x27, x23, width 8
+00c7:  2f9b0000  not x28, x27
+00c8:  27b8e000  and x29, x24, x28
+00c9:  2799d800  and x28, x25, x27
+00ca:  2b5de000  or x26, x29, x28
+00cb:  2ef60000  not x23, x22
+00cc:  26d2b800  and x22, x18, x23
+00cd:  d2470015  state_read x18, 21 <@uart.r_tx_shft_reg.r_shft_reg> : width 8
+00ce:  e0000000  literal (continuation)
+00cf:  82f20181  slice x23, x18, start 1, width 7
+00d0:  ce400000  li x18, 0 : width 1
+00d1:  e0000000  literal (continuation)
+00d2:  5f12b800  concat x24, x18, x23
+00d3:  d2430004  state_read x18, 4 <@uart.s_tx_state> : width 4
+00d4:  e0000000  literal (continuation)
+00d5:  cee30000  li x23, 0 : width 4
+00d6:  e0000000  literal (continuation)
+00d7:  4732b800  eq x25, x18, x23
+00d8:  cee00000  li x23, 0 : width 1
+00d9:  e0000000  literal (continuation)
+00da:  2b77c800  or x27, x23, x25
+00db:  cee00000  li x23, 0 : width 1
+00dc:  e0000000  literal (continuation)
+00dd:  2b37d800  or x25, x23, x27
+00de:  cee00001  li x23, 1 : width 1
+00df:  e0000000  literal (continuation)
+00e0:  cf800001  li x28, 1 : width 1
+00e1:  e0000000  literal (continuation)
+00e2:  67db0000  sext x30, x27, width 1
+00e3:  2ffe0000  not x31, x30
+00e4:  df200030  export_write 48, x25 : width 1
+00e5:  e0000000  literal (continuation)
+00e6:  2737f800  and x25, x23, x31
+00e7:  27fcf000  and x31, x28, x30
+00e8:  2bb9f800  or x29, x25, x31
+00e9:  d2e00008  state_read x23, 8 <@uart.w_baud_tick> : width 1
+00ea:  e0000000  literal (continuation)
+00eb:  2721b800  and x25, x1, x23
+00ec:  cee00000  li x23, 0 : width 1
+00ed:  e0000000  literal (continuation)
+00ee:  67db0000  sext x30, x27, width 1
+00ef:  2ffe0000  not x31, x30
+00f0:  dfa00031  export_write 49, x29 : width 1
+00f1:  e0000000  literal (continuation)
+00f2:  27b7f800  and x29, x23, x31
+00f3:  27f9f000  and x31, x25, x30
+00f4:  2b9df800  or x28, x29, x31
+00f5:  cee00000  li x23, 0 : width 1
+00f6:  e0000000  literal (continuation)
+00f7:  cf200000  li x25, 0 : width 1
+00f8:  e0000000  literal (continuation)
+00f9:  67db0000  sext x30, x27, width 1
+00fa:  2ffe0000  not x31, x30
+00fb:  df800032  export_write 50, x28 : width 1
+00fc:  e0000000  literal (continuation)
+00fd:  2797f800  and x28, x23, x31
+00fe:  27f9f000  and x31, x25, x30
+00ff:  2bbcf800  or x29, x28, x31
+0100:  cee30000  li x23, 0 : width 4
+0101:  e0000000  literal (continuation)
+0102:  cf230001  li x25, 1 : width 4
+0103:  e0000000  literal (continuation)
+0104:  67c10003  sext x30, x1, width 4
+0105:  2ffe0000  not x31, x30
+0106:  dec00033  export_write 51, x22 : width 1
+0107:  e0000000  literal (continuation)
+0108:  26d7f800  and x22, x23, x31
+0109:  27f9f000  and x31, x25, x30
+010a:  2b96f800  or x28, x22, x31
+010b:  cec30000  li x22, 0 : width 4
+010c:  e0000000  literal (continuation)
+010d:  673b0003  sext x25, x27, width 4
+010e:  2fd90000  not x30, x25
+010f:  27f6f000  and x31, x22, x30
+0110:  27dcc800  and x30, x28, x25
+0111:  2afff000  or x23, x31, x30
+0112:  cec30001  li x22, 1 : width 4
+0113:  e0000000  literal (continuation)
+0114:  4732b000  eq x25, x18, x22
+0115:  cec00000  li x22, 0 : width 1
+0116:  e0000000  literal (continuation)
+0117:  2b76c800  or x27, x22, x25
+0118:  dac00030  import_read x22, 48 : width 1
+0119:  e0000000  literal (continuation)
+011a:  2b36d800  or x25, x22, x27
+011b:  dac00031  import_read x22, 49 : width 1
+011c:  e0000000  literal (continuation)
+011d:  cf800000  li x28, 0 : width 1
+011e:  e0000000  literal (continuation)
+011f:  67fb0000  sext x31, x27, width 1
+0120:  dee30034  export_write 52, x23 : width 4
+0121:  e0000000  literal (continuation)
+0122:  2eff0000  not x23, x31
+0123:  df470035  export_write 53, x26 : width 8
+0124:  e0000000  literal (continuation)
+0125:  2756b800  and x26, x22, x23
+0126:  26fcf800  and x23, x28, x31
+0127:  2bdab800  or x30, x26, x23
+0128:  dac00032  import_read x22, 50 : width 1
+0129:  e0000000  literal (continuation)
+012a:  cee00000  li x23, 0 : width 1
+012b:  e0000000  literal (continuation)
+012c:  679b0000  sext x28, x27, width 1
+012d:  2ffc0000  not x31, x28
+012e:  dea00036  export_write 54, x21 : width 1
+012f:  e0000000  literal (continuation)
+0130:  26b6f800  and x21, x22, x31
+0131:  27f7e000  and x31, x23, x28
+0132:  2b55f800  or x26, x21, x31
+0133:  cea00000  li x21, 0 : width 1
+0134:  e0000000  literal (continuation)
+0135:  66fb0000  sext x23, x27, width 1
+0136:  2f970000  not x28, x23
+0137:  27fde000  and x31, x29, x28
+0138:  2795b800  and x28, x21, x23
+0139:  2adfe000  or x22, x31, x28
+013a:  daa30034  import_read x21, 52 : width 4
+013b:  e0000000  literal (continuation)
+013c:  cee30002  li x23, 2 : width 4
+013d:  e0000000  literal (continuation)
+013e:  67bb0003  sext x29, x27, width 4
+013f:  2ffd0000  not x31, x29
+0140:  dec00037  export_write 55, x22 : width 1
+0141:  e0000000  literal (continuation)
+0142:  26d5f800  and x22, x21, x31
+0143:  27f7e800  and x31, x23, x29
+0144:  2b96f800  or x28, x22, x31
+0145:  cea30002  li x21, 2 : width 4
+0146:  e0000000  literal (continuation)
+0147:  46d2a800  eq x22, x18, x21
+0148:  cea00000  li x21, 0 : width 1
+0149:  e0000000  literal (continuation)
+014a:  2af5b000  or x23, x21, x22
+014b:  2ab9b800  or x21, x25, x23
+014c:  67370000  sext x25, x23, width 1
+014d:  2f790000  not x27, x25
+014e:  27bed800  and x29, x30, x27
+014f:  2773c800  and x27, x19, x25
+0150:  2addd800  or x22, x29, x27
+0151:  cf200000  li x25, 0 : width 1
+0152:  e0000000  literal (continuation)
+0153:  67b70000  sext x29, x23, width 1
+0154:  2fdd0000  not x30, x29
+0155:  27faf000  and x31, x26, x30
+0156:  27d9e800  and x30, x25, x29
+0157:  2b7ff000  or x27, x31, x30
+0158:  db200037  import_read x25, 55 : width 1
+0159:  e0000000  literal (continuation)
+015a:  d3400008  state_read x26, 8 <@uart.w_baud_tick> : width 1
+015b:  e0000000  literal (continuation)
+015c:  67d70000  sext x30, x23, width 1
+015d:  2ffe0000  not x31, x30
+015e:  dea00038  export_write 56, x21 : width 1
+015f:  e0000000  literal (continuation)
+0160:  26b9f800  and x21, x25, x31
+0161:  27faf000  and x31, x26, x30
+0162:  2bb5f800  or x29, x21, x31
+0163:  cea30003  li x21, 3 : width 4
+0164:  e0000000  literal (continuation)
+0165:  67570003  sext x26, x23, width 4
+0166:  2fda0000  not x30, x26
+0167:  27fcf000  and x31, x28, x30
+0168:  27d5d000  and x30, x21, x26
+0169:  2b3ff000  or x25, x31, x30
+016a:  cea30003  li x21, 3 : width 4
+016b:  e0000000  literal (continuation)
+016c:  46f2a800  eq x23, x18, x21
+016d:  cea00000  li x21, 0 : width 1
+016e:  e0000000  literal (continuation)
+016f:  2b55b800  or x26, x21, x23
+0170:  daa00038  import_read x21, 56 : width 1
+0171:  e0000000  literal (continuation)
+0172:  2af5d000  or x23, x21, x26
+0173:  679a0000  sext x28, x26, width 1
+0174:  2fdc0000  not x30, x28
+0175:  27f6f000  and x31, x22, x30
+0176:  27d3e000  and x30, x19, x28
+0177:  2abff000  or x21, x31, x30
+0178:  cec00000  li x22, 0 : width 1
+0179:  e0000000  literal (continuation)
+017a:  67da0000  sext x30, x26, width 1
+017b:  2ffe0000  not x31, x30
+017c:  dfa00039  export_write 57, x29 : width 1
+017d:  e0000000  literal (continuation)
+017e:  27bbf800  and x29, x27, x31
+017f:  27f6f000  and x31, x22, x30
+0180:  2b9df800  or x28, x29, x31
+0181:  dac00039  import_read x22, 57 : width 1
+0182:  e0000000  literal (continuation)
+0183:  d3600008  state_read x27, 8 <@uart.w_baud_tick> : width 1
+0184:  e0000000  literal (continuation)
+0185:  67da0000  sext x30, x26, width 1
+0186:  2ffe0000  not x31, x30
+0187:  dde0003a  export_write 58, x15 : width 1
+0188:  e0000000  literal (continuation)
+0189:  25f6f800  and x15, x22, x31
+018a:  27fbf000  and x31, x27, x30
+018b:  2baff800  or x29, x15, x31
+018c:  cde30004  li x15, 4 : width 4
+018d:  e0000000  literal (continuation)
+018e:  677a0003  sext x27, x26, width 4
+018f:  2fdb0000  not x30, x27
+0190:  27f9f000  and x31, x25, x30
+0191:  27cfd800  and x30, x15, x27
+0192:  2adff000  or x22, x31, x30
+0193:  cde30004  li x15, 4 : width 4
+0194:  e0000000  literal (continuation)
+0195:  47327800  eq x25, x18, x15
+0196:  cde00000  li x15, 0 : width 1
+0197:  e0000000  literal (continuation)
+0198:  2b4fc800  or x26, x15, x25
+0199:  29f7d000  or x15, x23, x26
+019a:  673a0000  sext x25, x26, width 1
+019b:  2f790000  not x27, x25
+019c:  27d5d800  and x30, x21, x27
+019d:  2773c800  and x27, x19, x25
+019e:  2afed800  or x23, x30, x27
+019f:  cea00000  li x21, 0 : width 1
+01a0:  e0000000  literal (continuation)
+01a1:  677a0000  sext x27, x26, width 1
+01a2:  2fdb0000  not x30, x27
+01a3:  27fcf000  and x31, x28, x30
+01a4:  27d5d800  and x30, x21, x27
+01a5:  2b3ff000  or x25, x31, x30
+01a6:  d2a00008  state_read x21, 8 <@uart.w_baud_tick> : width 1
+01a7:  e0000000  literal (continuation)
+01a8:  679a0000  sext x28, x26, width 1
+01a9:  2fdc0000  not x30, x28
+01aa:  27fdf000  and x31, x29, x30
+01ab:  27d5e000  and x30, x21, x28
+01ac:  2b7ff000  or x27, x31, x30
+01ad:  cea30005  li x21, 5 : width 4
+01ae:  e0000000  literal (continuation)
+01af:  67ba0003  sext x29, x26, width 4
+01b0:  2fdd0000  not x30, x29
+01b1:  27f6f000  and x31, x22, x30
+01b2:  27d5e800  and x30, x21, x29
+01b3:  2b9ff000  or x28, x31, x30
+01b4:  cea30005  li x21, 5 : width 4
+01b5:  e0000000  literal (continuation)
+01b6:  46d2a800  eq x22, x18, x21
+01b7:  cea00000  li x21, 0 : width 1
+01b8:  e0000000  literal (continuation)
+01b9:  2b55b000  or x26, x21, x22
+01ba:  2aafd000  or x21, x15, x26
+01bb:  66da0000  sext x22, x26, width 1
+01bc:  2fb60000  not x29, x22
+01bd:  27d7e800  and x30, x23, x29
+01be:  27b3b000  and x29, x19, x22
+01bf:  29fee800  or x15, x30, x29
+01c0:  cec00000  li x22, 0 : width 1
+01c1:  e0000000  literal (continuation)
+01c2:  67ba0000  sext x29, x26, width 1
+01c3:  2fdd0000  not x30, x29
+01c4:  27f9f000  and x31, x25, x30
+01c5:  27d6e800  and x30, x22, x29
+01c6:  2afff000  or x23, x31, x30
+01c7:  d2c00008  state_read x22, 8 <@uart.w_baud_tick> : width 1
+01c8:  e0000000  literal (continuation)
+01c9:  67ba0000  sext x29, x26, width 1
+01ca:  2fdd0000  not x30, x29
+01cb:  27fbf000  and x31, x27, x30
+01cc:  27d6e800  and x30, x22, x29
+01cd:  2b3ff000  or x25, x31, x30
+01ce:  cec30006  li x22, 6 : width 4
+01cf:  e0000000  literal (continuation)
+01d0:  67ba0003  sext x29, x26, width 4
+01d1:  2fdd0000  not x30, x29
+01d2:  27fcf000  and x31, x28, x30
+01d3:  27d6e800  and x30, x22, x29
+01d4:  2b7ff000  or x27, x31, x30
+01d5:  cec30006  li x22, 6 : width 4
+01d6:  e0000000  literal (continuation)
+01d7:  4752b000  eq x26, x18, x22
+01d8:  cec00000  li x22, 0 : width 1
+01d9:  e0000000  literal (continuation)
+01da:  2b96d000  or x28, x22, x26
+01db:  2ad5e000  or x22, x21, x28
+01dc:  675c0000  sext x26, x28, width 1
+01dd:  2fba0000  not x29, x26
+01de:  27cfe800  and x30, x15, x29
+01df:  27b3d000  and x29, x19, x26
+01e0:  2abee800  or x21, x30, x29
+01e1:  cde00000  li x15, 0 : width 1
+01e2:  e0000000  literal (continuation)
+01e3:  67bc0000  sext x29, x28, width 1
+01e4:  2fdd0000  not x30, x29
+01e5:  27f7f000  and x31, x23, x30
+01e6:  27cfe800  and x30, x15, x29
+01e7:  2b5ff000  or x26, x31, x30
+01e8:  d1e00008  state_read x15, 8 <@uart.w_baud_tick> : width 1
+01e9:  e0000000  literal (continuation)
+01ea:  67bc0000  sext x29, x28, width 1
+01eb:  2fdd0000  not x30, x29
+01ec:  27f9f000  and x31, x25, x30
+01ed:  27cfe800  and x30, x15, x29
+01ee:  2afff000  or x23, x31, x30
+01ef:  cde30007  li x15, 7 : width 4
+01f0:  e0000000  literal (continuation)
+01f1:  67bc0003  sext x29, x28, width 4
+01f2:  2fdd0000  not x30, x29
+01f3:  27fbf000  and x31, x27, x30
+01f4:  27cfe800  and x30, x15, x29
+01f5:  2b3ff000  or x25, x31, x30
+01f6:  cde30007  li x15, 7 : width 4
+01f7:  e0000000  literal (continuation)
+01f8:  47727800  eq x27, x18, x15
+01f9:  cde00000  li x15, 0 : width 1
+01fa:  e0000000  literal (continuation)
+01fb:  2b8fd800  or x28, x15, x27
+01fc:  29f6e000  or x15, x22, x28
+01fd:  677c0000  sext x27, x28, width 1
+01fe:  2fbb0000  not x29, x27
+01ff:  27d5e800  and x30, x21, x29
+0200:  27b3d800  and x29, x19, x27
+0201:  2adee800  or x22, x30, x29
+0202:  cea00000  li x21, 0 : width 1
+0203:  e0000000  literal (continuation)
+0204:  67bc0000  sext x29, x28, width 1
+0205:  2fdd0000  not x30, x29
+0206:  27faf000  and x31, x26, x30
+0207:  27d5e800  and x30, x21, x29
+0208:  2b7ff000  or x27, x31, x30
+0209:  d2a00008  state_read x21, 8 <@uart.w_baud_tick> : width 1
+020a:  e0000000  literal (continuation)
+020b:  67bc0000  sext x29, x28, width 1
+020c:  2fdd0000  not x30, x29
+020d:  27f7f000  and x31, x23, x30
+020e:  27d5e800  and x30, x21, x29
+020f:  2b5ff000  or x26, x31, x30
+0210:  cea30008  li x21, 8 : width 4
+0211:  e0000000  literal (continuation)
+0212:  67bc0003  sext x29, x28, width 4
+0213:  2fdd0000  not x30, x29
+0214:  27f9f000  and x31, x25, x30
+0215:  27d5e800  and x30, x21, x29
+0216:  2afff000  or x23, x31, x30
+0217:  cea30008  li x21, 8 : width 4
+0218:  e0000000  literal (continuation)
+0219:  4732a800  eq x25, x18, x21
+021a:  cea00000  li x21, 0 : width 1
+021b:  e0000000  literal (continuation)
+021c:  2b95c800  or x28, x21, x25
+021d:  2aafe000  or x21, x15, x28
+021e:  673c0000  sext x25, x28, width 1
+021f:  2fb90000  not x29, x25
+0220:  27d6e800  and x30, x22, x29
+0221:  27b3c800  and x29, x19, x25
+0222:  29fee800  or x15, x30, x29
+0223:  cec00000  li x22, 0 : width 1
+0224:  e0000000  literal (continuation)
+0225:  67bc0000  sext x29, x28, width 1
+0226:  2fdd0000  not x30, x29
+0227:  27fbf000  and x31, x27, x30
+0228:  27d6e800  and x30, x22, x29
+0229:  2b3ff000  or x25, x31, x30
+022a:  d2c00008  state_read x22, 8 <@uart.w_baud_tick> : width 1
+022b:  e0000000  literal (continuation)
+022c:  67bc0000  sext x29, x28, width 1
+022d:  2fdd0000  not x30, x29
+022e:  27faf000  and x31, x26, x30
+022f:  27d6e800  and x30, x22, x29
+0230:  2b7ff000  or x27, x31, x30
+0231:  cec30009  li x22, 9 : width 4
+0232:  e0000000  literal (continuation)
+0233:  67bc0003  sext x29, x28, width 4
+0234:  2fdd0000  not x30, x29
+0235:  27f7f000  and x31, x23, x30
+0236:  27d6e800  and x30, x22, x29
+0237:  2b5ff000  or x26, x31, x30
+0238:  cec30009  li x22, 9 : width 4
+0239:  e0000000  literal (continuation)
+023a:  46f2b000  eq x23, x18, x22
+023b:  cec00000  li x22, 0 : width 1
+023c:  e0000000  literal (continuation)
+023d:  2b96b800  or x28, x22, x23
+023e:  2ad5e000  or x22, x21, x28
+023f:  66fc0000  sext x23, x28, width 1
+0240:  2fb70000  not x29, x23
+0241:  27cfe800  and x30, x15, x29
+0242:  27b3b800  and x29, x19, x23
+0243:  2abee800  or x21, x30, x29
+0244:  cde00000  li x15, 0 : width 1
+0245:  e0000000  literal (continuation)
+0246:  66fc0000  sext x23, x28, width 1
+0247:  2fb70000  not x29, x23
+0248:  27d9e800  and x30, x25, x29
+0249:  27afb800  and x29, x15, x23
+024a:  2a7ee800  or x19, x30, x29
+024b:  d1e00008  state_read x15, 8 <@uart.w_baud_tick> : width 1
+024c:  e0000000  literal (continuation)
+024d:  673c0000  sext x25, x28, width 1
+024e:  2fb90000  not x29, x25
+024f:  27dbe800  and x30, x27, x29
+0250:  27afc800  and x29, x15, x25
+0251:  2afee800  or x23, x30, x29
+0252:  cde3000b  li x15, 11 : width 4
+0253:  e0000000  literal (continuation)
+0254:  677c0003  sext x27, x28, width 4
+0255:  2fbb0000  not x29, x27
+0256:  27dae800  and x30, x26, x29
+0257:  27afd800  and x29, x15, x27
+0258:  2b3ee800  or x25, x30, x29
+0259:  cde3000a  li x15, 10 : width 4
+025a:  e0000000  literal (continuation)
+025b:  47527800  eq x26, x18, x15
+025c:  cde00000  li x15, 0 : width 1
+025d:  e0000000  literal (continuation)
+025e:  2b6fd000  or x27, x15, x26
+025f:  29f6d800  or x15, x22, x27
+0260:  cec00001  li x22, 1 : width 1
+0261:  e0000000  literal (continuation)
+0262:  679b0000  sext x28, x27, width 1
+0263:  2fbc0000  not x29, x28
+0264:  27d5e800  and x30, x21, x29
+0265:  27b6e000  and x29, x22, x28
+0266:  2b5ee800  or x26, x30, x29
+0267:  cea00000  li x21, 0 : width 1
+0268:  e0000000  literal (continuation)
+0269:  679b0000  sext x28, x27, width 1
+026a:  2fbc0000  not x29, x28
+026b:  27d3e800  and x30, x19, x29
+026c:  27b5e000  and x29, x21, x28
+026d:  2adee800  or x22, x30, x29
+026e:  ce600000  li x19, 0 : width 1
+026f:  e0000000  literal (continuation)
+0270:  679b0000  sext x28, x27, width 1
+0271:  2fbc0000  not x29, x28
+0272:  27d7e800  and x30, x23, x29
+0273:  27b3e000  and x29, x19, x28
+0274:  2abee800  or x21, x30, x29
+0275:  ce63000b  li x19, 11 : width 4
+0276:  e0000000  literal (continuation)
+0277:  679b0003  sext x28, x27, width 4
+0278:  2fbc0000  not x29, x28
+0279:  27d9e800  and x30, x25, x29
+027a:  27b3e000  and x29, x19, x28
+027b:  2afee800  or x23, x30, x29
+027c:  ce63000b  li x19, 11 : width 4
+027d:  e0000000  literal (continuation)
+027e:  47329800  eq x25, x18, x19
+027f:  ce600000  li x19, 0 : width 1
+0280:  e0000000  literal (continuation)
+0281:  2b73c800  or x27, x19, x25
+0282:  2a6fd800  or x19, x15, x27
+0283:  cde00001  li x15, 1 : width 1
+0284:  e0000000  literal (continuation)
+0285:  679b0000  sext x28, x27, width 1
+0286:  2fbc0000  not x29, x28
+0287:  27dae800  and x30, x26, x29
+0288:  27afe000  and x29, x15, x28
+0289:  2b3ee800  or x25, x30, x29
+028a:  cde00000  li x15, 0 : width 1
+028b:  e0000000  literal (continuation)
+028c:  679b0000  sext x28, x27, width 1
+028d:  2fbc0000  not x29, x28
+028e:  27d6e800  and x30, x22, x29
+028f:  27afe000  and x29, x15, x28
+0290:  2b5ee800  or x26, x30, x29
+0291:  cde00000  li x15, 0 : width 1
+0292:  e0000000  literal (continuation)
+0293:  679b0000  sext x28, x27, width 1
+0294:  2fbc0000  not x29, x28
+0295:  27d5e800  and x30, x21, x29
+0296:  27afe000  and x29, x15, x28
+0297:  2adee800  or x22, x30, x29
+0298:  cde30000  li x15, 0 : width 4
+0299:  e0000000  literal (continuation)
+029a:  679b0003  sext x28, x27, width 4
+029b:  2fbc0000  not x29, x28
+029c:  27d7e800  and x30, x23, x29
+029d:  27afe000  and x29, x15, x28
+029e:  2abee800  or x21, x30, x29
+029f:  cde3000c  li x15, 12 : width 4
+02a0:  e0000000  literal (continuation)
+02a1:  46f27800  eq x23, x18, x15
+02a2:  cde00000  li x15, 0 : width 1
+02a3:  e0000000  literal (continuation)
+02a4:  2a4fb800  or x18, x15, x23
+02a5:  29f39000  or x15, x19, x18
+02a6:  cde00001  li x15, 1 : width 1
+02a7:  e0000000  literal (continuation)
+02a8:  66f20000  sext x23, x18, width 1
+02a9:  2f770000  not x27, x23
+02aa:  2799d800  and x28, x25, x27
+02ab:  276fb800  and x27, x15, x23
+02ac:  2a7cd800  or x19, x28, x27
+02ad:  de60003b  export_write 59 <o_tx>, x19 : width 1
+02ae:  e0000000  literal (continuation)
+02af:  cde00000  li x15, 0 : width 1
+02b0:  e0000000  literal (continuation)
+02b1:  66f20000  sext x23, x18, width 1
+02b2:  2f370000  not x25, x23
+02b3:  277ac800  and x27, x26, x25
+02b4:  272fb800  and x25, x15, x23
+02b5:  2a7bc800  or x19, x27, x25
+02b6:  cde00000  li x15, 0 : width 1
+02b7:  e0000000  literal (continuation)
+02b8:  67320000  sext x25, x18, width 1
+02b9:  2f590000  not x26, x25
+02ba:  2776d000  and x27, x22, x26
+02bb:  274fc800  and x26, x15, x25
+02bc:  2afbd000  or x23, x27, x26
+02bd:  cde30000  li x15, 0 : width 4
+02be:  e0000000  literal (continuation)
+02bf:  67320003  sext x25, x18, width 4
+02c0:  2f590000  not x26, x25
+02c1:  2775d000  and x27, x21, x26
+02c2:  274fc800  and x26, x15, x25
+02c3:  2adbd000  or x22, x27, x26
+02c4:  d1e00019  state_read x15, 25 <@uart.r_rx_shft_reg.i_clk_prev> : width 1
+02c5:  e0000000  literal (continuation)
+02c6:  2e4f0000  not x18, x15
+02c7:  25f21800  and x15, x18, x3
+02c8:  d4600019  state_write 25 <@uart.r_rx_shft_reg.i_clk_prev>, x3 : width 1
+02c9:  e0000000  literal (continuation)
+02ca:  ce400000  li x18, 0 : width 1
+02cb:  e0000000  literal (continuation)
+02cc:  2ab27800  or x21, x18, x15
+02cd:  2de40000  not x15, x4
+02ce:  d240001a  state_read x18, 26 <@uart.r_rx_shft_reg.i_rst_n_prev> : width 1
+02cf:  e0000000  literal (continuation)
+02d0:  272f9000  and x25, x15, x18
+02d1:  d480001a  state_write 26 <@uart.r_rx_shft_reg.i_rst_n_prev>, x4 : width 1
+02d2:  e0000000  literal (continuation)
+02d3:  29f5c800  or x15, x21, x25
+02d4:  2e440000  not x18, x4
+02d5:  26af9000  and x21, x15, x18
+02d6:  d3270018  state_read x25, 24 <@uart.r_rx_shft_reg.r_shft_reg> : width 8
+02d7:  e0000000  literal (continuation)
+02d8:  cf470000  li x26, 0 : width 8
+02d9:  e0000000  literal (continuation)
+02da:  67950007  sext x28, x21, width 8
+02db:  2fbc0000  not x29, x28
+02dc:  27d9e800  and x30, x25, x29
+02dd:  27bae000  and x29, x26, x28
+02de:  2b7ee800  or x27, x30, x29
+02df:  2eb20000  not x21, x18
+02e0:  264fa800  and x18, x15, x21
+02e1:  d1e00001  state_read x15, 1 <@uart.w_s_rx_data_valid> : width 1
+02e2:  e0000000  literal (continuation)
+02e3:  26b27800  and x21, x18, x15
+02e4:  d1e70018  state_read x15, 24 <@uart.r_rx_shft_reg.r_shft_reg> : width 8
+02e5:  e0000000  literal (continuation)
+02e6:  824f0181  slice x18, x15, start 1, width 7
+02e7:  d1e0001d  state_read x15, 29 <@uart.sync0.i_clk_prev> : width 1
+02e8:  e0000000  literal (continuation)
+02e9:  2f2f0000  not x25, x15
+02ea:  25f91800  and x15, x25, x3
+02eb:  d460001d  state_write 29 <@uart.sync0.i_clk_prev>, x3 : width 1
+02ec:  e0000000  literal (continuation)
+02ed:  cf200000  li x25, 0 : width 1
+02ee:  e0000000  literal (continuation)
+02ef:  2b597800  or x26, x25, x15
+02f0:  2de40000  not x15, x4
+02f1:  d320001e  state_read x25, 30 <@uart.sync0.i_rst_n_prev> : width 1
+02f2:  e0000000  literal (continuation)
+02f3:  278fc800  and x28, x15, x25
+02f4:  d480001e  state_write 30 <@uart.sync0.i_rst_n_prev>, x4 : width 1
+02f5:  e0000000  literal (continuation)
+02f6:  29fae000  or x15, x26, x28
+02f7:  2f240000  not x25, x4
+02f8:  274fc800  and x26, x15, x25
+02f9:  d380001c  state_read x28, 28 <@uart.sync0.r_ff1> : width 1
+02fa:  e0000000  literal (continuation)
+02fb:  cfa00000  li x29, 0 : width 1
+02fc:  e0000000  literal (continuation)
+02fd:  67fa0000  sext x31, x26, width 1
+02fe:  df20003c  export_write 60, x25 : width 1
+02ff:  e0000000  literal (continuation)
+0300:  2f3f0000  not x25, x31
+0301:  de46003d  export_write 61, x18 : width 7
+0302:  e0000000  literal (continuation)
+0303:  265cc800  and x18, x28, x25
+0304:  273df800  and x25, x29, x31
+0305:  2bd2c800  or x30, x18, x25
+0306:  d240001b  state_read x18, 27 <@uart.sync0.r_ff2> : width 1
+0307:  e0000000  literal (continuation)
+0308:  cf200000  li x25, 0 : width 1
+0309:  e0000000  literal (continuation)
+030a:  67ba0000  sext x29, x26, width 1
+030b:  2ffd0000  not x31, x29
+030c:  dfc0003e  export_write 62, x30 : width 1
+030d:  e0000000  literal (continuation)
+030e:  27d2f800  and x30, x18, x31
+030f:  27f9e800  and x31, x25, x29
+0310:  2b9ef800  or x28, x30, x31
+0311:  da40003c  import_read x18, 60 : width 1
+0312:  e0000000  literal (continuation)
+0313:  2f320000  not x25, x18
+0314:  264fc800  and x18, x15, x25
+0315:  d9e0003e  import_read x15, 62 : width 1
+0316:  e0000000  literal (continuation)
+0317:  db20002c  import_read x25, 44 <i_rx> : width 1
+0318:  e0000000  literal (continuation)
+0319:  67b20000  sext x29, x18, width 1
+031a:  2fdd0000  not x30, x29
+031b:  27eff000  and x31, x15, x30
+031c:  27d9e800  and x30, x25, x29
+031d:  2b5ff000  or x26, x31, x30
+031e:  d1e0001c  state_read x15, 28 <@uart.sync0.r_ff1> : width 1
+031f:  e0000000  literal (continuation)
+0320:  67b20000  sext x29, x18, width 1
+0321:  2fdd0000  not x30, x29
+0322:  27fcf000  and x31, x28, x30
+0323:  27cfe800  and x30, x15, x29
+0324:  2b3ff000  or x25, x31, x30
+0325:  d720001b  state_write 27 <@uart.sync0.r_ff2>, x25 : width 1
+0326:  e0000000  literal (continuation)
+0327:  d740001c  state_write 28 <@uart.sync0.r_ff1>, x26 : width 1
+0328:  e0000000  literal (continuation)
+0329:  d1e30004  state_read x15, 4 <@uart.s_tx_state> : width 4
+032a:  e0000000  literal (continuation)
+032b:  ce430000  li x18, 0 : width 4
+032c:  e0000000  literal (continuation)
+032d:  472f9000  eq x25, x15, x18
+032e:  d1e30003  state_read x15, 3 <@uart.s_rx_state> : width 4
+032f:  e0000000  literal (continuation)
+0330:  ce430000  li x18, 0 : width 4
+0331:  e0000000  literal (continuation)
+0332:  474f9000  eq x26, x15, x18
+0333:  25f9d000  and x15, x25, x26
+0334:  d240001b  state_read x18, 27 <@uart.sync0.r_ff2> : width 1
+0335:  e0000000  literal (continuation)
+0336:  272f9000  and x25, x15, x18
+0337:  d1e10002  state_read x15, 2 <@uart.ones_ctr> : width 2
+0338:  e0000000  literal (continuation)
+0339:  634f001f  zext x26, x15, width 32
+033a:  cdff0002  li x15, 2 : width 32
+033b:  e0000000  literal (continuation)
+033c:  4f9a7800  slt x28, x26, x15
+033d:  cde00001  li x15, 1 : width 1
+033e:  e0000000  literal (continuation)
+033f:  cf400000  li x26, 0 : width 1
+0340:  e0000000  literal (continuation)
+0341:  67dc0000  sext x30, x28, width 1
+0342:  2ffe0000  not x31, x30
+0343:  de40003f  export_write 63, x18 : width 1
+0344:  e0000000  literal (continuation)
+0345:  264ff800  and x18, x15, x31
+0346:  27faf000  and x31, x26, x30
+0347:  2bb2f800  or x29, x18, x31
+0348:  d1e10021  state_read x15, 33 <@uart.rx_buffer.r_count> : width 2
+0349:  e0000000  literal (continuation)
+034a:  624f001f  zext x18, x15, width 32
+034b:  cdff0002  li x15, 2 : width 32
+034c:  e0000000  literal (continuation)
+034d:  47527800  eq x26, x18, x15
+034e:  df400040  export_write 64 <o_rx_full>, x26 : width 1
+034f:  e0000000  literal (continuation)
+0350:  d1e10021  state_read x15, 33 <@uart.rx_buffer.r_count> : width 2
+0351:  e0000000  literal (continuation)
+0352:  ce410000  li x18, 0 : width 2
+0353:  e0000000  literal (continuation)
+0354:  478f9000  eq x28, x15, x18
+0355:  df800041  export_write 65 <o_rx_empty>, x28 : width 1
+0356:  e0000000  literal (continuation)
+0357:  2dfc0000  not x15, x28
+0358:  dde00042  export_write 66 <o_deq_rx_ready>, x15 : width 1
+0359:  e0000000  literal (continuation)
+035a:  2e5a0000  not x18, x26
+035b:  d3400023  state_read x26, 35 <@uart.rx_buffer.r_head_ptr> : width 1
+035c:  e0000000  literal (continuation)
+035d:  cf800001  li x28, 1 : width 1
+035e:  e0000000  literal (continuation)
+035f:  47dae000  eq x30, x26, x28
+0360:  d3470020  state_read x26, 32 <@uart.rx_buffer.mem_buff[0]> : width 8
+0361:  e0000000  literal (continuation)
+0362:  d387001f  state_read x28, 31 <@uart.rx_buffer.mem_buff[1]> : width 8
+0363:  e0000000  literal (continuation)
+0364:  dce00043  export_write 67, x7 : width 1
+0365:  e0000000  literal (continuation)
+0366:  64fe0007  sext x7, x30, width 8
+0367:  dee00044  export_write 68, x23 : width 1
+0368:  e0000000  literal (continuation)
+0369:  2ee70000  not x23, x7
+036a:  dda10045  export_write 69, x13 : width 2
+036b:  e0000000  literal (continuation)
+036c:  25bab800  and x13, x26, x23
+036d:  26fc3800  and x23, x28, x7
+036e:  2bedb800  or x31, x13, x23
+036f:  dfe70046  export_write 70 <o_deq_rx_data>, x31 : width 8
+0370:  e0000000  literal (continuation)
+0371:  d0e00024  state_read x7, 36 <@uart.rx_buffer.i_clk_prev> : width 1
+0372:  e0000000  literal (continuation)
+0373:  2da70000  not x13, x7
+0374:  24ed1800  and x7, x13, x3
+0375:  d4600024  state_write 36 <@uart.rx_buffer.i_clk_prev>, x3 : width 1
+0376:  e0000000  literal (continuation)
+0377:  cda00000  li x13, 0 : width 1
+0378:  e0000000  literal (continuation)
+0379:  2aed3800  or x23, x13, x7
+037a:  2ce40000  not x7, x4
+037b:  d1a00025  state_read x13, 37 <@uart.rx_buffer.i_rst_n_prev> : width 1
+037c:  e0000000  literal (continuation)
+037d:  27476800  and x26, x7, x13
+037e:  d4800025  state_write 37 <@uart.rx_buffer.i_rst_n_prev>, x4 : width 1
+037f:  e0000000  literal (continuation)
+0380:  28f7d000  or x7, x23, x26
+0381:  2da40000  not x13, x4
+0382:  26e76800  and x23, x7, x13
+0383:  d3400023  state_read x26, 35 <@uart.rx_buffer.r_head_ptr> : width 1
+0384:  e0000000  literal (continuation)
+0385:  cf800000  li x28, 0 : width 1
+0386:  e0000000  literal (continuation)
+0387:  67f70000  sext x31, x23, width 1
+0388:  dda00047  export_write 71, x13 : width 1
+0389:  e0000000  literal (continuation)
+038a:  2dbf0000  not x13, x31
+038b:  dce00048  export_write 72, x7 : width 1
+038c:  e0000000  literal (continuation)
+038d:  24fa6800  and x7, x26, x13
+038e:  25bcf800  and x13, x28, x31
+038f:  2bc76800  or x30, x7, x13
+0390:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0391:  e0000000  literal (continuation)
+0392:  cda00000  li x13, 0 : width 1
+0393:  e0000000  literal (continuation)
+0394:  67970000  sext x28, x23, width 1
+0395:  2ffc0000  not x31, x28
+0396:  dfc00049  export_write 73, x30 : width 1
+0397:  e0000000  literal (continuation)
+0398:  27c7f800  and x30, x7, x31
+0399:  27ede000  and x31, x13, x28
+039a:  2b5ef800  or x26, x30, x31
+039b:  d0e10021  state_read x7, 33 <@uart.rx_buffer.r_count> : width 2
+039c:  e0000000  literal (continuation)
+039d:  cda10000  li x13, 0 : width 2
+039e:  e0000000  literal (continuation)
+039f:  67d70001  sext x30, x23, width 2
+03a0:  2ffe0000  not x31, x30
+03a1:  dd80004a  export_write 74, x12 : width 1
+03a2:  e0000000  literal (continuation)
+03a3:  2587f800  and x12, x7, x31
+03a4:  27edf000  and x31, x13, x30
+03a5:  2b8cf800  or x28, x12, x31
+03a6:  d8e00047  import_read x7, 71 : width 1
+03a7:  e0000000  literal (continuation)
+03a8:  2d870000  not x12, x7
+03a9:  d8e00048  import_read x7, 72 : width 1
+03aa:  e0000000  literal (continuation)
+03ab:  25a76000  and x13, x7, x12
+03ac:  d0e00000  state_read x7, 0 <@uart.w_p_rx_data_valid> : width 1
+03ad:  e0000000  literal (continuation)
+03ae:  25923800  and x12, x18, x7
+03af:  d8e00029  import_read x7, 41 <i_deq_rx_valid> : width 1
+03b0:  e0000000  literal (continuation)
+03b1:  264f3800  and x18, x15, x7
+03b2:  5cec9000  concat x7, x12, x18
+03b3:  cd810001  li x12, 1 : width 2
+03b4:  e0000000  literal (continuation)
+03b5:  45e76000  eq x15, x7, x12
+03b6:  cd800000  li x12, 0 : width 1
+03b7:  e0000000  literal (continuation)
+03b8:  2a4c7800  or x18, x12, x15
+03b9:  cd800000  li x12, 0 : width 1
+03ba:  e0000000  literal (continuation)
+03bb:  29ec9000  or x15, x12, x18
+03bc:  258d9000  and x12, x13, x18
+03bd:  d2400023  state_read x18, 35 <@uart.rx_buffer.r_head_ptr> : width 1
+03be:  e0000000  literal (continuation)
+03bf:  62f2001f  zext x23, x18, width 32
+03c0:  ce5f0001  li x18, 1 : width 32
+03c1:  e0000000  literal (continuation)
+03c2:  0fd79000  add x30, x23, x18
+03c3:  825e0000  slice x18, x30, start 0, width 1
+03c4:  dae00049  import_read x23, 73 : width 1
+03c5:  e0000000  literal (continuation)
+03c6:  67ec0000  sext x31, x12, width 1
+03c7:  dce1004b  export_write 75, x7 : width 2
+03c8:  e0000000  literal (continuation)
+03c9:  2cff0000  not x7, x31
+03ca:  dda0004c  export_write 76, x13 : width 1
+03cb:  e0000000  literal (continuation)
+03cc:  25b73800  and x13, x23, x7
+03cd:  24f2f800  and x7, x18, x31
+03ce:  2bcd3800  or x30, x13, x7
+03cf:  d0e10021  state_read x7, 33 <@uart.rx_buffer.r_count> : width 2
+03d0:  e0000000  literal (continuation)
+03d1:  61a7001f  zext x13, x7, width 32
+03d2:  ccff0001  li x7, 1 : width 32
+03d3:  e0000000  literal (continuation)
+03d4:  124d3800  sub x18, x13, x7
+03d5:  80f20040  slice x7, x18, start 0, width 2
+03d6:  664c0001  sext x18, x12, width 2
+03d7:  2ef20000  not x23, x18
+03d8:  27fcb800  and x31, x28, x23
+03d9:  26e79000  and x23, x7, x18
+03da:  29bfb800  or x13, x31, x23
+03db:  d8e1004b  import_read x7, 75 : width 2
+03dc:  e0000000  literal (continuation)
+03dd:  cd810002  li x12, 2 : width 2
+03de:  e0000000  literal (continuation)
+03df:  46476000  eq x18, x7, x12
+03e0:  cd800000  li x12, 0 : width 1
+03e1:  e0000000  literal (continuation)
+03e2:  2aec9000  or x23, x12, x18
+03e3:  298fb800  or x12, x15, x23
+03e4:  d9e0004c  import_read x15, 76 : width 1
+03e5:  e0000000  literal (continuation)
+03e6:  264fb800  and x18, x15, x23
+03e7:  d2e00022  state_read x23, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+03e8:  e0000000  literal (continuation)
+03e9:  6397001f  zext x28, x23, width 32
+03ea:  ceff0001  li x23, 1 : width 32
+03eb:  e0000000  literal (continuation)
+03ec:  0ffcb800  add x31, x28, x23
+03ed:  82ff0000  slice x23, x31, start 0, width 1
+03ee:  67f20000  sext x31, x18, width 1
+03ef:  dde0004d  export_write 77, x15 : width 1
+03f0:  e0000000  literal (continuation)
+03f1:  2dff0000  not x15, x31
+03f2:  dce1004e  export_write 78, x7 : width 2
+03f3:  e0000000  literal (continuation)
+03f4:  24fa7800  and x7, x26, x15
+03f5:  25f7f800  and x15, x23, x31
+03f6:  2b877800  or x28, x7, x15
+03f7:  d0e10021  state_read x7, 33 <@uart.rx_buffer.r_count> : width 2
+03f8:  e0000000  literal (continuation)
+03f9:  61e7001f  zext x15, x7, width 32
+03fa:  ccff0001  li x7, 1 : width 32
+03fb:  e0000000  literal (continuation)
+03fc:  0eef3800  add x23, x15, x7
+03fd:  80f70040  slice x7, x23, start 0, width 2
+03fe:  66f20001  sext x23, x18, width 2
+03ff:  2f570000  not x26, x23
+0400:  27edd000  and x31, x13, x26
+0401:  2747b800  and x26, x7, x23
+0402:  29ffd000  or x15, x31, x26
+0403:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0404:  e0000000  literal (continuation)
+0405:  cda00001  li x13, 1 : width 1
+0406:  e0000000  literal (continuation)
+0407:  46e76800  eq x23, x7, x13
+0408:  d0e70020  state_read x7, 32 <@uart.rx_buffer.mem_buff[0]> : width 8
+0409:  e0000000  literal (continuation)
+040a:  d1a7001f  state_read x13, 31 <@uart.rx_buffer.mem_buff[1]> : width 8
+040b:  e0000000  literal (continuation)
+040c:  67f70007  sext x31, x23, width 8
+040d:  dde1004f  export_write 79, x15 : width 2
+040e:  e0000000  literal (continuation)
+040f:  2dff0000  not x15, x31
+0410:  de400050  export_write 80, x18 : width 1
+0411:  e0000000  literal (continuation)
+0412:  26477800  and x18, x7, x15
+0413:  25edf800  and x15, x13, x31
+0414:  2b527800  or x26, x18, x15
+0415:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0416:  e0000000  literal (continuation)
+0417:  cda00000  li x13, 0 : width 1
+0418:  e0000000  literal (continuation)
+0419:  45e76800  eq x15, x7, x13
+041a:  d9a00050  import_read x13, 80 : width 1
+041b:  e0000000  literal (continuation)
+041c:  264d7800  and x18, x13, x15
+041d:  d1e70020  state_read x15, 32 <@uart.rx_buffer.mem_buff[0]> : width 8
+041e:  e0000000  literal (continuation)
+041f:  d2e70018  state_read x23, 24 <@uart.r_rx_shft_reg.r_shft_reg> : width 8
+0420:  e0000000  literal (continuation)
+0421:  67f20007  sext x31, x18, width 8
+0422:  dda00051  export_write 81, x13 : width 1
+0423:  e0000000  literal (continuation)
+0424:  2dbf0000  not x13, x31
+0425:  dce00052  export_write 82, x7 : width 1
+0426:  e0000000  literal (continuation)
+0427:  24ef6800  and x7, x15, x13
+0428:  25b7f800  and x13, x23, x31
+0429:  2b476800  or x26, x7, x13
+042a:  d8e00052  import_read x7, 82 : width 1
+042b:  e0000000  literal (continuation)
+042c:  cda00001  li x13, 1 : width 1
+042d:  e0000000  literal (continuation)
+042e:  45e76800  eq x15, x7, x13
+042f:  d8e00051  import_read x7, 81 : width 1
+0430:  e0000000  literal (continuation)
+0431:  25a77800  and x13, x7, x15
+0432:  d0e7001f  state_read x7, 31 <@uart.rx_buffer.mem_buff[1]> : width 8
+0433:  e0000000  literal (continuation)
+0434:  664d0007  sext x18, x13, width 8
+0435:  2ff20000  not x31, x18
+0436:  df470053  export_write 83, x26 : width 8
+0437:  e0000000  literal (continuation)
+0438:  2747f800  and x26, x7, x31
+0439:  27f79000  and x31, x23, x18
+043a:  29faf800  or x15, x26, x31
+043b:  d8e1004e  import_read x7, 78 : width 2
+043c:  e0000000  literal (continuation)
+043d:  cda10003  li x13, 3 : width 2
+043e:  e0000000  literal (continuation)
+043f:  46476800  eq x18, x7, x13
+0440:  cce00000  li x7, 0 : width 1
+0441:  e0000000  literal (continuation)
+0442:  29a79000  or x13, x7, x18
+0443:  28ec6800  or x7, x12, x13
+0444:  d980004d  import_read x12, 77 : width 1
+0445:  e0000000  literal (continuation)
+0446:  264c6800  and x18, x12, x13
+0447:  d1a00023  state_read x13, 35 <@uart.rx_buffer.r_head_ptr> : width 1
+0448:  e0000000  literal (continuation)
+0449:  634d001f  zext x26, x13, width 32
+044a:  cdbf0001  li x13, 1 : width 32
+044b:  e0000000  literal (continuation)
+044c:  0ffa6800  add x31, x26, x13
+044d:  81bf0000  slice x13, x31, start 0, width 1
+044e:  67f20000  sext x31, x18, width 1
+044f:  dd800054  export_write 84, x12 : width 1
+0450:  e0000000  literal (continuation)
+0451:  2d9f0000  not x12, x31
+0452:  dce00055  export_write 85, x7 : width 1
+0453:  e0000000  literal (continuation)
+0454:  24fe6000  and x7, x30, x12
+0455:  258df800  and x12, x13, x31
+0456:  2b476000  or x26, x7, x12
+0457:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0458:  e0000000  literal (continuation)
+0459:  6187001f  zext x12, x7, width 32
+045a:  ccff0001  li x7, 1 : width 32
+045b:  e0000000  literal (continuation)
+045c:  0dac3800  add x13, x12, x7
+045d:  80ed0000  slice x7, x13, start 0, width 1
+045e:  65b20000  sext x13, x18, width 1
+045f:  2fcd0000  not x30, x13
+0460:  27fcf000  and x31, x28, x30
+0461:  27c76800  and x30, x7, x13
+0462:  299ff000  or x12, x31, x30
+0463:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0464:  e0000000  literal (continuation)
+0465:  cda00001  li x13, 1 : width 1
+0466:  e0000000  literal (continuation)
+0467:  47876800  eq x28, x7, x13
+0468:  d0e70020  state_read x7, 32 <@uart.rx_buffer.mem_buff[0]> : width 8
+0469:  e0000000  literal (continuation)
+046a:  d1a7001f  state_read x13, 31 <@uart.rx_buffer.mem_buff[1]> : width 8
+046b:  e0000000  literal (continuation)
+046c:  67fc0007  sext x31, x28, width 8
+046d:  dd800056  export_write 86, x12 : width 1
+046e:  e0000000  literal (continuation)
+046f:  2d9f0000  not x12, x31
+0470:  df400057  export_write 87, x26 : width 1
+0471:  e0000000  literal (continuation)
+0472:  27476000  and x26, x7, x12
+0473:  258df800  and x12, x13, x31
+0474:  2bda6000  or x30, x26, x12
+0475:  d0e00022  state_read x7, 34 <@uart.rx_buffer.r_tail_ptr> : width 1
+0476:  e0000000  literal (continuation)
+0477:  cd800000  li x12, 0 : width 1
+0478:  e0000000  literal (continuation)
+0479:  45a76000  eq x13, x7, x12
+047a:  25926800  and x12, x18, x13
+047b:  d9a70053  import_read x13, 83 : width 8
+047c:  e0000000  literal (continuation)
+047d:  678c0007  sext x28, x12, width 8
+047e:  2fdc0000  not x30, x28
+047f:  27edf000  and x31, x13, x30
+0480:  27d7e000  and x30, x23, x28
+0481:  2b5ff000  or x26, x31, x30
+0482:  cd800001  li x12, 1 : width 1
+0483:  e0000000  literal (continuation)
+0484:  45a76000  eq x13, x7, x12
+0485:  24f26800  and x7, x18, x13
+0486:  65a70007  sext x13, x7, width 8
+0487:  2e4d0000  not x18, x13
+0488:  278f9000  and x28, x15, x18
+0489:  26576800  and x18, x23, x13
+048a:  299c9000  or x12, x28, x18
+048b:  d8e00055  import_read x7, 85 : width 1
+048c:  e0000000  literal (continuation)
+048d:  2da70000  not x13, x7
+048e:  d8e00054  import_read x7, 84 : width 1
+048f:  e0000000  literal (continuation)
+0490:  25e76800  and x15, x7, x13
+0491:  d587001f  state_write 31 <@uart.rx_buffer.mem_buff[1]>, x12 : width 8
+0492:  e0000000  literal (continuation)
+0493:  d7470020  state_write 32 <@uart.rx_buffer.mem_buff[0]>, x26 : width 8
+0494:  e0000000  literal (continuation)
+0495:  d8e1004f  import_read x7, 79 : width 2
+0496:  e0000000  literal (continuation)
+0497:  d4e10021  state_write 33 <@uart.rx_buffer.r_count>, x7 : width 2
+0498:  e0000000  literal (continuation)
+0499:  d8e00056  import_read x7, 86 : width 1
+049a:  e0000000  literal (continuation)
+049b:  d4e00022  state_write 34 <@uart.rx_buffer.r_tail_ptr>, x7 : width 1
+049c:  e0000000  literal (continuation)
+049d:  d8e00057  import_read x7, 87 : width 1
+049e:  e0000000  literal (continuation)
+049f:  d4e00023  state_write 35 <@uart.rx_buffer.r_head_ptr>, x7 : width 1
+04a0:  e0000000  literal (continuation)
+04a1:  d0e0000c  state_read x7, 12 <@uart.i_clk_prev> : width 1
+04a2:  e0000000  literal (continuation)
+04a3:  2d870000  not x12, x7
+04a4:  24ec1800  and x7, x12, x3
+04a5:  d460000c  state_write 12 <@uart.i_clk_prev>, x3 : width 1
+04a6:  e0000000  literal (continuation)
+04a7:  cd800000  li x12, 0 : width 1
+04a8:  e0000000  literal (continuation)
+04a9:  29ac3800  or x13, x12, x7
+04aa:  2ce40000  not x7, x4
+04ab:  d180000d  state_read x12, 13 <@uart.i_rst_n_prev> : width 1
+04ac:  e0000000  literal (continuation)
+04ad:  25e76000  and x15, x7, x12
+04ae:  d480000d  state_write 13 <@uart.i_rst_n_prev>, x4 : width 1
+04af:  e0000000  literal (continuation)
+04b0:  28ed7800  or x7, x13, x15
+04b1:  2d840000  not x12, x4
+04b2:  25a76000  and x13, x7, x12
+04b3:  d1ff000b  state_read x15, 11 <@uart.r_baud_div_pend> : width 32
+04b4:  e0000000  literal (continuation)
+04b5:  ce5f0010  li x18, 16 : width 32
+04b6:  e0000000  literal (continuation)
+04b7:  674d001f  sext x26, x13, width 32
+04b8:  2f9a0000  not x28, x26
+04b9:  27cfe000  and x30, x15, x28
+04ba:  2792d000  and x28, x18, x26
+04bb:  2afee000  or x23, x30, x28
+04bc:  d1ff000a  state_read x15, 10 <@uart.r_baud_div> : width 32
+04bd:  e0000000  literal (continuation)
+04be:  ce5f0010  li x18, 16 : width 32
+04bf:  e0000000  literal (continuation)
+04c0:  678d001f  sext x28, x13, width 32
+04c1:  2fdc0000  not x30, x28
+04c2:  27eff000  and x31, x15, x30
+04c3:  27d2e000  and x30, x18, x28
+04c4:  2b5ff000  or x26, x31, x30
+04c5:  2dac0000  not x13, x12
+04c6:  25876800  and x12, x7, x13
+04c7:  d8ff0028  import_read x7, 40 <i_baud_div> : width 32
+04c8:  e0000000  literal (continuation)
+04c9:  cdbf0010  li x13, 16 : width 32
+04ca:  e0000000  literal (continuation)
+04cb:  4de76800  slt x15, x7, x13
+04cc:  cdbf0010  li x13, 16 : width 32
+04cd:  e0000000  literal (continuation)
+04ce:  678f001f  sext x28, x15, width 32
+04cf:  2fdc0000  not x30, x28
+04d0:  27e7f000  and x31, x7, x30
+04d1:  27cde000  and x30, x13, x28
+04d2:  2a5ff000  or x18, x31, x30
+04d3:  65ac001f  sext x13, x12, width 32
+04d4:  2ded0000  not x15, x13
+04d5:  27977800  and x28, x23, x15
+04d6:  25f26800  and x15, x18, x13
+04d7:  28fc7800  or x7, x28, x15
+04d8:  25acc800  and x13, x12, x25
+04d9:  d19f000b  state_read x12, 11 <@uart.r_baud_div_pend> : width 32
+04da:  e0000000  literal (continuation)
+04db:  664d001f  sext x18, x13, width 32
+04dc:  2ef20000  not x23, x18
+04dd:  279ab800  and x28, x26, x23
+04de:  26ec9000  and x23, x12, x18
+04df:  29fcb800  or x15, x28, x23
+04e0:  d180000c  state_read x12, 12 <@uart.i_clk_prev> : width 1
+04e1:  e0000000  literal (continuation)
+04e2:  2dac0000  not x13, x12
+04e3:  258d1800  and x12, x13, x3
+04e4:  d460000c  state_write 12 <@uart.i_clk_prev>, x3 : width 1
+04e5:  e0000000  literal (continuation)
+04e6:  cda00000  li x13, 0 : width 1
+04e7:  e0000000  literal (continuation)
+04e8:  2a4d6000  or x18, x13, x12
+04e9:  2d840000  not x12, x4
+04ea:  d1a0000d  state_read x13, 13 <@uart.i_rst_n_prev> : width 1
+04eb:  e0000000  literal (continuation)
+04ec:  26ec6800  and x23, x12, x13
+04ed:  d480000d  state_write 13 <@uart.i_rst_n_prev>, x4 : width 1
+04ee:  e0000000  literal (continuation)
+04ef:  2992b800  or x12, x18, x23
+04f0:  2da40000  not x13, x4
+04f1:  264c6800  and x18, x12, x13
+04f2:  d2ff0009  state_read x23, 9 <@uart.r_baud_ctr> : width 32
+04f3:  e0000000  literal (continuation)
+04f4:  cf5f0000  li x26, 0 : width 32
+04f5:  e0000000  literal (continuation)
+04f6:  67d2001f  sext x30, x18, width 32
+04f7:  2ffe0000  not x31, x30
+04f8:  dd800058  export_write 88, x12 : width 1
+04f9:  e0000000  literal (continuation)
+04fa:  2597f800  and x12, x23, x31
+04fb:  27faf000  and x31, x26, x30
+04fc:  2b8cf800  or x28, x12, x31
+04fd:  d19f0005  state_read x12, 5 <@uart.r_samp_ctr> : width 32
+04fe:  e0000000  literal (continuation)
+04ff:  ceff0000  li x23, 0 : width 32
+0500:  e0000000  literal (continuation)
+0501:  67d2001f  sext x30, x18, width 32
+0502:  2ffe0000  not x31, x30
+0503:  dcff0059  export_write 89, x7 : width 32
+0504:  e0000000  literal (continuation)
+0505:  24ecf800  and x7, x12, x31
+0506:  27f7f000  and x31, x23, x30
+0507:  2b47f800  or x26, x7, x31
+0508:  d0e00008  state_read x7, 8 <@uart.w_baud_tick> : width 1
+0509:  e0000000  literal (continuation)
+050a:  cd800000  li x12, 0 : width 1
+050b:  e0000000  literal (continuation)
+050c:  67d20000  sext x30, x18, width 1
+050d:  2ffe0000  not x31, x30
+050e:  df5f005a  export_write 90, x26 : width 32
+050f:  e0000000  literal (continuation)
+0510:  2747f800  and x26, x7, x31
+0511:  27ecf000  and x31, x12, x30
+0512:  2afaf800  or x23, x26, x31
+0513:  d0e00007  state_read x7, 7 <@uart.w_samp_tick> : width 1
+0514:  e0000000  literal (continuation)
+0515:  cd800000  li x12, 0 : width 1
+0516:  e0000000  literal (continuation)
+0517:  67d20000  sext x30, x18, width 1
+0518:  2ffe0000  not x31, x30
+0519:  dda0005b  export_write 91, x13 : width 1
+051a:  e0000000  literal (continuation)
+051b:  25a7f800  and x13, x7, x31
+051c:  27ecf000  and x31, x12, x30
+051d:  2b4df800  or x26, x13, x31
+051e:  d8e0005b  import_read x7, 91 : width 1
+051f:  e0000000  literal (continuation)
+0520:  2d870000  not x12, x7
+0521:  d8e00058  import_read x7, 88 : width 1
+0522:  e0000000  literal (continuation)
+0523:  25a76000  and x13, x7, x12
+0524:  d0ff000a  state_read x7, 10 <@uart.r_baud_div> : width 32
+0525:  e0000000  literal (continuation)
+0526:  d19f000b  state_read x12, 11 <@uart.r_baud_div_pend> : width 32
+0527:  e0000000  literal (continuation)
+0528:  4a476000  ne x18, x7, x12
+0529:  24f99000  and x7, x25, x18
+052a:  258d3800  and x12, x13, x7
+052b:  ce5f0000  li x18, 0 : width 32
+052c:  e0000000  literal (continuation)
+052d:  67cc001f  sext x30, x12, width 32
+052e:  2ffe0000  not x31, x30
+052f:  dce0005c  export_write 92, x7 : width 1
+0530:  e0000000  literal (continuation)
+0531:  24fcf800  and x7, x28, x31
+0532:  27f2f000  and x31, x18, x30
+0533:  2b27f800  or x25, x7, x31
+0534:  d8ff005a  import_read x7, 90 : width 32
+0535:  e0000000  literal (continuation)
+0536:  ce5f0000  li x18, 0 : width 32
+0537:  e0000000  literal (continuation)
+0538:  67cc001f  sext x30, x12, width 32
+0539:  2ffe0000  not x31, x30
+053a:  df3f005d  export_write 93, x25 : width 32
+053b:  e0000000  literal (continuation)
+053c:  2727f800  and x25, x7, x31
+053d:  27f2f000  and x31, x18, x30
+053e:  2b99f800  or x28, x25, x31
+053f:  cce00000  li x7, 0 : width 1
+0540:  e0000000  literal (continuation)
+0541:  672c0000  sext x25, x12, width 1
+0542:  2fd90000  not x30, x25
+0543:  27f7f000  and x31, x23, x30
+0544:  27c7c800  and x30, x7, x25
+0545:  2a5ff000  or x18, x31, x30
+0546:  cce00000  li x7, 0 : width 1
+0547:  e0000000  literal (continuation)
+0548:  672c0000  sext x25, x12, width 1
+0549:  2fd90000  not x30, x25
+054a:  27faf000  and x31, x26, x30
+054b:  27c7c800  and x30, x7, x25
+054c:  2afff000  or x23, x31, x30
+054d:  d8e0005c  import_read x7, 92 : width 1
+054e:  e0000000  literal (continuation)
+054f:  2d870000  not x12, x7
+0550:  24ed6000  and x7, x13, x12
+0551:  d19f000a  state_read x12, 10 <@uart.r_baud_div> : width 32
+0552:  e0000000  literal (continuation)
+0553:  cdbf0001  li x13, 1 : width 32
+0554:  e0000000  literal (continuation)
+0555:  132c6800  sub x25, x12, x13
+0556:  d19f0009  state_read x12, 9 <@uart.r_baud_ctr> : width 32
+0557:  e0000000  literal (continuation)
+0558:  45acc800  eq x13, x12, x25
+0559:  25876800  and x12, x7, x13
+055a:  db3f005d  import_read x25, 93 : width 32
+055b:  e0000000  literal (continuation)
+055c:  cf5f0000  li x26, 0 : width 32
+055d:  e0000000  literal (continuation)
+055e:  67ec001f  sext x31, x12, width 32
+055f:  dda0005e  export_write 94, x13 : width 1
+0560:  e0000000  literal (continuation)
+0561:  2dbf0000  not x13, x31
+0562:  dce0005f  export_write 95, x7 : width 1
+0563:  e0000000  literal (continuation)
+0564:  24f96800  and x7, x25, x13
+0565:  25baf800  and x13, x26, x31
+0566:  2bc76800  or x30, x7, x13
+0567:  cce00001  li x7, 1 : width 1
+0568:  e0000000  literal (continuation)
+0569:  672c0000  sext x25, x12, width 1
+056a:  2f590000  not x26, x25
+056b:  27f2d000  and x31, x18, x26
+056c:  2747c800  and x26, x7, x25
+056d:  29bfd000  or x13, x31, x26
+056e:  d8e0005e  import_read x7, 94 : width 1
+056f:  e0000000  literal (continuation)
+0570:  2d870000  not x12, x7
+0571:  d8e0005f  import_read x7, 95 : width 1
+0572:  e0000000  literal (continuation)
+0573:  26476000  and x18, x7, x12
+0574:  d19f0009  state_read x12, 9 <@uart.r_baud_ctr> : width 32
+0575:  e0000000  literal (continuation)
+0576:  cf3f0001  li x25, 1 : width 32
+0577:  e0000000  literal (continuation)
+0578:  0f4cc800  add x26, x12, x25
+0579:  6732001f  sext x25, x18, width 32
+057a:  2ff90000  not x31, x25
+057b:  dce00060  export_write 96, x7 : width 1
+057c:  e0000000  literal (continuation)
+057d:  24fef800  and x7, x30, x31
+057e:  27fac800  and x31, x26, x25
+057f:  2987f800  or x12, x7, x31
+0580:  cce00000  li x7, 0 : width 1
+0581:  e0000000  literal (continuation)
+0582:  67520000  sext x26, x18, width 1
+0583:  2fda0000  not x30, x26
+0584:  27edf000  and x31, x13, x30
+0585:  27c7d000  and x30, x7, x26
+0586:  2b3ff000  or x25, x31, x30
+0587:  d0ff000a  state_read x7, 10 <@uart.r_baud_div> : width 32
+0588:  e0000000  literal (continuation)
+0589:  cdbf0004  li x13, 4 : width 32
+058a:  e0000000  literal (continuation)
+058b:  1e476800  lshr x18, x7, x13
+058c:  ccff0001  li x7, 1 : width 32
+058d:  e0000000  literal (continuation)
+058e:  11b23800  sub x13, x18, x7
+058f:  d0ff0005  state_read x7, 5 <@uart.r_samp_ctr> : width 32
+0590:  e0000000  literal (continuation)
+0591:  46476800  eq x18, x7, x13
+0592:  d8e00060  import_read x7, 96 : width 1
+0593:  e0000000  literal (continuation)
+0594:  25a79000  and x13, x7, x18
+0595:  cf5f0000  li x26, 0 : width 32
+0596:  e0000000  literal (continuation)
+0597:  67ed001f  sext x31, x13, width 32
+0598:  dce00061  export_write 97, x7 : width 1
+0599:  e0000000  literal (continuation)
+059a:  2cff0000  not x7, x31
+059b:  de400062  export_write 98, x18 : width 1
+059c:  e0000000  literal (continuation)
+059d:  265c3800  and x18, x28, x7
+059e:  24faf800  and x7, x26, x31
+059f:  2bd23800  or x30, x18, x7
+05a0:  cce00001  li x7, 1 : width 1
+05a1:  e0000000  literal (continuation)
+05a2:  674d0000  sext x26, x13, width 1
+05a3:  2f9a0000  not x28, x26
+05a4:  27f7e000  and x31, x23, x28
+05a5:  2787d000  and x28, x7, x26
+05a6:  2a5fe000  or x18, x31, x28
+05a7:  d8e00062  import_read x7, 98 : width 1
+05a8:  e0000000  literal (continuation)
+05a9:  2da70000  not x13, x7
+05aa:  d8e00061  import_read x7, 97 : width 1
+05ab:  e0000000  literal (continuation)
+05ac:  26e76800  and x23, x7, x13
+05ad:  d0ff0005  state_read x7, 5 <@uart.r_samp_ctr> : width 32
+05ae:  e0000000  literal (continuation)
+05af:  cdbf0001  li x13, 1 : width 32
+05b0:  e0000000  literal (continuation)
+05b1:  0f476800  add x26, x7, x13
+05b2:  65b7001f  sext x13, x23, width 32
+05b3:  2f8d0000  not x28, x13
+05b4:  27fee000  and x31, x30, x28
+05b5:  279a6800  and x28, x26, x13
+05b6:  28ffe000  or x7, x31, x28
+05b7:  cda00000  li x13, 0 : width 1
+05b8:  e0000000  literal (continuation)
+05b9:  67970000  sext x28, x23, width 1
+05ba:  2fdc0000  not x30, x28
+05bb:  27f2f000  and x31, x18, x30
+05bc:  27cde000  and x30, x13, x28
+05bd:  2b5ff000  or x26, x31, x30
+05be:  d1a0000c  state_read x13, 12 <@uart.i_clk_prev> : width 1
+05bf:  e0000000  literal (continuation)
+05c0:  2e4d0000  not x18, x13
+05c1:  25b21800  and x13, x18, x3
+05c2:  d460000c  state_write 12 <@uart.i_clk_prev>, x3 : width 1
+05c3:  e0000000  literal (continuation)
+05c4:  ce400000  li x18, 0 : width 1
+05c5:  e0000000  literal (continuation)
+05c6:  2af26800  or x23, x18, x13
+05c7:  2da40000  not x13, x4
+05c8:  d240000d  state_read x18, 13 <@uart.i_rst_n_prev> : width 1
+05c9:  e0000000  literal (continuation)
+05ca:  278d9000  and x28, x13, x18
+05cb:  d480000d  state_write 13 <@uart.i_rst_n_prev>, x4 : width 1
+05cc:  e0000000  literal (continuation)
+05cd:  29b7e000  or x13, x23, x28
+05ce:  2e440000  not x18, x4
+05cf:  26ed9000  and x23, x13, x18
+05d0:  d3830004  state_read x28, 4 <@uart.s_tx_state> : width 4
+05d1:  e0000000  literal (continuation)
+05d2:  cfc30000  li x30, 0 : width 4
+05d3:  e0000000  literal (continuation)
+05d4:  de400063  export_write 99, x18 : width 1
+05d5:  e0000000  literal (continuation)
+05d6:  66570003  sext x18, x23, width 4
+05d7:  dda00064  export_write 100, x13 : width 1
+05d8:  e0000000  literal (continuation)
+05d9:  2db20000  not x13, x18
+05da:  dd9f0065  export_write 101, x12 : width 32
+05db:  e0000000  literal (continuation)
+05dc:  259c6800  and x12, x28, x13
+05dd:  25be9000  and x13, x30, x18
+05de:  2bec6800  or x31, x12, x13
+05df:  d9800063  import_read x12, 99 : width 1
+05e0:  e0000000  literal (continuation)
+05e1:  2dac0000  not x13, x12
+05e2:  d9800064  import_read x12, 100 : width 1
+05e3:  e0000000  literal (continuation)
+05e4:  264c6800  and x18, x12, x13
+05e5:  d1800008  state_read x12, 8 <@uart.w_baud_tick> : width 1
+05e6:  e0000000  literal (continuation)
+05e7:  25b26000  and x13, x18, x12
+05e8:  664d0003  sext x18, x13, width 4
+05e9:  2ef20000  not x23, x18
+05ea:  279fb800  and x28, x31, x23
+05eb:  26f69000  and x23, x22, x18
+05ec:  299cb800  or x12, x28, x23
+05ed:  d1a0000c  state_read x13, 12 <@uart.i_clk_prev> : width 1
+05ee:  e0000000  literal (continuation)
+05ef:  2e4d0000  not x18, x13
+05f0:  25b21800  and x13, x18, x3
+05f1:  d460000c  state_write 12 <@uart.i_clk_prev>, x3 : width 1
+05f2:  e0000000  literal (continuation)
+05f3:  cc600000  li x3, 0 : width 1
+05f4:  e0000000  literal (continuation)
+05f5:  2a436800  or x18, x3, x13
+05f6:  2c640000  not x3, x4
+05f7:  d1a0000d  state_read x13, 13 <@uart.i_rst_n_prev> : width 1
+05f8:  e0000000  literal (continuation)
+05f9:  26c36800  and x22, x3, x13
+05fa:  d480000d  state_write 13 <@uart.i_rst_n_prev>, x4 : width 1
+05fb:  e0000000  literal (continuation)
+05fc:  2872b000  or x3, x18, x22
+05fd:  2da40000  not x13, x4
+05fe:  24836800  and x4, x3, x13
+05ff:  d2430003  state_read x18, 3 <@uart.s_rx_state> : width 4
+0600:  e0000000  literal (continuation)
+0601:  cec30000  li x22, 0 : width 4
+0602:  e0000000  literal (continuation)
+0603:  67840003  sext x28, x4, width 4
+0604:  2fdc0000  not x30, x28
+0605:  27f2f000  and x31, x18, x30
+0606:  27d6e000  and x30, x22, x28
+0607:  2afff000  or x23, x31, x30
+0608:  d2440006  state_read x18, 6 <@uart.samp_ctr> : width 5
+0609:  e0000000  literal (continuation)
+060a:  cec40000  li x22, 0 : width 5
+060b:  e0000000  literal (continuation)
+060c:  67c40004  sext x30, x4, width 5
+060d:  2ffe0000  not x31, x30
+060e:  dee30066  export_write 102, x23 : width 4
+060f:  e0000000  literal (continuation)
+0610:  26f2f800  and x23, x18, x31
+0611:  27f6f000  and x31, x22, x30
+0612:  2b97f800  or x28, x23, x31
+0613:  d2410002  state_read x18, 2 <@uart.ones_ctr> : width 2
+0614:  e0000000  literal (continuation)
+0615:  cec10000  li x22, 0 : width 2
+0616:  e0000000  literal (continuation)
+0617:  67c40001  sext x30, x4, width 2
+0618:  2ffe0000  not x31, x30
+0619:  dda00067  export_write 103, x13 : width 1
+061a:  e0000000  literal (continuation)
+061b:  25b2f800  and x13, x18, x31
+061c:  27f6f000  and x31, x22, x30
+061d:  2aedf800  or x23, x13, x31
+061e:  d1a00001  state_read x13, 1 <@uart.w_s_rx_data_valid> : width 1
+061f:  e0000000  literal (continuation)
+0620:  ce400000  li x18, 0 : width 1
+0621:  e0000000  literal (continuation)
+0622:  67c40000  sext x30, x4, width 1
+0623:  2ffe0000  not x31, x30
+0624:  dee10068  export_write 104, x23 : width 2
+0625:  e0000000  literal (continuation)
+0626:  26edf800  and x23, x13, x31
+0627:  27f2f000  and x31, x18, x30
+0628:  2ad7f800  or x22, x23, x31
+0629:  d1a00000  state_read x13, 0 <@uart.w_p_rx_data_valid> : width 1
+062a:  e0000000  literal (continuation)
+062b:  ce400000  li x18, 0 : width 1
+062c:  e0000000  literal (continuation)
+062d:  67c40000  sext x30, x4, width 1
+062e:  2ffe0000  not x31, x30
+062f:  dc600069  export_write 105, x3 : width 1
+0630:  e0000000  literal (continuation)
+0631:  246df800  and x3, x13, x31
+0632:  27f2f000  and x31, x18, x30
+0633:  2ae3f800  or x23, x3, x31
+0634:  d8600067  import_read x3, 103 : width 1
+0635:  e0000000  literal (continuation)
+0636:  2c830000  not x4, x3
+0637:  d8600069  import_read x3, 105 : width 1
+0638:  e0000000  literal (continuation)
+0639:  25a32000  and x13, x3, x4
+063a:  cc600000  li x3, 0 : width 1
+063b:  e0000000  literal (continuation)
+063c:  664d0000  sext x18, x13, width 1
+063d:  2fd20000  not x30, x18
+063e:  27f6f000  and x31, x22, x30
+063f:  27c39000  and x30, x3, x18
+0640:  289ff000  or x4, x31, x30
+0641:  cc600000  li x3, 0 : width 1
+0642:  e0000000  literal (continuation)
+0643:  66cd0000  sext x22, x13, width 1
+0644:  2fd60000  not x30, x22
+0645:  27f7f000  and x31, x23, x30
+0646:  27c3b000  and x30, x3, x22
+0647:  2a5ff000  or x18, x31, x30
+0648:  d0600007  state_read x3, 7 <@uart.w_samp_tick> : width 1
+0649:  e0000000  literal (continuation)
+064a:  26cd1800  and x22, x13, x3
+064b:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+064c:  e0000000  literal (continuation)
+064d:  61a3001f  zext x13, x3, width 32
+064e:  cc7f0001  li x3, 1 : width 32
+064f:  e0000000  literal (continuation)
+0650:  0eed1800  add x23, x13, x3
+0651:  80770100  slice x3, x23, start 0, width 5
+0652:  66f60004  sext x23, x22, width 5
+0653:  2fd70000  not x30, x23
+0654:  27fcf000  and x31, x28, x30
+0655:  27c3b800  and x30, x3, x23
+0656:  29bff000  or x13, x31, x30
+0657:  d0630003  state_read x3, 3 <@uart.s_rx_state> : width 4
+0658:  e0000000  literal (continuation)
+0659:  cee30000  li x23, 0 : width 4
+065a:  e0000000  literal (continuation)
+065b:  4783b800  eq x28, x3, x23
+065c:  cee00000  li x23, 0 : width 1
+065d:  e0000000  literal (continuation)
+065e:  2bd7e000  or x30, x23, x28
+065f:  cee00000  li x23, 0 : width 1
+0660:  e0000000  literal (continuation)
+0661:  2b97f000  or x28, x23, x30
+0662:  26f6f000  and x23, x22, x30
+0663:  dbc0003f  import_read x30, 63 : width 1
+0664:  e0000000  literal (continuation)
+0665:  cfe00000  li x31, 0 : width 1
+0666:  e0000000  literal (continuation)
+0667:  dee0006a  export_write 106, x23 : width 1
+0668:  e0000000  literal (continuation)
+0669:  46fef800  eq x23, x30, x31
+066a:  cfe30000  li x31, 0 : width 4
+066b:  e0000000  literal (continuation)
+066c:  dfc0006b  export_write 107, x30 : width 1
+066d:  e0000000  literal (continuation)
+066e:  cfc30001  li x30, 1 : width 4
+066f:  e0000000  literal (continuation)
+0670:  dc63006c  export_write 108, x3 : width 4
+0671:  e0000000  literal (continuation)
+0672:  dec0006d  export_write 109, x22 : width 1
+0673:  e0000000  literal (continuation)
+0674:  66d70003  sext x22, x23, width 4
+0675:  de40006e  export_write 110, x18 : width 1
+0676:  e0000000  literal (continuation)
+0677:  2e560000  not x18, x22
+0678:  dd83006f  export_write 111, x12 : width 4
+0679:  e0000000  literal (continuation)
+067a:  259f9000  and x12, x31, x18
+067b:  265eb000  and x18, x30, x22
+067c:  286c9000  or x3, x12, x18
+067d:  d980006a  import_read x12, 106 : width 1
+067e:  e0000000  literal (continuation)
+067f:  da430066  import_read x18, 102 : width 4
+0680:  e0000000  literal (continuation)
+0681:  66ec0003  sext x23, x12, width 4
+0682:  2fd70000  not x30, x23
+0683:  27f2f000  and x31, x18, x30
+0684:  27c3b800  and x30, x3, x23
+0685:  2adff000  or x22, x31, x30
+0686:  d8610068  import_read x3, 104 : width 2
+0687:  e0000000  literal (continuation)
+0688:  ce410000  li x18, 0 : width 2
+0689:  e0000000  literal (continuation)
+068a:  67cc0001  sext x30, x12, width 2
+068b:  2ffe0000  not x31, x30
+068c:  df800070  export_write 112, x28 : width 1
+068d:  e0000000  literal (continuation)
+068e:  2783f800  and x28, x3, x31
+068f:  27f2f000  and x31, x18, x30
+0690:  2afcf800  or x23, x28, x31
+0691:  cc640001  li x3, 1 : width 5
+0692:  e0000000  literal (continuation)
+0693:  678c0004  sext x28, x12, width 5
+0694:  2fdc0000  not x30, x28
+0695:  27edf000  and x31, x13, x30
+0696:  27c3e000  and x30, x3, x28
+0697:  2a5ff000  or x18, x31, x30
+0698:  d863006c  import_read x3, 108 : width 4
+0699:  e0000000  literal (continuation)
+069a:  cd830001  li x12, 1 : width 4
+069b:  e0000000  literal (continuation)
+069c:  45a36000  eq x13, x3, x12
+069d:  cd800000  li x12, 0 : width 1
+069e:  e0000000  literal (continuation)
+069f:  2b8c6800  or x28, x12, x13
+06a0:  d9800070  import_read x12, 112 : width 1
+06a1:  e0000000  literal (continuation)
+06a2:  29ace000  or x13, x12, x28
+06a3:  d980006d  import_read x12, 109 : width 1
+06a4:  e0000000  literal (continuation)
+06a5:  27cce000  and x30, x12, x28
+06a6:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+06a7:  e0000000  literal (continuation)
+06a8:  63fc001f  zext x31, x28, width 32
+06a9:  cf9f0007  li x28, 7 : width 32
+06aa:  e0000000  literal (continuation)
+06ab:  dd800071  export_write 113, x12 : width 1
+06ac:  e0000000  literal (continuation)
+06ad:  459fe000  eq x12, x31, x28
+06ae:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+06af:  e0000000  literal (continuation)
+06b0:  63fc001f  zext x31, x28, width 32
+06b1:  cf9f0008  li x28, 8 : width 32
+06b2:  e0000000  literal (continuation)
+06b3:  dd800072  export_write 114, x12 : width 1
+06b4:  e0000000  literal (continuation)
+06b5:  459fe000  eq x12, x31, x28
+06b6:  db800072  import_read x28, 114 : width 1
+06b7:  e0000000  literal (continuation)
+06b8:  2bfc6000  or x31, x28, x12
+06b9:  d1840006  state_read x12, 6 <@uart.samp_ctr> : width 5
+06ba:  e0000000  literal (continuation)
+06bb:  638c001f  zext x28, x12, width 32
+06bc:  cd9f0009  li x12, 9 : width 32
+06bd:  e0000000  literal (continuation)
+06be:  dc630073  export_write 115, x3 : width 4
+06bf:  e0000000  literal (continuation)
+06c0:  447c6000  eq x3, x28, x12
+06c1:  299f1800  or x12, x31, x3
+06c2:  247e6000  and x3, x30, x12
+06c3:  db80006b  import_read x28, 107 : width 1
+06c4:  e0000000  literal (continuation)
+06c5:  63fc0001  zext x31, x28, width 2
+06c6:  dfe10074  export_write 116, x31 : width 2
+06c7:  e0000000  literal (continuation)
+06c8:  d3e10002  state_read x31, 2 <@uart.ones_ctr> : width 2
+06c9:  e0000000  literal (continuation)
+06ca:  df800075  export_write 117, x28 : width 1
+06cb:  e0000000  literal (continuation)
+06cc:  db810074  import_read x28, 116 : width 2
+06cd:  e0000000  literal (continuation)
+06ce:  dc600076  export_write 118, x3 : width 1
+06cf:  e0000000  literal (continuation)
+06d0:  0c7fe000  add x3, x31, x28
+06d1:  db800076  import_read x28, 118 : width 1
+06d2:  e0000000  literal (continuation)
+06d3:  dd800077  export_write 119, x12 : width 1
+06d4:  e0000000  literal (continuation)
+06d5:  659c0001  sext x12, x28, width 2
+06d6:  de440078  export_write 120, x18 : width 5
+06d7:  e0000000  literal (continuation)
+06d8:  2e4c0000  not x18, x12
+06d9:  dd000079  export_write 121, x8 : width 1
+06da:  e0000000  literal (continuation)
+06db:  25179000  and x8, x23, x18
+06dc:  26436000  and x18, x3, x12
+06dd:  2be89000  or x31, x8, x18
+06de:  d8600077  import_read x3, 119 : width 1
+06df:  e0000000  literal (continuation)
+06e0:  2d030000  not x8, x3
+06e1:  247e4000  and x3, x30, x8
+06e2:  d1040006  state_read x8, 6 <@uart.samp_ctr> : width 5
+06e3:  e0000000  literal (continuation)
+06e4:  6188001f  zext x12, x8, width 32
+06e5:  cd1f0010  li x8, 16 : width 32
+06e6:  e0000000  literal (continuation)
+06e7:  464c4000  eq x18, x12, x8
+06e8:  25039000  and x8, x3, x18
+06e9:  d0610002  state_read x3, 2 <@uart.ones_ctr> : width 2
+06ea:  e0000000  literal (continuation)
+06eb:  6183001f  zext x12, x3, width 32
+06ec:  cc7f0002  li x3, 2 : width 32
+06ed:  e0000000  literal (continuation)
+06ee:  4e4c1800  slt x18, x12, x3
+06ef:  cc630000  li x3, 0 : width 4
+06f0:  e0000000  literal (continuation)
+06f1:  cd830002  li x12, 2 : width 4
+06f2:  e0000000  literal (continuation)
+06f3:  67920003  sext x28, x18, width 4
+06f4:  2fdc0000  not x30, x28
+06f5:  dd00007a  export_write 122, x8 : width 1
+06f6:  e0000000  literal (continuation)
+06f7:  2503f000  and x8, x3, x30
+06f8:  27cce000  and x30, x12, x28
+06f9:  2ae8f000  or x23, x8, x30
+06fa:  d860007a  import_read x3, 122 : width 1
+06fb:  e0000000  literal (continuation)
+06fc:  65830003  sext x12, x3, width 4
+06fd:  2e4c0000  not x18, x12
+06fe:  27969000  and x28, x22, x18
+06ff:  26576000  and x18, x23, x12
+0700:  291c9000  or x8, x28, x18
+0701:  d9840078  import_read x12, 120 : width 5
+0702:  e0000000  literal (continuation)
+0703:  ce440001  li x18, 1 : width 5
+0704:  e0000000  literal (continuation)
+0705:  66e30004  sext x23, x3, width 5
+0706:  2f970000  not x28, x23
+0707:  27cce000  and x30, x12, x28
+0708:  2792b800  and x28, x18, x23
+0709:  2adee000  or x22, x30, x28
+070a:  cd810000  li x12, 0 : width 2
+070b:  e0000000  literal (continuation)
+070c:  66e30001  sext x23, x3, width 2
+070d:  2f970000  not x28, x23
+070e:  27dfe000  and x30, x31, x28
+070f:  278cb800  and x28, x12, x23
+0710:  2a5ee000  or x18, x30, x28
+0711:  d8630073  import_read x3, 115 : width 4
+0712:  e0000000  literal (continuation)
+0713:  cd830002  li x12, 2 : width 4
+0714:  e0000000  literal (continuation)
+0715:  46e36000  eq x23, x3, x12
+0716:  cd800000  li x12, 0 : width 1
+0717:  e0000000  literal (continuation)
+0718:  2b8cb800  or x28, x12, x23
+0719:  298de000  or x12, x13, x28
+071a:  d9a00071  import_read x13, 113 : width 1
+071b:  e0000000  literal (continuation)
+071c:  26ede000  and x23, x13, x28
+071d:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+071e:  e0000000  literal (continuation)
+071f:  63dc001f  zext x30, x28, width 32
+0720:  cf9f0007  li x28, 7 : width 32
+0721:  e0000000  literal (continuation)
+0722:  47fee000  eq x31, x30, x28
+0723:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+0724:  e0000000  literal (continuation)
+0725:  63dc001f  zext x30, x28, width 32
+0726:  cf9f0008  li x28, 8 : width 32
+0727:  e0000000  literal (continuation)
+0728:  dfe0007b  export_write 123, x31 : width 1
+0729:  e0000000  literal (continuation)
+072a:  47fee000  eq x31, x30, x28
+072b:  db80007b  import_read x28, 123 : width 1
+072c:  e0000000  literal (continuation)
+072d:  2bdcf800  or x30, x28, x31
+072e:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+072f:  e0000000  literal (continuation)
+0730:  63fc001f  zext x31, x28, width 32
+0731:  cf9f0009  li x28, 9 : width 32
+0732:  e0000000  literal (continuation)
+0733:  dee0007c  export_write 124, x23 : width 1
+0734:  e0000000  literal (continuation)
+0735:  46ffe000  eq x23, x31, x28
+0736:  2b9eb800  or x28, x30, x23
+0737:  dae0007c  import_read x23, 124 : width 1
+0738:  e0000000  literal (continuation)
+0739:  27d7e000  and x30, x23, x28
+073a:  dbe00075  import_read x31, 117 : width 1
+073b:  e0000000  literal (continuation)
+073c:  dee0007d  export_write 125, x23 : width 1
+073d:  e0000000  literal (continuation)
+073e:  62ff0001  zext x23, x31, width 2
+073f:  dee1007e  export_write 126, x23 : width 2
+0740:  e0000000  literal (continuation)
+0741:  d2e10002  state_read x23, 2 <@uart.ones_ctr> : width 2
+0742:  e0000000  literal (continuation)
+0743:  dfe0007f  export_write 127, x31 : width 1
+0744:  e0000000  literal (continuation)
+0745:  dbe1007e  import_read x31, 126 : width 2
+0746:  e0000000  literal (continuation)
+0747:  df800080  export_write 128, x28 : width 1
+0748:  e0000000  literal (continuation)
+0749:  0f97f800  add x28, x23, x31
+074a:  67fe0001  sext x31, x30, width 2
+074b:  dda00081  export_write 129, x13 : width 1
+074c:  e0000000  literal (continuation)
+074d:  2dbf0000  not x13, x31
+074e:  dc630082  export_write 130, x3 : width 4
+074f:  e0000000  literal (continuation)
+0750:  24726800  and x3, x18, x13
+0751:  25bcf800  and x13, x28, x31
+0752:  2ae36800  or x23, x3, x13
+0753:  d8600080  import_read x3, 128 : width 1
+0754:  e0000000  literal (continuation)
+0755:  2da30000  not x13, x3
+0756:  d860007d  import_read x3, 125 : width 1
+0757:  e0000000  literal (continuation)
+0758:  26436800  and x18, x3, x13
+0759:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+075a:  e0000000  literal (continuation)
+075b:  61a3001f  zext x13, x3, width 32
+075c:  cc7f000a  li x3, 10 : width 32
+075d:  e0000000  literal (continuation)
+075e:  478d1800  eq x28, x13, x3
+075f:  2472e000  and x3, x18, x28
+0760:  cda00001  li x13, 1 : width 1
+0761:  e0000000  literal (continuation)
+0762:  67e30000  sext x31, x3, width 1
+0763:  df800083  export_write 131, x28 : width 1
+0764:  e0000000  literal (continuation)
+0765:  2f9f0000  not x28, x31
+0766:  de400084  export_write 132, x18 : width 1
+0767:  e0000000  literal (continuation)
+0768:  2644e000  and x18, x4, x28
+0769:  278df800  and x28, x13, x31
+076a:  2bd2e000  or x30, x18, x28
+076b:  d8600083  import_read x3, 131 : width 1
+076c:  e0000000  literal (continuation)
+076d:  2c830000  not x4, x3
+076e:  d8600084  import_read x3, 132 : width 1
+076f:  e0000000  literal (continuation)
+0770:  25a32000  and x13, x3, x4
+0771:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+0772:  e0000000  literal (continuation)
+0773:  6083001f  zext x4, x3, width 32
+0774:  cc7f0010  li x3, 16 : width 32
+0775:  e0000000  literal (continuation)
+0776:  46441800  eq x18, x4, x3
+0777:  246d9000  and x3, x13, x18
+0778:  cc830003  li x4, 3 : width 4
+0779:  e0000000  literal (continuation)
+077a:  66430003  sext x18, x3, width 4
+077b:  2f920000  not x28, x18
+077c:  27e8e000  and x31, x8, x28
+077d:  27849000  and x28, x4, x18
+077e:  29bfe000  or x13, x31, x28
+077f:  cc840001  li x4, 1 : width 5
+0780:  e0000000  literal (continuation)
+0781:  66430004  sext x18, x3, width 5
+0782:  2f920000  not x28, x18
+0783:  27f6e000  and x31, x22, x28
+0784:  27849000  and x28, x4, x18
+0785:  291fe000  or x8, x31, x28
+0786:  cc810000  li x4, 0 : width 2
+0787:  e0000000  literal (continuation)
+0788:  66c30001  sext x22, x3, width 2
+0789:  2f960000  not x28, x22
+078a:  27f7e000  and x31, x23, x28
+078b:  2784b000  and x28, x4, x22
+078c:  2a5fe000  or x18, x31, x28
+078d:  d8630082  import_read x3, 130 : width 4
+078e:  e0000000  literal (continuation)
+078f:  cc830003  li x4, 3 : width 4
+0790:  e0000000  literal (continuation)
+0791:  46c32000  eq x22, x3, x4
+0792:  cc800000  li x4, 0 : width 1
+0793:  e0000000  literal (continuation)
+0794:  2ae4b000  or x23, x4, x22
+0795:  288cb800  or x4, x12, x23
+0796:  d9800081  import_read x12, 129 : width 1
+0797:  e0000000  literal (continuation)
+0798:  26ccb800  and x22, x12, x23
+0799:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+079a:  e0000000  literal (continuation)
+079b:  6397001f  zext x28, x23, width 32
+079c:  ceff0007  li x23, 7 : width 32
+079d:  e0000000  literal (continuation)
+079e:  47fcb800  eq x31, x28, x23
+079f:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+07a0:  e0000000  literal (continuation)
+07a1:  6397001f  zext x28, x23, width 32
+07a2:  ceff0008  li x23, 8 : width 32
+07a3:  e0000000  literal (continuation)
+07a4:  dec00085  export_write 133, x22 : width 1
+07a5:  e0000000  literal (continuation)
+07a6:  46dcb800  eq x22, x28, x23
+07a7:  2affb000  or x23, x31, x22
+07a8:  d2c40006  state_read x22, 6 <@uart.samp_ctr> : width 5
+07a9:  e0000000  literal (continuation)
+07aa:  6396001f  zext x28, x22, width 32
+07ab:  cedf0009  li x22, 9 : width 32
+07ac:  e0000000  literal (continuation)
+07ad:  47fcb000  eq x31, x28, x22
+07ae:  2ad7f800  or x22, x23, x31
+07af:  dae00085  import_read x23, 133 : width 1
+07b0:  e0000000  literal (continuation)
+07b1:  2797b000  and x28, x23, x22
+07b2:  dbe0007f  import_read x31, 127 : width 1
+07b3:  e0000000  literal (continuation)
+07b4:  dee00086  export_write 134, x23 : width 1
+07b5:  e0000000  literal (continuation)
+07b6:  62ff0001  zext x23, x31, width 2
+07b7:  dfe00087  export_write 135, x31 : width 1
+07b8:  e0000000  literal (continuation)
+07b9:  d3e10002  state_read x31, 2 <@uart.ones_ctr> : width 2
+07ba:  e0000000  literal (continuation)
+07bb:  df800088  export_write 136, x28 : width 1
+07bc:  e0000000  literal (continuation)
+07bd:  0f9fb800  add x28, x31, x23
+07be:  dae00088  import_read x23, 136 : width 1
+07bf:  e0000000  literal (continuation)
+07c0:  dd800089  export_write 137, x12 : width 1
+07c1:  e0000000  literal (continuation)
+07c2:  65970001  sext x12, x23, width 2
+07c3:  dc80008a  export_write 138, x4 : width 1
+07c4:  e0000000  literal (continuation)
+07c5:  2c8c0000  not x4, x12
+07c6:  dc63008b  export_write 139, x3 : width 4
+07c7:  e0000000  literal (continuation)
+07c8:  24722000  and x3, x18, x4
+07c9:  249c6000  and x4, x28, x12
+07ca:  2be32000  or x31, x3, x4
+07cb:  2c760000  not x3, x22
+07cc:  d8800086  import_read x4, 134 : width 1
+07cd:  e0000000  literal (continuation)
+07ce:  25841800  and x12, x4, x3
+07cf:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+07d0:  e0000000  literal (continuation)
+07d1:  6083001f  zext x4, x3, width 32
+07d2:  cc7f000a  li x3, 10 : width 32
+07d3:  e0000000  literal (continuation)
+07d4:  46441800  eq x18, x4, x3
+07d5:  246c9000  and x3, x12, x18
+07d6:  cc800001  li x4, 1 : width 1
+07d7:  e0000000  literal (continuation)
+07d8:  66e30000  sext x23, x3, width 1
+07d9:  2f970000  not x28, x23
+07da:  dd80008c  export_write 140, x12 : width 1
+07db:  e0000000  literal (continuation)
+07dc:  259ee000  and x12, x30, x28
+07dd:  2784b800  and x28, x4, x23
+07de:  2acce000  or x22, x12, x28
+07df:  2c720000  not x3, x18
+07e0:  d880008c  import_read x4, 140 : width 1
+07e1:  e0000000  literal (continuation)
+07e2:  25841800  and x12, x4, x3
+07e3:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+07e4:  e0000000  literal (continuation)
+07e5:  6083001f  zext x4, x3, width 32
+07e6:  cc7f0010  li x3, 16 : width 32
+07e7:  e0000000  literal (continuation)
+07e8:  46441800  eq x18, x4, x3
+07e9:  246c9000  and x3, x12, x18
+07ea:  cc830004  li x4, 4 : width 4
+07eb:  e0000000  literal (continuation)
+07ec:  66430003  sext x18, x3, width 4
+07ed:  2ef20000  not x23, x18
+07ee:  278db800  and x28, x13, x23
+07ef:  26e49000  and x23, x4, x18
+07f0:  299cb800  or x12, x28, x23
+07f1:  cc840001  li x4, 1 : width 5
+07f2:  e0000000  literal (continuation)
+07f3:  66430004  sext x18, x3, width 5
+07f4:  2ef20000  not x23, x18
+07f5:  2788b800  and x28, x8, x23
+07f6:  26e49000  and x23, x4, x18
+07f7:  29bcb800  or x13, x28, x23
+07f8:  cc810000  li x4, 0 : width 2
+07f9:  e0000000  literal (continuation)
+07fa:  66430001  sext x18, x3, width 2
+07fb:  2ef20000  not x23, x18
+07fc:  279fb800  and x28, x31, x23
+07fd:  26e49000  and x23, x4, x18
+07fe:  291cb800  or x8, x28, x23
+07ff:  d863008b  import_read x3, 139 : width 4
+0800:  e0000000  literal (continuation)
+0801:  cc830004  li x4, 4 : width 4
+0802:  e0000000  literal (continuation)
+0803:  46432000  eq x18, x3, x4
+0804:  cc800000  li x4, 0 : width 1
+0805:  e0000000  literal (continuation)
+0806:  2ae49000  or x23, x4, x18
+0807:  d880008a  import_read x4, 138 : width 1
+0808:  e0000000  literal (continuation)
+0809:  2a44b800  or x18, x4, x23
+080a:  d8800089  import_read x4, 137 : width 1
+080b:  e0000000  literal (continuation)
+080c:  2784b800  and x28, x4, x23
+080d:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+080e:  e0000000  literal (continuation)
+080f:  63d7001f  zext x30, x23, width 32
+0810:  ceff0007  li x23, 7 : width 32
+0811:  e0000000  literal (continuation)
+0812:  47feb800  eq x31, x30, x23
+0813:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0814:  e0000000  literal (continuation)
+0815:  63d7001f  zext x30, x23, width 32
+0816:  ceff0008  li x23, 8 : width 32
+0817:  e0000000  literal (continuation)
+0818:  dfe0008d  export_write 141, x31 : width 1
+0819:  e0000000  literal (continuation)
+081a:  47feb800  eq x31, x30, x23
+081b:  dae0008d  import_read x23, 141 : width 1
+081c:  e0000000  literal (continuation)
+081d:  2bd7f800  or x30, x23, x31
+081e:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+081f:  e0000000  literal (continuation)
+0820:  63f7001f  zext x31, x23, width 32
+0821:  ceff0009  li x23, 9 : width 32
+0822:  e0000000  literal (continuation)
+0823:  dfc0008e  export_write 142, x30 : width 1
+0824:  e0000000  literal (continuation)
+0825:  47dfb800  eq x30, x31, x23
+0826:  dae0008e  import_read x23, 142 : width 1
+0827:  e0000000  literal (continuation)
+0828:  2bf7f000  or x31, x23, x30
+0829:  26fcf800  and x23, x28, x31
+082a:  dbc00087  import_read x30, 135 : width 1
+082b:  e0000000  literal (continuation)
+082c:  dee0008f  export_write 143, x23 : width 1
+082d:  e0000000  literal (continuation)
+082e:  62fe0001  zext x23, x30, width 2
+082f:  dfc00090  export_write 144, x30 : width 1
+0830:  e0000000  literal (continuation)
+0831:  d3c10002  state_read x30, 2 <@uart.ones_ctr> : width 2
+0832:  e0000000  literal (continuation)
+0833:  dc800091  export_write 145, x4 : width 1
+0834:  e0000000  literal (continuation)
+0835:  0c9eb800  add x4, x30, x23
+0836:  dae0008f  import_read x23, 143 : width 1
+0837:  e0000000  literal (continuation)
+0838:  de400092  export_write 146, x18 : width 1
+0839:  e0000000  literal (continuation)
+083a:  66570001  sext x18, x23, width 2
+083b:  dc630093  export_write 147, x3 : width 4
+083c:  e0000000  literal (continuation)
+083d:  2c720000  not x3, x18
+083e:  dda40094  export_write 148, x13 : width 5
+083f:  e0000000  literal (continuation)
+0840:  25a81800  and x13, x8, x3
+0841:  24649000  and x3, x4, x18
+0842:  2bcd1800  or x30, x13, x3
+0843:  2c7f0000  not x3, x31
+0844:  249c1800  and x4, x28, x3
+0845:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+0846:  e0000000  literal (continuation)
+0847:  6103001f  zext x8, x3, width 32
+0848:  cc7f000a  li x3, 10 : width 32
+0849:  e0000000  literal (continuation)
+084a:  45a81800  eq x13, x8, x3
+084b:  24646800  and x3, x4, x13
+084c:  cd000001  li x8, 1 : width 1
+084d:  e0000000  literal (continuation)
+084e:  66e30000  sext x23, x3, width 1
+084f:  2f970000  not x28, x23
+0850:  27f6e000  and x31, x22, x28
+0851:  2788b800  and x28, x8, x23
+0852:  2a5fe000  or x18, x31, x28
+0853:  2c6d0000  not x3, x13
+0854:  25041800  and x8, x4, x3
+0855:  d0640006  state_read x3, 6 <@uart.samp_ctr> : width 5
+0856:  e0000000  literal (continuation)
+0857:  6083001f  zext x4, x3, width 32
+0858:  cc7f0010  li x3, 16 : width 32
+0859:  e0000000  literal (continuation)
+085a:  45a41800  eq x13, x4, x3
+085b:  24686800  and x3, x8, x13
+085c:  cc830005  li x4, 5 : width 4
+085d:  e0000000  literal (continuation)
+085e:  65a30003  sext x13, x3, width 4
+085f:  2ecd0000  not x22, x13
+0860:  26ecb000  and x23, x12, x22
+0861:  26c46800  and x22, x4, x13
+0862:  2917b000  or x8, x23, x22
+0863:  d8840094  import_read x4, 148 : width 5
+0864:  e0000000  literal (continuation)
+0865:  cd840001  li x12, 1 : width 5
+0866:  e0000000  literal (continuation)
+0867:  66c30004  sext x22, x3, width 5
+0868:  2ef60000  not x23, x22
+0869:  2784b800  and x28, x4, x23
+086a:  26ecb000  and x23, x12, x22
+086b:  29bcb800  or x13, x28, x23
+086c:  cc810000  li x4, 0 : width 2
+086d:  e0000000  literal (continuation)
+086e:  66c30001  sext x22, x3, width 2
+086f:  2ef60000  not x23, x22
+0870:  279eb800  and x28, x30, x23
+0871:  26e4b000  and x23, x4, x22
+0872:  299cb800  or x12, x28, x23
+0873:  d8630093  import_read x3, 147 : width 4
+0874:  e0000000  literal (continuation)
+0875:  cc830005  li x4, 5 : width 4
+0876:  e0000000  literal (continuation)
+0877:  46c32000  eq x22, x3, x4
+0878:  cc800000  li x4, 0 : width 1
+0879:  e0000000  literal (continuation)
+087a:  2ae4b000  or x23, x4, x22
+087b:  d8800092  import_read x4, 146 : width 1
+087c:  e0000000  literal (continuation)
+087d:  2ac4b800  or x22, x4, x23
+087e:  d8800091  import_read x4, 145 : width 1
+087f:  e0000000  literal (continuation)
+0880:  2784b800  and x28, x4, x23
+0881:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0882:  e0000000  literal (continuation)
+0883:  63d7001f  zext x30, x23, width 32
+0884:  ceff0007  li x23, 7 : width 32
+0885:  e0000000  literal (continuation)
+0886:  47feb800  eq x31, x30, x23
+0887:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0888:  e0000000  literal (continuation)
+0889:  63d7001f  zext x30, x23, width 32
+088a:  ceff0008  li x23, 8 : width 32
+088b:  e0000000  literal (continuation)
+088c:  dfe00095  export_write 149, x31 : width 1
+088d:  e0000000  literal (continuation)
+088e:  47feb800  eq x31, x30, x23
+088f:  dae00095  import_read x23, 149 : width 1
+0890:  e0000000  literal (continuation)
+0891:  2bd7f800  or x30, x23, x31
+0892:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0893:  e0000000  literal (continuation)
+0894:  63f7001f  zext x31, x23, width 32
+0895:  ceff0009  li x23, 9 : width 32
+0896:  e0000000  literal (continuation)
+0897:  df800096  export_write 150, x28 : width 1
+0898:  e0000000  literal (continuation)
+0899:  479fb800  eq x28, x31, x23
+089a:  2afee000  or x23, x30, x28
+089b:  db800096  import_read x28, 150 : width 1
+089c:  e0000000  literal (continuation)
+089d:  27dcb800  and x30, x28, x23
+089e:  dbe00090  import_read x31, 144 : width 1
+089f:  e0000000  literal (continuation)
+08a0:  df800097  export_write 151, x28 : width 1
+08a1:  e0000000  literal (continuation)
+08a2:  639f0001  zext x28, x31, width 2
+08a3:  df810098  export_write 152, x28 : width 2
+08a4:  e0000000  literal (continuation)
+08a5:  d3810002  state_read x28, 2 <@uart.ones_ctr> : width 2
+08a6:  e0000000  literal (continuation)
+08a7:  dfe00099  export_write 153, x31 : width 1
+08a8:  e0000000  literal (continuation)
+08a9:  dbe10098  import_read x31, 152 : width 2
+08aa:  e0000000  literal (continuation)
+08ab:  dee0009a  export_write 154, x23 : width 1
+08ac:  e0000000  literal (continuation)
+08ad:  0efcf800  add x23, x28, x31
+08ae:  67fe0001  sext x31, x30, width 2
+08af:  dc80009b  export_write 155, x4 : width 1
+08b0:  e0000000  literal (continuation)
+08b1:  2c9f0000  not x4, x31
+08b2:  dec0009c  export_write 156, x22 : width 1
+08b3:  e0000000  literal (continuation)
+08b4:  26cc2000  and x22, x12, x4
+08b5:  2497f800  and x4, x23, x31
+08b6:  2b962000  or x28, x22, x4
+08b7:  d880009a  import_read x4, 154 : width 1
+08b8:  e0000000  literal (continuation)
+08b9:  2d840000  not x12, x4
+08ba:  d8800097  import_read x4, 151 : width 1
+08bb:  e0000000  literal (continuation)
+08bc:  26c46000  and x22, x4, x12
+08bd:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+08be:  e0000000  literal (continuation)
+08bf:  6184001f  zext x12, x4, width 32
+08c0:  cc9f000a  li x4, 10 : width 32
+08c1:  e0000000  literal (continuation)
+08c2:  46ec2000  eq x23, x12, x4
+08c3:  2496b800  and x4, x22, x23
+08c4:  cd800001  li x12, 1 : width 1
+08c5:  e0000000  literal (continuation)
+08c6:  67e40000  sext x31, x4, width 1
+08c7:  dee0009d  export_write 157, x23 : width 1
+08c8:  e0000000  literal (continuation)
+08c9:  2eff0000  not x23, x31
+08ca:  dec0009e  export_write 158, x22 : width 1
+08cb:  e0000000  literal (continuation)
+08cc:  26d2b800  and x22, x18, x23
+08cd:  26ecf800  and x23, x12, x31
+08ce:  2bd6b800  or x30, x22, x23
+08cf:  d880009d  import_read x4, 157 : width 1
+08d0:  e0000000  literal (continuation)
+08d1:  2d840000  not x12, x4
+08d2:  d880009e  import_read x4, 158 : width 1
+08d3:  e0000000  literal (continuation)
+08d4:  26446000  and x18, x4, x12
+08d5:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+08d6:  e0000000  literal (continuation)
+08d7:  6184001f  zext x12, x4, width 32
+08d8:  cc9f0010  li x4, 16 : width 32
+08d9:  e0000000  literal (continuation)
+08da:  46cc2000  eq x22, x12, x4
+08db:  2492b000  and x4, x18, x22
+08dc:  cd830006  li x12, 6 : width 4
+08dd:  e0000000  literal (continuation)
+08de:  66c40003  sext x22, x4, width 4
+08df:  2ef60000  not x23, x22
+08e0:  27e8b800  and x31, x8, x23
+08e1:  26ecb000  and x23, x12, x22
+08e2:  2a5fb800  or x18, x31, x23
+08e3:  cd040001  li x8, 1 : width 5
+08e4:  e0000000  literal (continuation)
+08e5:  66c40004  sext x22, x4, width 5
+08e6:  2ef60000  not x23, x22
+08e7:  27edb800  and x31, x13, x23
+08e8:  26e8b000  and x23, x8, x22
+08e9:  299fb800  or x12, x31, x23
+08ea:  cd010000  li x8, 0 : width 2
+08eb:  e0000000  literal (continuation)
+08ec:  66c40001  sext x22, x4, width 2
+08ed:  2ef60000  not x23, x22
+08ee:  27fcb800  and x31, x28, x23
+08ef:  26e8b000  and x23, x8, x22
+08f0:  29bfb800  or x13, x31, x23
+08f1:  cc830006  li x4, 6 : width 4
+08f2:  e0000000  literal (continuation)
+08f3:  45032000  eq x8, x3, x4
+08f4:  cc800000  li x4, 0 : width 1
+08f5:  e0000000  literal (continuation)
+08f6:  2ac44000  or x22, x4, x8
+08f7:  d880009c  import_read x4, 156 : width 1
+08f8:  e0000000  literal (continuation)
+08f9:  2904b000  or x8, x4, x22
+08fa:  d880009b  import_read x4, 155 : width 1
+08fb:  e0000000  literal (continuation)
+08fc:  26e4b000  and x23, x4, x22
+08fd:  d2c40006  state_read x22, 6 <@uart.samp_ctr> : width 5
+08fe:  e0000000  literal (continuation)
+08ff:  6396001f  zext x28, x22, width 32
+0900:  cedf0007  li x22, 7 : width 32
+0901:  e0000000  literal (continuation)
+0902:  47fcb000  eq x31, x28, x22
+0903:  d2c40006  state_read x22, 6 <@uart.samp_ctr> : width 5
+0904:  e0000000  literal (continuation)
+0905:  6396001f  zext x28, x22, width 32
+0906:  cedf0008  li x22, 8 : width 32
+0907:  e0000000  literal (continuation)
+0908:  dfe0009f  export_write 159, x31 : width 1
+0909:  e0000000  literal (continuation)
+090a:  47fcb000  eq x31, x28, x22
+090b:  dac0009f  import_read x22, 159 : width 1
+090c:  e0000000  literal (continuation)
+090d:  2b96f800  or x28, x22, x31
+090e:  d2c40006  state_read x22, 6 <@uart.samp_ctr> : width 5
+090f:  e0000000  literal (continuation)
+0910:  63f6001f  zext x31, x22, width 32
+0911:  cedf0009  li x22, 9 : width 32
+0912:  e0000000  literal (continuation)
+0913:  df8000a0  export_write 160, x28 : width 1
+0914:  e0000000  literal (continuation)
+0915:  479fb000  eq x28, x31, x22
+0916:  dac000a0  import_read x22, 160 : width 1
+0917:  e0000000  literal (continuation)
+0918:  2bf6e000  or x31, x22, x28
+0919:  26d7f800  and x22, x23, x31
+091a:  db800099  import_read x28, 153 : width 1
+091b:  e0000000  literal (continuation)
+091c:  dec000a1  export_write 161, x22 : width 1
+091d:  e0000000  literal (continuation)
+091e:  62dc0001  zext x22, x28, width 2
+091f:  dec100a2  export_write 162, x22 : width 2
+0920:  e0000000  literal (continuation)
+0921:  d2c10002  state_read x22, 2 <@uart.ones_ctr> : width 2
+0922:  e0000000  literal (continuation)
+0923:  df8000a3  export_write 163, x28 : width 1
+0924:  e0000000  literal (continuation)
+0925:  db8100a2  import_read x28, 162 : width 2
+0926:  e0000000  literal (continuation)
+0927:  dee000a4  export_write 164, x23 : width 1
+0928:  e0000000  literal (continuation)
+0929:  0ef6e000  add x23, x22, x28
+092a:  dac000a1  import_read x22, 161 : width 1
+092b:  e0000000  literal (continuation)
+092c:  dc8000a5  export_write 165, x4 : width 1
+092d:  e0000000  literal (continuation)
+092e:  64960001  sext x4, x22, width 2
+092f:  dd0000a6  export_write 166, x8 : width 1
+0930:  e0000000  literal (continuation)
+0931:  2d040000  not x8, x4
+0932:  dd8400a7  export_write 167, x12 : width 5
+0933:  e0000000  literal (continuation)
+0934:  258d4000  and x12, x13, x8
+0935:  25172000  and x8, x23, x4
+0936:  2b8c4000  or x28, x12, x8
+0937:  2c9f0000  not x4, x31
+0938:  d90000a4  import_read x8, 164 : width 1
+0939:  e0000000  literal (continuation)
+093a:  25882000  and x12, x8, x4
+093b:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+093c:  e0000000  literal (continuation)
+093d:  6104001f  zext x8, x4, width 32
+093e:  cc9f000a  li x4, 10 : width 32
+093f:  e0000000  literal (continuation)
+0940:  45a82000  eq x13, x8, x4
+0941:  248c6800  and x4, x12, x13
+0942:  cd000001  li x8, 1 : width 1
+0943:  e0000000  literal (continuation)
+0944:  66e40000  sext x23, x4, width 1
+0945:  2ff70000  not x31, x23
+0946:  dda000a8  export_write 168, x13 : width 1
+0947:  e0000000  literal (continuation)
+0948:  25bef800  and x13, x30, x31
+0949:  27e8b800  and x31, x8, x23
+094a:  2acdf800  or x22, x13, x31
+094b:  d88000a8  import_read x4, 168 : width 1
+094c:  e0000000  literal (continuation)
+094d:  2d040000  not x8, x4
+094e:  248c4000  and x4, x12, x8
+094f:  d1040006  state_read x8, 6 <@uart.samp_ctr> : width 5
+0950:  e0000000  literal (continuation)
+0951:  6188001f  zext x12, x8, width 32
+0952:  cd1f0010  li x8, 16 : width 32
+0953:  e0000000  literal (continuation)
+0954:  45ac4000  eq x13, x12, x8
+0955:  25046800  and x8, x4, x13
+0956:  cc830007  li x4, 7 : width 4
+0957:  e0000000  literal (continuation)
+0958:  65a80003  sext x13, x8, width 4
+0959:  2eed0000  not x23, x13
+095a:  27d2b800  and x30, x18, x23
+095b:  26e46800  and x23, x4, x13
+095c:  299eb800  or x12, x30, x23
+095d:  d88400a7  import_read x4, 167 : width 5
+095e:  e0000000  literal (continuation)
+095f:  cda40001  li x13, 1 : width 5
+0960:  e0000000  literal (continuation)
+0961:  66e80004  sext x23, x8, width 5
+0962:  2fd70000  not x30, x23
+0963:  27e4f000  and x31, x4, x30
+0964:  27cdb800  and x30, x13, x23
+0965:  2a5ff000  or x18, x31, x30
+0966:  cc810000  li x4, 0 : width 2
+0967:  e0000000  literal (continuation)
+0968:  66e80001  sext x23, x8, width 2
+0969:  2fd70000  not x30, x23
+096a:  27fcf000  and x31, x28, x30
+096b:  27c4b800  and x30, x4, x23
+096c:  29bff000  or x13, x31, x30
+096d:  cc830007  li x4, 7 : width 4
+096e:  e0000000  literal (continuation)
+096f:  45032000  eq x8, x3, x4
+0970:  cc800000  li x4, 0 : width 1
+0971:  e0000000  literal (continuation)
+0972:  2ae44000  or x23, x4, x8
+0973:  d88000a6  import_read x4, 166 : width 1
+0974:  e0000000  literal (continuation)
+0975:  2904b800  or x8, x4, x23
+0976:  d88000a5  import_read x4, 165 : width 1
+0977:  e0000000  literal (continuation)
+0978:  2784b800  and x28, x4, x23
+0979:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+097a:  e0000000  literal (continuation)
+097b:  63d7001f  zext x30, x23, width 32
+097c:  ceff0007  li x23, 7 : width 32
+097d:  e0000000  literal (continuation)
+097e:  47feb800  eq x31, x30, x23
+097f:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0980:  e0000000  literal (continuation)
+0981:  63d7001f  zext x30, x23, width 32
+0982:  ceff0008  li x23, 8 : width 32
+0983:  e0000000  literal (continuation)
+0984:  dfe000a9  export_write 169, x31 : width 1
+0985:  e0000000  literal (continuation)
+0986:  47feb800  eq x31, x30, x23
+0987:  dae000a9  import_read x23, 169 : width 1
+0988:  e0000000  literal (continuation)
+0989:  2bd7f800  or x30, x23, x31
+098a:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+098b:  e0000000  literal (continuation)
+098c:  63f7001f  zext x31, x23, width 32
+098d:  ceff0009  li x23, 9 : width 32
+098e:  e0000000  literal (continuation)
+098f:  dfc000aa  export_write 170, x30 : width 1
+0990:  e0000000  literal (continuation)
+0991:  47dfb800  eq x30, x31, x23
+0992:  dae000aa  import_read x23, 170 : width 1
+0993:  e0000000  literal (continuation)
+0994:  2bf7f000  or x31, x23, x30
+0995:  26fcf800  and x23, x28, x31
+0996:  dbc000a3  import_read x30, 163 : width 1
+0997:  e0000000  literal (continuation)
+0998:  dee000ab  export_write 171, x23 : width 1
+0999:  e0000000  literal (continuation)
+099a:  62fe0001  zext x23, x30, width 2
+099b:  dee100ac  export_write 172, x23 : width 2
+099c:  e0000000  literal (continuation)
+099d:  d2e10002  state_read x23, 2 <@uart.ones_ctr> : width 2
+099e:  e0000000  literal (continuation)
+099f:  dfc000ad  export_write 173, x30 : width 1
+09a0:  e0000000  literal (continuation)
+09a1:  dbc100ac  import_read x30, 172 : width 2
+09a2:  e0000000  literal (continuation)
+09a3:  dc8000ae  export_write 174, x4 : width 1
+09a4:  e0000000  literal (continuation)
+09a5:  0c97f000  add x4, x23, x30
+09a6:  dae000ab  import_read x23, 171 : width 1
+09a7:  e0000000  literal (continuation)
+09a8:  dfe000af  export_write 175, x31 : width 1
+09a9:  e0000000  literal (continuation)
+09aa:  67f70001  sext x31, x23, width 2
+09ab:  dd8300b0  export_write 176, x12 : width 4
+09ac:  e0000000  literal (continuation)
+09ad:  2d9f0000  not x12, x31
+09ae:  dec000b1  export_write 177, x22 : width 1
+09af:  e0000000  literal (continuation)
+09b0:  26cd6000  and x22, x13, x12
+09b1:  2584f800  and x12, x4, x31
+09b2:  2bd66000  or x30, x22, x12
+09b3:  d88000af  import_read x4, 175 : width 1
+09b4:  e0000000  literal (continuation)
+09b5:  2d840000  not x12, x4
+09b6:  249c6000  and x4, x28, x12
+09b7:  d1840006  state_read x12, 6 <@uart.samp_ctr> : width 5
+09b8:  e0000000  literal (continuation)
+09b9:  61ac001f  zext x13, x12, width 32
+09ba:  cd9f000a  li x12, 10 : width 32
+09bb:  e0000000  literal (continuation)
+09bc:  46cd6000  eq x22, x13, x12
+09bd:  2584b000  and x12, x4, x22
+09be:  d9a000b1  import_read x13, 177 : width 1
+09bf:  e0000000  literal (continuation)
+09c0:  cee00001  li x23, 1 : width 1
+09c1:  e0000000  literal (continuation)
+09c2:  67ec0000  sext x31, x12, width 1
+09c3:  dec000b2  export_write 178, x22 : width 1
+09c4:  e0000000  literal (continuation)
+09c5:  2edf0000  not x22, x31
+09c6:  dc8000b3  export_write 179, x4 : width 1
+09c7:  e0000000  literal (continuation)
+09c8:  248db000  and x4, x13, x22
+09c9:  26d7f800  and x22, x23, x31
+09ca:  2b84b000  or x28, x4, x22
+09cb:  d88000b2  import_read x4, 178 : width 1
+09cc:  e0000000  literal (continuation)
+09cd:  2d840000  not x12, x4
+09ce:  d88000b3  import_read x4, 179 : width 1
+09cf:  e0000000  literal (continuation)
+09d0:  25a46000  and x13, x4, x12
+09d1:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+09d2:  e0000000  literal (continuation)
+09d3:  6184001f  zext x12, x4, width 32
+09d4:  cc9f0010  li x4, 16 : width 32
+09d5:  e0000000  literal (continuation)
+09d6:  46cc2000  eq x22, x12, x4
+09d7:  248db000  and x4, x13, x22
+09d8:  d98300b0  import_read x12, 176 : width 4
+09d9:  e0000000  literal (continuation)
+09da:  cda30008  li x13, 8 : width 4
+09db:  e0000000  literal (continuation)
+09dc:  66e40003  sext x23, x4, width 4
+09dd:  2ff70000  not x31, x23
+09de:  df8000b4  export_write 180, x28 : width 1
+09df:  e0000000  literal (continuation)
+09e0:  278cf800  and x28, x12, x31
+09e1:  27edb800  and x31, x13, x23
+09e2:  2adcf800  or x22, x28, x31
+09e3:  cd840001  li x12, 1 : width 5
+09e4:  e0000000  literal (continuation)
+09e5:  66e40004  sext x23, x4, width 5
+09e6:  2f970000  not x28, x23
+09e7:  27f2e000  and x31, x18, x28
+09e8:  278cb800  and x28, x12, x23
+09e9:  29bfe000  or x13, x31, x28
+09ea:  cd810000  li x12, 0 : width 2
+09eb:  e0000000  literal (continuation)
+09ec:  66e40001  sext x23, x4, width 2
+09ed:  2f970000  not x28, x23
+09ee:  27fee000  and x31, x30, x28
+09ef:  278cb800  and x28, x12, x23
+09f0:  2a5fe000  or x18, x31, x28
+09f1:  cc830008  li x4, 8 : width 4
+09f2:  e0000000  literal (continuation)
+09f3:  45832000  eq x12, x3, x4
+09f4:  cc800000  li x4, 0 : width 1
+09f5:  e0000000  literal (continuation)
+09f6:  2ae46000  or x23, x4, x12
+09f7:  2888b800  or x4, x8, x23
+09f8:  d90000ae  import_read x8, 174 : width 1
+09f9:  e0000000  literal (continuation)
+09fa:  2588b800  and x12, x8, x23
+09fb:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+09fc:  e0000000  literal (continuation)
+09fd:  6397001f  zext x28, x23, width 32
+09fe:  ceff0007  li x23, 7 : width 32
+09ff:  e0000000  literal (continuation)
+0a00:  47dcb800  eq x30, x28, x23
+0a01:  d2e40006  state_read x23, 6 <@uart.samp_ctr> : width 5
+0a02:  e0000000  literal (continuation)
+0a03:  6397001f  zext x28, x23, width 32
+0a04:  ceff0008  li x23, 8 : width 32
+0a05:  e0000000  literal (continuation)
+0a06:  47fcb800  eq x31, x28, x23
+0a07:  2afef800  or x23, x30, x31
+0a08:  d3840006  state_read x28, 6 <@uart.samp_ctr> : width 5
+0a09:  e0000000  literal (continuation)
+0a0a:  63dc001f  zext x30, x28, width 32
+0a0b:  cf9f0009  li x28, 9 : width 32
+0a0c:  e0000000  literal (continuation)
+0a0d:  47fee000  eq x31, x30, x28
+0a0e:  2b97f800  or x28, x23, x31
+0a0f:  26ece000  and x23, x12, x28
+0a10:  dbc000ad  import_read x30, 173 : width 1
+0a11:  e0000000  literal (continuation)
+0a12:  63fe0001  zext x31, x30, width 2
+0a13:  dfc000b5  export_write 181, x30 : width 1
+0a14:  e0000000  literal (continuation)
+0a15:  d3c10002  state_read x30, 2 <@uart.ones_ctr> : width 2
+0a16:  e0000000  literal (continuation)
+0a17:  dee000b6  export_write 182, x23 : width 1
+0a18:  e0000000  literal (continuation)
+0a19:  0efef800  add x23, x30, x31
+0a1a:  dbc000b6  import_read x30, 182 : width 1
+0a1b:  e0000000  literal (continuation)
+0a1c:  df8000b7  export_write 183, x28 : width 1
+0a1d:  e0000000  literal (continuation)
+0a1e:  679e0001  sext x28, x30, width 2
+0a1f:  dd8000b8  export_write 184, x12 : width 1
+0a20:  e0000000  literal (continuation)
+0a21:  2d9c0000  not x12, x28
+0a22:  dc8000b9  export_write 185, x4 : width 1
+0a23:  e0000000  literal (continuation)
+0a24:  24926000  and x4, x18, x12
+0a25:  2597e000  and x12, x23, x28
+0a26:  2be46000  or x31, x4, x12
+0a27:  d88000b7  import_read x4, 183 : width 1
+0a28:  e0000000  literal (continuation)
+0a29:  2d840000  not x12, x4
+0a2a:  d88000b8  import_read x4, 184 : width 1
+0a2b:  e0000000  literal (continuation)
+0a2c:  26446000  and x18, x4, x12
+0a2d:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0a2e:  e0000000  literal (continuation)
+0a2f:  6184001f  zext x12, x4, width 32
+0a30:  cc9f000a  li x4, 10 : width 32
+0a31:  e0000000  literal (continuation)
+0a32:  46ec2000  eq x23, x12, x4
+0a33:  2492b800  and x4, x18, x23
+0a34:  d98000b4  import_read x12, 180 : width 1
+0a35:  e0000000  literal (continuation)
+0a36:  cf800001  li x28, 1 : width 1
+0a37:  e0000000  literal (continuation)
+0a38:  de4000ba  export_write 186, x18 : width 1
+0a39:  e0000000  literal (continuation)
+0a3a:  66440000  sext x18, x4, width 1
+0a3b:  dfe100bb  export_write 187, x31 : width 2
+0a3c:  e0000000  literal (continuation)
+0a3d:  2ff20000  not x31, x18
+0a3e:  dd0000bc  export_write 188, x8 : width 1
+0a3f:  e0000000  literal (continuation)
+0a40:  250cf800  and x8, x12, x31
+0a41:  27fc9000  and x31, x28, x18
+0a42:  2bc8f800  or x30, x8, x31
+0a43:  2c970000  not x4, x23
+0a44:  d90000ba  import_read x8, 186 : width 1
+0a45:  e0000000  literal (continuation)
+0a46:  25882000  and x12, x8, x4
+0a47:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0a48:  e0000000  literal (continuation)
+0a49:  6104001f  zext x8, x4, width 32
+0a4a:  cc9f0010  li x4, 16 : width 32
+0a4b:  e0000000  literal (continuation)
+0a4c:  46482000  eq x18, x8, x4
+0a4d:  248c9000  and x4, x12, x18
+0a4e:  cd030009  li x8, 9 : width 4
+0a4f:  e0000000  literal (continuation)
+0a50:  66440003  sext x18, x4, width 4
+0a51:  2ef20000  not x23, x18
+0a52:  2796b800  and x28, x22, x23
+0a53:  26e89000  and x23, x8, x18
+0a54:  299cb800  or x12, x28, x23
+0a55:  cd040001  li x8, 1 : width 5
+0a56:  e0000000  literal (continuation)
+0a57:  66c40004  sext x22, x4, width 5
+0a58:  2ef60000  not x23, x22
+0a59:  278db800  and x28, x13, x23
+0a5a:  26e8b000  and x23, x8, x22
+0a5b:  2a5cb800  or x18, x28, x23
+0a5c:  d90100bb  import_read x8, 187 : width 2
+0a5d:  e0000000  literal (continuation)
+0a5e:  cda10000  li x13, 0 : width 2
+0a5f:  e0000000  literal (continuation)
+0a60:  66e40001  sext x23, x4, width 2
+0a61:  2f970000  not x28, x23
+0a62:  27e8e000  and x31, x8, x28
+0a63:  278db800  and x28, x13, x23
+0a64:  2adfe000  or x22, x31, x28
+0a65:  cc830009  li x4, 9 : width 4
+0a66:  e0000000  literal (continuation)
+0a67:  45032000  eq x8, x3, x4
+0a68:  cc800000  li x4, 0 : width 1
+0a69:  e0000000  literal (continuation)
+0a6a:  29a44000  or x13, x4, x8
+0a6b:  d88000b9  import_read x4, 185 : width 1
+0a6c:  e0000000  literal (continuation)
+0a6d:  29046800  or x8, x4, x13
+0a6e:  d88000bc  import_read x4, 188 : width 1
+0a6f:  e0000000  literal (continuation)
+0a70:  26e46800  and x23, x4, x13
+0a71:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0a72:  e0000000  literal (continuation)
+0a73:  638d001f  zext x28, x13, width 32
+0a74:  cdbf0007  li x13, 7 : width 32
+0a75:  e0000000  literal (continuation)
+0a76:  47fc6800  eq x31, x28, x13
+0a77:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0a78:  e0000000  literal (continuation)
+0a79:  638d001f  zext x28, x13, width 32
+0a7a:  cdbf0008  li x13, 8 : width 32
+0a7b:  e0000000  literal (continuation)
+0a7c:  dfe000bd  export_write 189, x31 : width 1
+0a7d:  e0000000  literal (continuation)
+0a7e:  47fc6800  eq x31, x28, x13
+0a7f:  d9a000bd  import_read x13, 189 : width 1
+0a80:  e0000000  literal (continuation)
+0a81:  2b8df800  or x28, x13, x31
+0a82:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0a83:  e0000000  literal (continuation)
+0a84:  63ed001f  zext x31, x13, width 32
+0a85:  cdbf0009  li x13, 9 : width 32
+0a86:  e0000000  literal (continuation)
+0a87:  df8000be  export_write 190, x28 : width 1
+0a88:  e0000000  literal (continuation)
+0a89:  479f6800  eq x28, x31, x13
+0a8a:  d9a000be  import_read x13, 190 : width 1
+0a8b:  e0000000  literal (continuation)
+0a8c:  2bede000  or x31, x13, x28
+0a8d:  25b7f800  and x13, x23, x31
+0a8e:  db8000b5  import_read x28, 181 : width 1
+0a8f:  e0000000  literal (continuation)
+0a90:  dda000bf  export_write 191, x13 : width 1
+0a91:  e0000000  literal (continuation)
+0a92:  61bc0001  zext x13, x28, width 2
+0a93:  dda100c0  export_write 192, x13 : width 2
+0a94:  e0000000  literal (continuation)
+0a95:  d1a10002  state_read x13, 2 <@uart.ones_ctr> : width 2
+0a96:  e0000000  literal (continuation)
+0a97:  dfe000c1  export_write 193, x31 : width 1
+0a98:  e0000000  literal (continuation)
+0a99:  dbe100c0  import_read x31, 192 : width 2
+0a9a:  e0000000  literal (continuation)
+0a9b:  dee000c2  export_write 194, x23 : width 1
+0a9c:  e0000000  literal (continuation)
+0a9d:  0eedf800  add x23, x13, x31
+0a9e:  d9a000bf  import_read x13, 191 : width 1
+0a9f:  e0000000  literal (continuation)
+0aa0:  dc8000c3  export_write 195, x4 : width 1
+0aa1:  e0000000  literal (continuation)
+0aa2:  648d0001  sext x4, x13, width 2
+0aa3:  dd0000c4  export_write 196, x8 : width 1
+0aa4:  e0000000  literal (continuation)
+0aa5:  2d040000  not x8, x4
+0aa6:  de4400c5  export_write 197, x18 : width 5
+0aa7:  e0000000  literal (continuation)
+0aa8:  26564000  and x18, x22, x8
+0aa9:  25172000  and x8, x23, x4
+0aaa:  2bf24000  or x31, x18, x8
+0aab:  d88000c1  import_read x4, 193 : width 1
+0aac:  e0000000  literal (continuation)
+0aad:  2d040000  not x8, x4
+0aae:  d88000c2  import_read x4, 194 : width 1
+0aaf:  e0000000  literal (continuation)
+0ab0:  25a44000  and x13, x4, x8
+0ab1:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0ab2:  e0000000  literal (continuation)
+0ab3:  6104001f  zext x8, x4, width 32
+0ab4:  cc9f000a  li x4, 10 : width 32
+0ab5:  e0000000  literal (continuation)
+0ab6:  46482000  eq x18, x8, x4
+0ab7:  248d9000  and x4, x13, x18
+0ab8:  cd000001  li x8, 1 : width 1
+0ab9:  e0000000  literal (continuation)
+0aba:  66e40000  sext x23, x4, width 1
+0abb:  de4000c6  export_write 198, x18 : width 1
+0abc:  e0000000  literal (continuation)
+0abd:  2e570000  not x18, x23
+0abe:  dda000c7  export_write 199, x13 : width 1
+0abf:  e0000000  literal (continuation)
+0ac0:  25be9000  and x13, x30, x18
+0ac1:  2648b800  and x18, x8, x23
+0ac2:  2acd9000  or x22, x13, x18
+0ac3:  d88000c6  import_read x4, 198 : width 1
+0ac4:  e0000000  literal (continuation)
+0ac5:  2d040000  not x8, x4
+0ac6:  d88000c7  import_read x4, 199 : width 1
+0ac7:  e0000000  literal (continuation)
+0ac8:  25a44000  and x13, x4, x8
+0ac9:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0aca:  e0000000  literal (continuation)
+0acb:  6104001f  zext x8, x4, width 32
+0acc:  cc9f0010  li x4, 16 : width 32
+0acd:  e0000000  literal (continuation)
+0ace:  46482000  eq x18, x8, x4
+0acf:  248d9000  and x4, x13, x18
+0ad0:  cd03000b  li x8, 11 : width 4
+0ad1:  e0000000  literal (continuation)
+0ad2:  66440003  sext x18, x4, width 4
+0ad3:  2ef20000  not x23, x18
+0ad4:  27ccb800  and x30, x12, x23
+0ad5:  26e89000  and x23, x8, x18
+0ad6:  29beb800  or x13, x30, x23
+0ad7:  d90400c5  import_read x8, 197 : width 5
+0ad8:  e0000000  literal (continuation)
+0ad9:  cd840001  li x12, 1 : width 5
+0ada:  e0000000  literal (continuation)
+0adb:  66e40004  sext x23, x4, width 5
+0adc:  2fd70000  not x30, x23
+0add:  dda300c8  export_write 200, x13 : width 4
+0ade:  e0000000  literal (continuation)
+0adf:  25a8f000  and x13, x8, x30
+0ae0:  27ccb800  and x30, x12, x23
+0ae1:  2a4df000  or x18, x13, x30
+0ae2:  cd010000  li x8, 0 : width 2
+0ae3:  e0000000  literal (continuation)
+0ae4:  65a40001  sext x13, x4, width 2
+0ae5:  2eed0000  not x23, x13
+0ae6:  27dfb800  and x30, x31, x23
+0ae7:  26e86800  and x23, x8, x13
+0ae8:  299eb800  or x12, x30, x23
+0ae9:  cc83000a  li x4, 10 : width 4
+0aea:  e0000000  literal (continuation)
+0aeb:  45032000  eq x8, x3, x4
+0aec:  cc800000  li x4, 0 : width 1
+0aed:  e0000000  literal (continuation)
+0aee:  29a44000  or x13, x4, x8
+0aef:  d88000c4  import_read x4, 196 : width 1
+0af0:  e0000000  literal (continuation)
+0af1:  29046800  or x8, x4, x13
+0af2:  d88000c3  import_read x4, 195 : width 1
+0af3:  e0000000  literal (continuation)
+0af4:  26e46800  and x23, x4, x13
+0af5:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0af6:  e0000000  literal (continuation)
+0af7:  63cd001f  zext x30, x13, width 32
+0af8:  cdbf0007  li x13, 7 : width 32
+0af9:  e0000000  literal (continuation)
+0afa:  47fe6800  eq x31, x30, x13
+0afb:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0afc:  e0000000  literal (continuation)
+0afd:  63cd001f  zext x30, x13, width 32
+0afe:  cdbf0008  li x13, 8 : width 32
+0aff:  e0000000  literal (continuation)
+0b00:  dfe000c9  export_write 201, x31 : width 1
+0b01:  e0000000  literal (continuation)
+0b02:  47fe6800  eq x31, x30, x13
+0b03:  d9a000c9  import_read x13, 201 : width 1
+0b04:  e0000000  literal (continuation)
+0b05:  2bcdf800  or x30, x13, x31
+0b06:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0b07:  e0000000  literal (continuation)
+0b08:  63ed001f  zext x31, x13, width 32
+0b09:  cdbf0009  li x13, 9 : width 32
+0b0a:  e0000000  literal (continuation)
+0b0b:  dfc000ca  export_write 202, x30 : width 1
+0b0c:  e0000000  literal (continuation)
+0b0d:  47df6800  eq x30, x31, x13
+0b0e:  d9a000ca  import_read x13, 202 : width 1
+0b0f:  e0000000  literal (continuation)
+0b10:  2bedf000  or x31, x13, x30
+0b11:  25b7f800  and x13, x23, x31
+0b12:  63dc0001  zext x30, x28, width 2
+0b13:  dfc100cb  export_write 203, x30 : width 2
+0b14:  e0000000  literal (continuation)
+0b15:  d3c10002  state_read x30, 2 <@uart.ones_ctr> : width 2
+0b16:  e0000000  literal (continuation)
+0b17:  dfe000cc  export_write 204, x31 : width 1
+0b18:  e0000000  literal (continuation)
+0b19:  dbe100cb  import_read x31, 203 : width 2
+0b1a:  e0000000  literal (continuation)
+0b1b:  dc8000cd  export_write 205, x4 : width 1
+0b1c:  e0000000  literal (continuation)
+0b1d:  0c9ef800  add x4, x30, x31
+0b1e:  67ed0001  sext x31, x13, width 2
+0b1f:  dd0000ce  export_write 206, x8 : width 1
+0b20:  e0000000  literal (continuation)
+0b21:  2d1f0000  not x8, x31
+0b22:  dee000cf  export_write 207, x23 : width 1
+0b23:  e0000000  literal (continuation)
+0b24:  26ec4000  and x23, x12, x8
+0b25:  2504f800  and x8, x4, x31
+0b26:  2bd74000  or x30, x23, x8
+0b27:  d88000cc  import_read x4, 204 : width 1
+0b28:  e0000000  literal (continuation)
+0b29:  2d040000  not x8, x4
+0b2a:  d88000cf  import_read x4, 207 : width 1
+0b2b:  e0000000  literal (continuation)
+0b2c:  25844000  and x12, x4, x8
+0b2d:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0b2e:  e0000000  literal (continuation)
+0b2f:  6104001f  zext x8, x4, width 32
+0b30:  cc9f000a  li x4, 10 : width 32
+0b31:  e0000000  literal (continuation)
+0b32:  45a82000  eq x13, x8, x4
+0b33:  248c6800  and x4, x12, x13
+0b34:  2c8d0000  not x4, x13
+0b35:  250c2000  and x8, x12, x4
+0b36:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0b37:  e0000000  literal (continuation)
+0b38:  6184001f  zext x12, x4, width 32
+0b39:  cc9f0010  li x4, 16 : width 32
+0b3a:  e0000000  literal (continuation)
+0b3b:  45ac2000  eq x13, x12, x4
+0b3c:  24886800  and x4, x8, x13
+0b3d:  d90300c8  import_read x8, 200 : width 4
+0b3e:  e0000000  literal (continuation)
+0b3f:  cd83000b  li x12, 11 : width 4
+0b40:  e0000000  literal (continuation)
+0b41:  66e40003  sext x23, x4, width 4
+0b42:  2ff70000  not x31, x23
+0b43:  dfc100d0  export_write 208, x30 : width 2
+0b44:  e0000000  literal (continuation)
+0b45:  27c8f800  and x30, x8, x31
+0b46:  27ecb800  and x31, x12, x23
+0b47:  29bef800  or x13, x30, x31
+0b48:  cd040001  li x8, 1 : width 5
+0b49:  e0000000  literal (continuation)
+0b4a:  66e40004  sext x23, x4, width 5
+0b4b:  2fd70000  not x30, x23
+0b4c:  27f2f000  and x31, x18, x30
+0b4d:  27c8b800  and x30, x8, x23
+0b4e:  299ff000  or x12, x31, x30
+0b4f:  d90100d0  import_read x8, 208 : width 2
+0b50:  e0000000  literal (continuation)
+0b51:  ce410000  li x18, 0 : width 2
+0b52:  e0000000  literal (continuation)
+0b53:  67c40001  sext x30, x4, width 2
+0b54:  2ffe0000  not x31, x30
+0b55:  dd8400d1  export_write 209, x12 : width 5
+0b56:  e0000000  literal (continuation)
+0b57:  2588f800  and x12, x8, x31
+0b58:  27f2f000  and x31, x18, x30
+0b59:  2aecf800  or x23, x12, x31
+0b5a:  cc83000b  li x4, 11 : width 4
+0b5b:  e0000000  literal (continuation)
+0b5c:  45032000  eq x8, x3, x4
+0b5d:  cc800000  li x4, 0 : width 1
+0b5e:  e0000000  literal (continuation)
+0b5f:  29844000  or x12, x4, x8
+0b60:  d88000ce  import_read x4, 206 : width 1
+0b61:  e0000000  literal (continuation)
+0b62:  29046000  or x8, x4, x12
+0b63:  d88000cd  import_read x4, 205 : width 1
+0b64:  e0000000  literal (continuation)
+0b65:  26446000  and x18, x4, x12
+0b66:  d1840006  state_read x12, 6 <@uart.samp_ctr> : width 5
+0b67:  e0000000  literal (continuation)
+0b68:  63cc001f  zext x30, x12, width 32
+0b69:  cd9f0007  li x12, 7 : width 32
+0b6a:  e0000000  literal (continuation)
+0b6b:  47fe6000  eq x31, x30, x12
+0b6c:  d1840006  state_read x12, 6 <@uart.samp_ctr> : width 5
+0b6d:  e0000000  literal (continuation)
+0b6e:  63cc001f  zext x30, x12, width 32
+0b6f:  cd9f0008  li x12, 8 : width 32
+0b70:  e0000000  literal (continuation)
+0b71:  dc8000d2  export_write 210, x4 : width 1
+0b72:  e0000000  literal (continuation)
+0b73:  449e6000  eq x4, x30, x12
+0b74:  299f2000  or x12, x31, x4
+0b75:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0b76:  e0000000  literal (continuation)
+0b77:  63c4001f  zext x30, x4, width 32
+0b78:  cc9f0009  li x4, 9 : width 32
+0b79:  e0000000  literal (continuation)
+0b7a:  47fe2000  eq x31, x30, x4
+0b7b:  288cf800  or x4, x12, x31
+0b7c:  25922000  and x12, x18, x4
+0b7d:  63dc0001  zext x30, x28, width 2
+0b7e:  d3e10002  state_read x31, 2 <@uart.ones_ctr> : width 2
+0b7f:  e0000000  literal (continuation)
+0b80:  dd8000d3  export_write 211, x12 : width 1
+0b81:  e0000000  literal (continuation)
+0b82:  0d9ff000  add x12, x31, x30
+0b83:  dbc000d3  import_read x30, 211 : width 1
+0b84:  e0000000  literal (continuation)
+0b85:  dda300d4  export_write 212, x13 : width 4
+0b86:  e0000000  literal (continuation)
+0b87:  65be0001  sext x13, x30, width 2
+0b88:  dec000d5  export_write 213, x22 : width 1
+0b89:  e0000000  literal (continuation)
+0b8a:  2ecd0000  not x22, x13
+0b8b:  df8000d6  export_write 214, x28 : width 1
+0b8c:  e0000000  literal (continuation)
+0b8d:  2797b000  and x28, x23, x22
+0b8e:  26cc6800  and x22, x12, x13
+0b8f:  2bfcb000  or x31, x28, x22
+0b90:  2d840000  not x12, x4
+0b91:  24926000  and x4, x18, x12
+0b92:  d1840006  state_read x12, 6 <@uart.samp_ctr> : width 5
+0b93:  e0000000  literal (continuation)
+0b94:  61ac001f  zext x13, x12, width 32
+0b95:  cd9f000a  li x12, 10 : width 32
+0b96:  e0000000  literal (continuation)
+0b97:  464d6000  eq x18, x13, x12
+0b98:  25849000  and x12, x4, x18
+0b99:  d1a10002  state_read x13, 2 <@uart.ones_ctr> : width 2
+0b9a:  e0000000  literal (continuation)
+0b9b:  62cd001f  zext x22, x13, width 32
+0b9c:  cdbf0002  li x13, 2 : width 32
+0b9d:  e0000000  literal (continuation)
+0b9e:  4ef66800  slt x23, x22, x13
+0b9f:  cda00001  li x13, 1 : width 1
+0ba0:  e0000000  literal (continuation)
+0ba1:  cec00000  li x22, 0 : width 1
+0ba2:  e0000000  literal (continuation)
+0ba3:  67d70000  sext x30, x23, width 1
+0ba4:  dd8000d7  export_write 215, x12 : width 1
+0ba5:  e0000000  literal (continuation)
+0ba6:  2d9e0000  not x12, x30
+0ba7:  de4000d8  export_write 216, x18 : width 1
+0ba8:  e0000000  literal (continuation)
+0ba9:  264d6000  and x18, x13, x12
+0baa:  2596f000  and x12, x22, x30
+0bab:  2b926000  or x28, x18, x12
+0bac:  cd9f0000  li x12, 0 : width 32
+0bad:  e0000000  literal (continuation)
+0bae:  cda00000  li x13, 0 : width 1
+0baf:  e0000000  literal (continuation)
+0bb0:  66cc0000  sext x22, x12, width 1
+0bb1:  2ef60000  not x23, x22
+0bb2:  27dcb800  and x30, x28, x23
+0bb3:  26edb000  and x23, x13, x22
+0bb4:  2a5eb800  or x18, x30, x23
+0bb5:  d98000d7  import_read x12, 215 : width 1
+0bb6:  e0000000  literal (continuation)
+0bb7:  d9a0006e  import_read x13, 110 : width 1
+0bb8:  e0000000  literal (continuation)
+0bb9:  66ec0000  sext x23, x12, width 1
+0bba:  2f970000  not x28, x23
+0bbb:  27cde000  and x30, x13, x28
+0bbc:  2792b800  and x28, x18, x23
+0bbd:  2adee000  or x22, x30, x28
+0bbe:  d98000d8  import_read x12, 216 : width 1
+0bbf:  e0000000  literal (continuation)
+0bc0:  2dac0000  not x13, x12
+0bc1:  25846800  and x12, x4, x13
+0bc2:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0bc3:  e0000000  literal (continuation)
+0bc4:  61a4001f  zext x13, x4, width 32
+0bc5:  cc9f0010  li x4, 16 : width 32
+0bc6:  e0000000  literal (continuation)
+0bc7:  464d2000  eq x18, x13, x4
+0bc8:  248c9000  and x4, x12, x18
+0bc9:  d98300d4  import_read x12, 212 : width 4
+0bca:  e0000000  literal (continuation)
+0bcb:  cda30000  li x13, 0 : width 4
+0bcc:  e0000000  literal (continuation)
+0bcd:  66e40003  sext x23, x4, width 4
+0bce:  2f970000  not x28, x23
+0bcf:  27cce000  and x30, x12, x28
+0bd0:  278db800  and x28, x13, x23
+0bd1:  2a5ee000  or x18, x30, x28
+0bd2:  d98400d1  import_read x12, 209 : width 5
+0bd3:  e0000000  literal (continuation)
+0bd4:  cda40001  li x13, 1 : width 5
+0bd5:  e0000000  literal (continuation)
+0bd6:  67840004  sext x28, x4, width 5
+0bd7:  2fdc0000  not x30, x28
+0bd8:  dfe100d9  export_write 217, x31 : width 2
+0bd9:  e0000000  literal (continuation)
+0bda:  27ecf000  and x31, x12, x30
+0bdb:  27cde000  and x30, x13, x28
+0bdc:  2afff000  or x23, x31, x30
+0bdd:  d98100d9  import_read x12, 217 : width 2
+0bde:  e0000000  literal (continuation)
+0bdf:  cda10000  li x13, 0 : width 2
+0be0:  e0000000  literal (continuation)
+0be1:  67c40001  sext x30, x4, width 2
+0be2:  2ffe0000  not x31, x30
+0be3:  dee400da  export_write 218, x23 : width 5
+0be4:  e0000000  literal (continuation)
+0be5:  26ecf800  and x23, x12, x31
+0be6:  27edf000  and x31, x13, x30
+0be7:  2b97f800  or x28, x23, x31
+0be8:  cc83000c  li x4, 12 : width 4
+0be9:  e0000000  literal (continuation)
+0bea:  45832000  eq x12, x3, x4
+0beb:  cc600000  li x3, 0 : width 1
+0bec:  e0000000  literal (continuation)
+0bed:  28836000  or x4, x3, x12
+0bee:  28682000  or x3, x8, x4
+0bef:  d90000d2  import_read x8, 210 : width 1
+0bf0:  e0000000  literal (continuation)
+0bf1:  25882000  and x12, x8, x4
+0bf2:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0bf3:  e0000000  literal (continuation)
+0bf4:  61a4001f  zext x13, x4, width 32
+0bf5:  cc9f0007  li x4, 7 : width 32
+0bf6:  e0000000  literal (continuation)
+0bf7:  46ed2000  eq x23, x13, x4
+0bf8:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0bf9:  e0000000  literal (continuation)
+0bfa:  61a4001f  zext x13, x4, width 32
+0bfb:  cc9f0008  li x4, 8 : width 32
+0bfc:  e0000000  literal (continuation)
+0bfd:  47cd2000  eq x30, x13, x4
+0bfe:  2897f000  or x4, x23, x30
+0bff:  d1a40006  state_read x13, 6 <@uart.samp_ctr> : width 5
+0c00:  e0000000  literal (continuation)
+0c01:  62ed001f  zext x23, x13, width 32
+0c02:  cdbf0009  li x13, 9 : width 32
+0c03:  e0000000  literal (continuation)
+0c04:  47d76800  eq x30, x23, x13
+0c05:  29a4f000  or x13, x4, x30
+0c06:  248c6800  and x4, x12, x13
+0c07:  dae000d6  import_read x23, 214 : width 1
+0c08:  e0000000  literal (continuation)
+0c09:  63d70001  zext x30, x23, width 2
+0c0a:  d2e10002  state_read x23, 2 <@uart.ones_ctr> : width 2
+0c0b:  e0000000  literal (continuation)
+0c0c:  0ff7f000  add x31, x23, x30
+0c0d:  67c40001  sext x30, x4, width 2
+0c0e:  dda000db  export_write 219, x13 : width 1
+0c0f:  e0000000  literal (continuation)
+0c10:  2dbe0000  not x13, x30
+0c11:  dd8000dc  export_write 220, x12 : width 1
+0c12:  e0000000  literal (continuation)
+0c13:  259c6800  and x12, x28, x13
+0c14:  25bff000  and x13, x31, x30
+0c15:  2aec6800  or x23, x12, x13
+0c16:  d88000db  import_read x4, 219 : width 1
+0c17:  e0000000  literal (continuation)
+0c18:  2d840000  not x12, x4
+0c19:  d88000dc  import_read x4, 220 : width 1
+0c1a:  e0000000  literal (continuation)
+0c1b:  25a46000  and x13, x4, x12
+0c1c:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0c1d:  e0000000  literal (continuation)
+0c1e:  6184001f  zext x12, x4, width 32
+0c1f:  cc9f000a  li x4, 10 : width 32
+0c20:  e0000000  literal (continuation)
+0c21:  478c2000  eq x28, x12, x4
+0c22:  248de000  and x4, x13, x28
+0c23:  d1810002  state_read x12, 2 <@uart.ones_ctr> : width 2
+0c24:  e0000000  literal (continuation)
+0c25:  63cc001f  zext x30, x12, width 32
+0c26:  cd9f0002  li x12, 2 : width 32
+0c27:  e0000000  literal (continuation)
+0c28:  4ffe6000  slt x31, x30, x12
+0c29:  cd800001  li x12, 1 : width 1
+0c2a:  e0000000  literal (continuation)
+0c2b:  cfc00000  li x30, 0 : width 1
+0c2c:  e0000000  literal (continuation)
+0c2d:  dc8000dd  export_write 221, x4 : width 1
+0c2e:  e0000000  literal (continuation)
+0c2f:  dda000de  export_write 222, x13 : width 1
+0c30:  e0000000  literal (continuation)
+0c31:  65bf0000  sext x13, x31, width 1
+0c32:  dee100df  export_write 223, x23 : width 2
+0c33:  e0000000  literal (continuation)
+0c34:  2eed0000  not x23, x13
+0c35:  dd0000e0  export_write 224, x8 : width 1
+0c36:  e0000000  literal (continuation)
+0c37:  250cb800  and x8, x12, x23
+0c38:  26fe6800  and x23, x30, x13
+0c39:  2888b800  or x4, x8, x23
+0c3a:  d90000dd  import_read x8, 221 : width 1
+0c3b:  e0000000  literal (continuation)
+0c3c:  65a80000  sext x13, x8, width 1
+0c3d:  2eed0000  not x23, x13
+0c3e:  27d6b800  and x30, x22, x23
+0c3f:  26e46800  and x23, x4, x13
+0c40:  299eb800  or x12, x30, x23
+0c41:  2c9c0000  not x4, x28
+0c42:  d90000de  import_read x8, 222 : width 1
+0c43:  e0000000  literal (continuation)
+0c44:  25a82000  and x13, x8, x4
+0c45:  d0840006  state_read x4, 6 <@uart.samp_ctr> : width 5
+0c46:  e0000000  literal (continuation)
+0c47:  6104001f  zext x8, x4, width 32
+0c48:  cc9f0010  li x4, 16 : width 32
+0c49:  e0000000  literal (continuation)
+0c4a:  46c82000  eq x22, x8, x4
+0c4b:  248db000  and x4, x13, x22
+0c4c:  cd030000  li x8, 0 : width 4
+0c4d:  e0000000  literal (continuation)
+0c4e:  66c40003  sext x22, x4, width 4
+0c4f:  2ef60000  not x23, x22
+0c50:  2792b800  and x28, x18, x23
+0c51:  26e8b000  and x23, x8, x22
+0c52:  29bcb800  or x13, x28, x23
+0c53:  d90400da  import_read x8, 218 : width 5
+0c54:  e0000000  literal (continuation)
+0c55:  ce440001  li x18, 1 : width 5
+0c56:  e0000000  literal (continuation)
+0c57:  66e40004  sext x23, x4, width 5
+0c58:  2f970000  not x28, x23
+0c59:  27c8e000  and x30, x8, x28
+0c5a:  2792b800  and x28, x18, x23
+0c5b:  2adee000  or x22, x30, x28
+0c5c:  d90100df  import_read x8, 223 : width 2
+0c5d:  e0000000  literal (continuation)
+0c5e:  ce410000  li x18, 0 : width 2
+0c5f:  e0000000  literal (continuation)
+0c60:  67840001  sext x28, x4, width 2
+0c61:  2fdc0000  not x30, x28
+0c62:  27e8f000  and x31, x8, x30
+0c63:  27d2e000  and x30, x18, x28
+0c64:  2afff000  or x23, x31, x30
+0c65:  2c830000  not x4, x3
+0c66:  d86000e0  import_read x3, 224 : width 1
+0c67:  e0000000  literal (continuation)
+0c68:  25032000  and x8, x3, x4
+0c69:  d86000d5  import_read x3, 213 : width 1
+0c6a:  e0000000  literal (continuation)
+0c6b:  cc800000  li x4, 0 : width 1
+0c6c:  e0000000  literal (continuation)
+0c6d:  67880000  sext x28, x8, width 1
+0c6e:  2fdc0000  not x30, x28
+0c6f:  27e3f000  and x31, x3, x30
+0c70:  27c4e000  and x30, x4, x28
+0c71:  2a5ff000  or x18, x31, x30
+0c72:  cc600000  li x3, 0 : width 1
+0c73:  e0000000  literal (continuation)
+0c74:  67880000  sext x28, x8, width 1
+0c75:  2fdc0000  not x30, x28
+0c76:  27ecf000  and x31, x12, x30
+0c77:  27c3e000  and x30, x3, x28
+0c78:  289ff000  or x4, x31, x30
+0c79:  d4800000  state_write 0 <@uart.w_p_rx_data_valid>, x4 : width 1
+0c7a:  e0000000  literal (continuation)
+0c7b:  d6400001  state_write 1 <@uart.w_s_rx_data_valid>, x18 : width 1
+0c7c:  e0000000  literal (continuation)
+0c7d:  d6e10002  state_write 2 <@uart.ones_ctr>, x23 : width 2
+0c7e:  e0000000  literal (continuation)
+0c7f:  d5a30003  state_write 3 <@uart.s_rx_state>, x13 : width 4
+0c80:  e0000000  literal (continuation)
+0c81:  d863006f  import_read x3, 111 : width 4
+0c82:  e0000000  literal (continuation)
+0c83:  d4630004  state_write 4 <@uart.s_tx_state>, x3 : width 4
+0c84:  e0000000  literal (continuation)
+0c85:  d4ff0005  state_write 5 <@uart.r_samp_ctr>, x7 : width 32
+0c86:  e0000000  literal (continuation)
+0c87:  d6c40006  state_write 6 <@uart.samp_ctr>, x22 : width 5
+0c88:  e0000000  literal (continuation)
+0c89:  d7400007  state_write 7 <@uart.w_samp_tick>, x26 : width 1
+0c8a:  e0000000  literal (continuation)
+0c8b:  d7200008  state_write 8 <@uart.w_baud_tick>, x25 : width 1
+0c8c:  e0000000  literal (continuation)
+0c8d:  d87f0065  import_read x3, 101 : width 32
+0c8e:  e0000000  literal (continuation)
+0c8f:  d47f0009  state_write 9 <@uart.r_baud_ctr>, x3 : width 32
+0c90:  e0000000  literal (continuation)
+0c91:  d5ff000a  state_write 10 <@uart.r_baud_div>, x15 : width 32
+0c92:  e0000000  literal (continuation)
+0c93:  d87f0059  import_read x3, 89 : width 32
+0c94:  e0000000  literal (continuation)
+0c95:  d47f000b  state_write 11 <@uart.r_baud_div_pend>, x3 : width 32
+0c96:  e0000000  literal (continuation)
+0c97:  24619800  and x3, x1, x19
+0c98:  d8200079  import_read x1, 121 : width 1
+0c99:  e0000000  literal (continuation)
+0c9a:  5c811800  concat x4, x1, x3
+0c9b:  cc210001  li x1, 1 : width 2
+0c9c:  e0000000  literal (continuation)
+0c9d:  44640800  eq x3, x4, x1
+0c9e:  cc200000  li x1, 0 : width 1
+0c9f:  e0000000  literal (continuation)
+0ca0:  28e11800  or x7, x1, x3
+0ca1:  cc200000  li x1, 0 : width 1
+0ca2:  e0000000  literal (continuation)
+0ca3:  28613800  or x3, x1, x7
+0ca4:  d8200043  import_read x1, 67 : width 1
+0ca5:  e0000000  literal (continuation)
+0ca6:  25013800  and x8, x1, x7
+0ca7:  65880000  sext x12, x8, width 1
+0ca8:  2dac0000  not x13, x12
+0ca9:  25eb6800  and x15, x11, x13
+0caa:  25a26000  and x13, x2, x12
+0cab:  28ef6800  or x7, x15, x13
+0cac:  d8410045  import_read x2, 69 : width 2
+0cad:  e0000000  literal (continuation)
+0cae:  65880001  sext x12, x8, width 2
+0caf:  2dac0000  not x13, x12
+0cb0:  25e26800  and x15, x2, x13
+0cb1:  25a56000  and x13, x5, x12
+0cb2:  296f6800  or x11, x15, x13
+0cb3:  cc410002  li x2, 2 : width 2
+0cb4:  e0000000  literal (continuation)
+0cb5:  44a41000  eq x5, x4, x2
+0cb6:  cc400000  li x2, 0 : width 1
+0cb7:  e0000000  literal (continuation)
+0cb8:  29022800  or x8, x2, x5
+0cb9:  28434000  or x2, x3, x8
+0cba:  24614000  and x3, x1, x8
+0cbb:  d8a0004a  import_read x5, 74 : width 1
+0cbc:  e0000000  literal (continuation)
+0cbd:  65830000  sext x12, x3, width 1
+0cbe:  2dac0000  not x13, x12
+0cbf:  25e56800  and x15, x5, x13
+0cc0:  25a96000  and x13, x9, x12
+0cc1:  290f6800  or x8, x15, x13
+0cc2:  65230001  sext x9, x3, width 2
+0cc3:  2d890000  not x12, x9
+0cc4:  25ab6000  and x13, x11, x12
+0cc5:  258a4800  and x12, x10, x9
+0cc6:  28ad6000  or x5, x13, x12
+0cc7:  25238000  and x9, x3, x16
+0cc8:  d147000f  state_read x10, 15 <@uart.tx_buffer.mem_buff[0]> : width 8
+0cc9:  e0000000  literal (continuation)
+0cca:  d967002a  import_read x11, 42 <i_enq_tx_data> : width 8
+0ccb:  e0000000  literal (continuation)
+0ccc:  65a90007  sext x13, x9, width 8
+0ccd:  2ded0000  not x15, x13
+0cce:  260a7800  and x16, x10, x15
+0ccf:  25eb6800  and x15, x11, x13
+0cd0:  29907800  or x12, x16, x15
+0cd1:  25238800  and x9, x3, x17
+0cd2:  d067000e  state_read x3, 14 <@uart.tx_buffer.mem_buff[1]> : width 8
+0cd3:  e0000000  literal (continuation)
+0cd4:  65a90007  sext x13, x9, width 8
+0cd5:  2ded0000  not x15, x13
+0cd6:  26037800  and x16, x3, x15
+0cd7:  25eb6800  and x15, x11, x13
+0cd8:  29507800  or x10, x16, x15
+0cd9:  cc610003  li x3, 3 : width 2
+0cda:  e0000000  literal (continuation)
+0cdb:  45241800  eq x9, x4, x3
+0cdc:  cc600000  li x3, 0 : width 1
+0cdd:  e0000000  literal (continuation)
+0cde:  28834800  or x4, x3, x9
+0cdf:  28622000  or x3, x2, x4
+0ce0:  24412000  and x2, x1, x4
+0ce1:  65220000  sext x9, x2, width 1
+0ce2:  2da90000  not x13, x9
+0ce3:  25e76800  and x15, x7, x13
+0ce4:  25ae4800  and x13, x14, x9
+0ce5:  288f6800  or x4, x15, x13
+0ce6:  d8e0003a  import_read x7, 58 : width 1
+0ce7:  e0000000  literal (continuation)
+0ce8:  65a20000  sext x13, x2, width 1
+0ce9:  2dcd0000  not x14, x13
+0cea:  25e87000  and x15, x8, x14
+0ceb:  25c76800  and x14, x7, x13
+0cec:  292f7000  or x9, x15, x14
+0ced:  24e2a000  and x7, x2, x20
+0cee:  65a70007  sext x13, x7, width 8
+0cef:  2dcd0000  not x14, x13
+0cf0:  25ec7000  and x15, x12, x14
+0cf1:  25cb6800  and x14, x11, x13
+0cf2:  290f7000  or x8, x15, x14
+0cf3:  d8e00036  import_read x7, 54 : width 1
+0cf4:  e0000000  literal (continuation)
+0cf5:  25823800  and x12, x2, x7
+0cf6:  64ec0007  sext x7, x12, width 8
+0cf7:  2da70000  not x13, x7
+0cf8:  25ca6800  and x14, x10, x13
+0cf9:  25ab3800  and x13, x11, x7
+0cfa:  284e6800  or x2, x14, x13
+0cfb:  2ce30000  not x7, x3
+0cfc:  24613800  and x3, x1, x7
+0cfd:  d447000e  state_write 14 <@uart.tx_buffer.mem_buff[1]>, x2 : width 8
+0cfe:  e0000000  literal (continuation)
+0cff:  d507000f  state_write 15 <@uart.tx_buffer.mem_buff[0]>, x8 : width 8
+0d00:  e0000000  literal (continuation)
+0d01:  d4a10010  state_write 16 <@uart.tx_buffer.r_count>, x5 : width 2
+0d02:  e0000000  literal (continuation)
+0d03:  d5200011  state_write 17 <@uart.tx_buffer.r_tail_ptr>, x9 : width 1
+0d04:  e0000000  literal (continuation)
+0d05:  d4800012  state_write 18 <@uart.tx_buffer.r_head_ptr>, x4 : width 1
+0d06:  e0000000  literal (continuation)
+0d07:  d8200033  import_read x1, 51 : width 1
+0d08:  e0000000  literal (continuation)
+0d09:  24419800  and x2, x1, x19
+0d0a:  d8670035  import_read x3, 53 : width 8
+0d0b:  e0000000  literal (continuation)
+0d0c:  64a20007  sext x5, x2, width 8
+0d0d:  2ce50000  not x7, x5
+0d0e:  25033800  and x8, x3, x7
+0d0f:  24e62800  and x7, x6, x5
+0d10:  28883800  or x4, x8, x7
+0d11:  2c530000  not x2, x19
+0d12:  24611000  and x3, x1, x2
+0d13:  d8200044  import_read x1, 68 : width 1
+0d14:  e0000000  literal (continuation)
+0d15:  24430800  and x2, x3, x1
+0d16:  64620007  sext x3, x2, width 8
+0d17:  2ca30000  not x5, x3
+0d18:  24c42800  and x6, x4, x5
+0d19:  24b81800  and x5, x24, x3
+0d1a:  28262800  or x1, x6, x5
+0d1b:  d4270015  state_write 21 <@uart.r_tx_shft_reg.r_shft_reg>, x1 : width 8
+0d1c:  e0000000  literal (continuation)
+0d1d:  d826003d  import_read x1, 61 : width 7
+0d1e:  e0000000  literal (continuation)
+0d1f:  5c5d0800  concat x2, x29, x1
+0d20:  64750007  sext x3, x21, width 8
+0d21:  2c830000  not x4, x3
+0d22:  24bb2000  and x5, x27, x4
+0d23:  24821800  and x4, x2, x3
+0d24:  28252000  or x1, x5, x4
+0d25:  d4270018  state_write 24 <@uart.r_rx_shft_reg.r_shft_reg>, x1 : width 8
+0d26:  e0000000  literal (continuation)
+0d27:  04000000  commit
+0d28:  d0210021  state_read x1, 33 <@uart.rx_buffer.r_count> : width 2
+0d29:  e0000000  literal (continuation)
+0d2a:  dc2100e1  export_write 225 <o_rx_level>, x1 : width 2
+0d2b:  e0000000  literal (continuation)
+0d2c:  d0210010  state_read x1, 16 <@uart.tx_buffer.r_count> : width 2
+0d2d:  e0000000  literal (continuation)
+0d2e:  dc2100e2  export_write 226 <o_tx_level>, x1 : width 2
+0d2f:  e0000000  literal (continuation)
+0d30:  04000000  commit
+0d31:  08000000  yield

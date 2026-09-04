@@ -1,0 +1,19 @@
+Top level design units:
+    delayed_ack_properties
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+define void @"delayed_ack_properties.combinational"() {
+entry:
+  ret void
+}
+
+define void @"delayed_ack_properties.clocked"() {
+entry:
+  ret void
+}
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+

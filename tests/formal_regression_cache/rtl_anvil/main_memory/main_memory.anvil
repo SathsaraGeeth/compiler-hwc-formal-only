@@ -1,0 +1,37 @@
+import "../coherency/protocol.anvil"
+
+proc main_memory(ep : left memory_ch) {
+    reg lines           : logic[1024][512];
+    reg initialized     : logic;
+    reg response        : mem_rsp;
+    reg current_request : mem_req;
+
+    loop {
+        if (*initialized == 1'b0) {
+            generate (i : 0, 1023, 1) {
+                set lines[i] := #flat{502'b0, i}
+            };
+            set initialized := 1'b1
+        } else {
+            
+        let request = recv ep.req >>
+
+        set current_request := request >>
+
+        if *current_request.op == mem_op::mem_write {
+
+            set lines[*current_request.addr[6+:10]] := *current_request.data;
+
+            set response.data := *current_request.data
+
+        } else {
+
+            set response.data := *lines[*current_request.addr[6+:10]]
+
+        } >>
+
+        send ep.rsp(*response)
+        } >> cycle 1
+        
+    }
+}

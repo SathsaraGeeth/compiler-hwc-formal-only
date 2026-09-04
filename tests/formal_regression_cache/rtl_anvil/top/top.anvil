@@ -1,0 +1,85 @@
+import "../common/types.anvil"
+import "../coherency/protocol.anvil"
+import "../cache/cache.anvil"
+import "../coherency/directory.anvil"
+import "../main_memory/main_memory.anvil"
+
+proc cache_system(
+    cpu0 : left cpu_cache_ch,
+    cpu1 : left cpu_cache_ch
+) {
+    reg cpu0_request  : cpu_req;
+    reg cpu1_request  : cpu_req;
+    reg cpu0_response : cpu_rsp;
+    reg cpu1_response : cpu_rsp;
+    reg last_client   : logic;
+    reg cpu0_pending  : logic;
+    reg cpu1_pending  : logic;
+    reg cpu0_active   : logic;
+    reg cpu1_active   : logic;
+    reg cpu0_line     : logic[58];
+    reg cpu1_line     : logic[58];
+
+
+    chan cpu0_cache  -- cpu0_top         : cpu_cache_ch;
+    chan cpu1_cache  -- cpu1_top         : cpu_cache_ch;
+    chan directory0  -- cache0_directory : cache_directory_ch;
+    chan directory1  -- cache1_directory : cache_directory_ch;
+    chan memory_side -- directory_side   : memory_ch;
+
+    spawn cache<0>(cpu0_cache, cache0_directory);
+    spawn cache<1>(cpu1_cache, cache1_directory);
+    spawn directory(directory0, directory1, directory_side);
+    spawn main_memory(memory_side);
+
+    loop {
+        if ready cpu0_top.rsp {
+            let response = recv cpu0_top.rsp >>
+            set cpu0_response := response;
+            set cpu0_active := 1'b0 >>
+            send cpu0.rsp(*cpu0_response)
+        } else if ready cpu1_top.rsp {
+            let response = recv cpu1_top.rsp >>
+            set cpu1_response := response;
+            set cpu1_active := 1'b0 >>
+            send cpu1.rsp(*cpu1_response)
+        } else if ((*cpu0_pending == 1'b1) &&
+                    ((*cpu1_active == 1'b0) || (*cpu0_line != *cpu1_line))) {
+            send cpu0_top.req(*cpu0_request) >>
+            set cpu0_pending := 1'b0;
+            set cpu0_active := 1'b1
+        } else if ((*cpu1_pending == 1'b1) &&
+                    ((*cpu0_active == 1'b0) || (*cpu1_line != *cpu0_line))) {
+            send cpu1_top.req(*cpu1_request) >>
+            set cpu1_pending := 1'b0;
+            set cpu1_active := 1'b1
+        } else if (ready cpu0.req && (*cpu0_active == 1'b0) &&
+                    (*cpu0_pending == 1'b0) &&
+                    ((*last_client == 1'b1) || ((ready cpu1.req) == 1'b0))) {
+            let request = recv cpu0.req >>
+            set cpu0_request := request;
+            set cpu0_line := request.addr[6+:58];
+            set last_client := 1'b0 >>
+            if ((*cpu1_active == 1'b1) && (*cpu1_line == request.addr[6+:58])) {
+                set cpu0_pending := 1'b1
+            } else {
+                send cpu0_top.req(*cpu0_request) >>
+                set cpu0_active := 1'b1
+            }
+        } else if (ready cpu1.req && (*cpu1_active == 1'b0) &&
+                    (*cpu1_pending == 1'b0)) {
+            let request = recv cpu1.req >>
+            set cpu1_request := request;
+            set cpu1_line := request.addr[6+:58];
+            set last_client := 1'b1 >>
+            if ((*cpu0_active == 1'b1) && (*cpu0_line == request.addr[6+:58])) {
+                set cpu1_pending := 1'b1
+            } else {
+                send cpu1_top.req(*cpu1_request) >>
+                set cpu1_active := 1'b1
+            }
+        } else {
+            set last_client := *last_client
+        } >> cycle 1
+    }
+}

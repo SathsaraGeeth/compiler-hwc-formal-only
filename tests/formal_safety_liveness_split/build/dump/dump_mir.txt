@@ -1,0 +1,43 @@
+Top level design units:
+    safety_liveness_split
+
+mir.version 1
+
+machine @split_dut(%clk : 4s<1>, %req : 4s<1>, %ack : 4s<1>, %done : 4s<1>) -> (state : 4s<128>, signature : 4s<128>, phase : 4s<6>) {
+  state @split_dut.phase : 4s<6>
+  state @split_dut.state : 4s<128>
+  state @split_dut.clk_prev : 4s<1>
+^entry:
+  %0 : 4s<128> = state_read @split_dut.state
+  %1 : 4s<1> = state_read @split_dut.clk_prev
+  %2 : 4s<1> = not %1
+  %3 : 4s<1> = and %2, %clk
+  state_write @split_dut.clk_prev, %clk
+  %4 : 4s<128> = state_read @split_dut.state
+  %5 : 4s<128> = state_read @split_dut.state
+  %6 : 4s<127> = slice %5, 0, 127
+  %7 : 4s<128> = state_read @split_dut.state
+  %8 : 4s<1> = slice %7, 127, 1
+  %9 : 4s<128> = state_read @split_dut.state
+  %10 : 4s<1> = slice %9, 95, 1
+  %11 : 4s<1> = xor %8, %10
+  %12 : 4s<128> = state_read @split_dut.state
+  %13 : 4s<1> = slice %12, 62, 1
+  %14 : 4s<1> = xor %11, %13
+  %15 : 4s<128> = state_read @split_dut.state
+  %16 : 4s<1> = slice %15, 0, 1
+  %17 : 4s<1> = xor %14, %16
+  %18 : 4s<128> = concat %6, %17
+  %19 : 4s<128> = state_read @split_dut.state
+  %20 : 4s<128> = mux %3, %19, %18
+  %21 : 4s<6> = state_read @split_dut.phase
+  %22 : 4s<6> = state_read @split_dut.phase
+  %23 : 4s<6> = add %22, 4s<6>'0x1
+  %24 : 4s<6> = state_read @split_dut.phase
+  %25 : 4s<6> = mux %3, %24, %23
+  state_write @split_dut.phase, %25
+  state_write @split_dut.state, %20
+  yield %20, %0, %25
+}
+endmachine
+

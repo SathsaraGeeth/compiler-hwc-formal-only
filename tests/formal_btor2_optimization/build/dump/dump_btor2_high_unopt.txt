@@ -1,0 +1,10 @@
+Top level design units:
+    formal_btor2_optimization
+
+btor2.hir {
+  assert optimized_protocol {
+    safety = G((request -> request))
+    reactivity = G((request -> F(grant)))
+    reactivity = G((request -> F(grant)))
+  }
+}

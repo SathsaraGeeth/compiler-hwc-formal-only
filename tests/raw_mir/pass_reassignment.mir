@@ -1,0 +1,10 @@
+mir.version 1
+
+machine @reassignment(%a : 4s<8>) -> (out : 4s<8>) {
+^entry:
+  %acc : 4s<8> = add %a, %a
+  %acc : 4s<8> = add %acc, %a
+  %acc : 4s<8> = sub %acc, 4s<8>'0x01
+  yield %acc
+}
+endmachine

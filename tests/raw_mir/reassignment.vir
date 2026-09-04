@@ -1,0 +1,9 @@
+vir.version 1
+
+func @raw_mir.reassignment() -> i32 {
+  %a = import_read @a, 0, 8
+  drive @a, %a
+  delay 1
+  export_write @out, 1, 8
+  return 0
+}

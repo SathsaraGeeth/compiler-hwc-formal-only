@@ -1,0 +1,86 @@
+Top level design units:
+    circular_buffer_auto_tb
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+@"clk" = global i1 zeroinitializer
+@"clr_n" = global i1 zeroinitializer
+@"deq_ready" = global i1 zeroinitializer
+@"deq_valid" = global i1 zeroinitializer
+@"empty" = global i1 zeroinitializer
+@"enq_tail_data" = global i8 zeroinitializer
+@"enq_valid" = global i1 zeroinitializer
+@"head_data" = global i8 zeroinitializer
+@"level" = global i3 zeroinitializer
+@"rst_n" = global i1 zeroinitializer
+
+define void @"circular_buffer_auto_tb.combinational"() {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_auto_tb.clocked"() {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_auto_tb.initial"() {
+entry:
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"rst_n"
+  store i1 0, ptr @"deq_valid"
+  store i8 0, ptr @"enq_tail_data"
+  store i1 0, ptr @"enq_valid"
+  store i1 1, ptr @"clr_n"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 0, ptr @"clk"
+  store i1 1, ptr @"rst_n"
+  store i8 42, ptr @"enq_tail_data"
+  store i1 1, ptr @"enq_valid"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"enq_valid"
+  call void @"vir.runtime.time.delay"(i32 1)
+  %0 = load i3, ptr @"level"
+  %1 = icmp eq i3 %0, 1
+  call void @"vir.runtime.assert.check"(i1 %1)
+  %2 = load i1, ptr @"empty"
+  %3 = xor i1 %2, true
+  call void @"vir.runtime.assert.check"(i1 %3)
+  %4 = load i1, ptr @"deq_ready"
+  call void @"vir.runtime.assert.check"(i1 %4)
+  %5 = load i8, ptr @"head_data"
+  %6 = icmp eq i8 %5, 42
+  call void @"vir.runtime.assert.check"(i1 %6)
+  store i1 1, ptr @"deq_valid"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.time.delay"(i32 1)
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"deq_valid"
+  call void @"vir.runtime.time.delay"(i32 1)
+  %7 = load i3, ptr @"level"
+  %8 = icmp eq i3 %7, 0
+  call void @"vir.runtime.assert.check"(i1 %8)
+  %9 = load i1, ptr @"empty"
+  call void @"vir.runtime.assert.check"(i1 %9)
+  %10 = load i1, ptr @"deq_ready"
+  %11 = xor i1 %10, true
+  call void @"vir.runtime.assert.check"(i1 %11)
+  call void @"vir.runtime.finish"()
+  ret void
+}
+
+declare void @"vir.runtime.time.delay"(i32)
+
+declare void @"vir.runtime.assert.check"(i1)
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+
+declare void @"vir.runtime.finish"()

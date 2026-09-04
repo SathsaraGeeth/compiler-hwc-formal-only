@@ -1,0 +1,30 @@
+Top level design units:
+    formal_btor2_optimization
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+@"add_zero_a" = global i8 zeroinitializer
+@"add_zero_b" = global i8 zeroinitializer
+@"data" = global i8 zeroinitializer
+@"grant" = global i64 zeroinitializer
+@"multiply_four" = global i8 zeroinitializer
+@"request" = global i1 zeroinitializer
+@"rst_n" = global i1 zeroinitializer
+@"selected_request" = global i1 zeroinitializer
+@"unused_logic" = global i8 zeroinitializer
+
+define void @"formal_btor2_optimization.combinational"() {
+entry:
+  %0 = load i8, ptr @"data"
+  %1 = add i8 %0, 0
+  store i8 %1, ptr @"add_zero_a"
+  %2 = load i8, ptr @"data"
+  %3 = add i8 %2, 0
+  store i8 %3, ptr @"add_zero_b"
+  %4 = load i8, ptr @"data"
+  %5 = mul i8 %4, 4
+  store i8 %5, ptr @"multiply_four"
+  %6 = load i1, ptr @"request"
+  %7 = load i8, ptr @"add_zero_a"
+  %8 = load i8, ptr @"add_zero_b"
+  %9 = icmp eq i8 %7, %8
+  %10 = 

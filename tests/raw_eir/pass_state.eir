@@ -1,0 +1,11 @@
+eir.version 1
+
+module @stateful_accumulator(%enable : 4s<1>, %input : 4s<8>) -> (value : 4s<8>) {
+  state @value : 4s<8>
+  %old : 4s<8> = state_read @value
+  %incremented : 4s<8> = add %old, %input
+  %next : 4s<8> = mux %enable, %old, %incremented
+  state_write @value, %next
+  yield %next
+}
+endmodule

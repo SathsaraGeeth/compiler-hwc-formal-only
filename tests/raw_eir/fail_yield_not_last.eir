@@ -1,0 +1,7 @@
+eir.version 1
+
+module @yield_not_last(%a : 4s<8>) -> (out : 4s<8>) {
+  yield %a
+  %dead : 4s<8> = add %a, %a
+}
+endmodule

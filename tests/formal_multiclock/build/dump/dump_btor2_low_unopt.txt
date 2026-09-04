@@ -1,0 +1,96 @@
+Top level design units:
+    multiclock_bridge
+
+1 sort bitvec 1
+2 input 1 clk_source
+3 input 1 clk_destination
+4 input 1 rst_n
+5 input 1 source_request
+6 const 1 0
+7 state 1 formal_initialized
+8 const 1 1
+9 const 1 0
+10 state 1 multiclock_bridge.destination_pulse
+11 const 1 0
+12 state 1 multiclock_bridge.synchronized_request
+13 const 1 0
+14 state 1 multiclock_bridge.synchronizer_stage
+15 const 1 0
+16 state 1 multiclock_bridge.source_epoch
+17 state 1 multiclock_bridge.clk_source_prev
+18 eq 1 17 2
+19 or 1 7 18
+20 state 1 multiclock_bridge.clk_destination_prev
+21 eq 1 20 3
+22 or 1 7 21
+23 not 1 17
+24 and 1 23 2
+25 not 1 4
+26 and 1 24 25
+27 const 1 0
+28 ite 1 26 27 16
+29 not 1 25
+30 and 1 24 29
+31 and 1 30 5
+32 not 1 16
+33 ite 1 31 32 28
+34 not 1 20
+35 and 1 34 3
+36 not 1 4
+37 and 1 35 36
+38 const 1 0
+39 ite 1 37 38 14
+40 const 1 0
+41 ite 1 37 40 12
+42 const 1 0
+43 ite 1 37 42 10
+44 not 1 36
+45 and 1 35 44
+46 ite 1 45 5 39
+47 ite 1 45 14 41
+48 not 1 12
+49 and 1 14 48
+50 ite 1 45 49 43
+51 const 1 1
+52 not 1 4
+53 not 1 52
+54 and 1 51 53
+55 not 1 5
+56 or 1 55 5
+57 not 1 56
+58 and 1 54 57
+59 not 1 54
+60 or 1 59 56
+61 state 1 destination_pulse_follows_synchronizer.clock_previous
+62 eq 1 61 3
+63 or 1 7 62
+64 not 1 61
+65 and 1 64 3
+66 not 1 4
+67 not 1 66
+68 and 1 65 67
+69 not 1 12
+70 and 1 10 69
+71 and 1 10 12
+72 and 1 68 70
+73 and 1 68 71
+74 init 1 7 6
+75 next 1 7 8
+76 init 1 10 9
+77 next 1 10 50
+78 init 1 12 11
+79 next 1 12 47
+80 init 1 14 13
+81 next 1 14 46
+82 init 1 16 15
+83 next 1 16 33
+84 next 1 17 2
+85 next 1 20 3
+86 next 1 61 3
+87 output 12 synchronized_request
+88 output 10 destination_pulse
+89 constraint 19 multiclock_bridge.clk_source_prev.initial_edge
+90 constraint 22 multiclock_bridge.clk_destination_prev.initial_edge
+91 constraint 60 assertion_0
+92 constraint 63 destination_pulse_follows_synchronizer.initial_clock
+93 bad 72 destination_pulse_follows_synchronizer

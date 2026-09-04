@@ -1,0 +1,10 @@
+read_file -f request_grant.f
+set_top formal_request_grant_properties
+create_clock clk
+set_reset rst_n -active_low
+set_engine pdr
+set_formal_backend auto
+set_formal_work_directory work/formal
+set_formal_timeout 2m
+set_expected_result proved
+prove request_grant_contract

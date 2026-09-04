@@ -1,0 +1,31 @@
+import "../../../../rtl_anvil/common/types.anvil"
+
+struct write_attempt {
+    state : mesi_state,
+    data  : logic[64]
+}
+
+chan write_state_ch {
+    left  attempt : (write_attempt@#1) @dyn-@dyn,
+    right commit  : (write_attempt@#1) @dyn-@dyn
+}
+
+proc write_state_coi(port : left write_state_ch) {
+    reg committed : write_attempt;
+    reg noop      : logic;
+
+    loop {
+        if ready port.attempt {
+            let request = recv port.attempt >>
+            if ((request.state == mesi_state::mesi_m) ||
+                (request.state == mesi_state::mesi_e)) {
+                set committed := request >>
+                send port.commit(*committed)
+            } else {
+                set noop := *noop
+            }
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

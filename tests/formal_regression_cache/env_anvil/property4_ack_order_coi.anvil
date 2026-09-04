@@ -1,0 +1,36 @@
+import "../../../../rtl_anvil/common/types.anvil"
+import "../../../../rtl_anvil/coherency/protocol.anvil"
+
+chan requester_ch {
+    left  req : (coh_req@#1) @dyn-@dyn,
+    right rsp : (coh_rsp@#1) @dyn-@dyn
+}
+
+chan owner_ch {
+    right snoop     : (snoop_req@#1) @dyn-@dyn,
+    left  snoop_rsp : (snoop_rsp@#1) @dyn-@dyn
+}
+
+proc directory_ack_order_coi(
+    requester : left requester_ch,
+    owner     : left owner_ch
+) {
+    reg snoop    : snoop_req;
+    reg response : coh_rsp;
+    reg noop     : logic;
+
+    loop {
+        if ready requester.req {
+            let request = recv requester.req >>
+            set snoop.op := snoop_op::snoop_invalidate;
+            set snoop.addr := request.addr >>
+            send owner.snoop(*snoop) >>
+            let acknowledgement = recv owner.snoop_rsp >>
+            set response.state := mesi_state::mesi_m;
+            set response.data := acknowledgement.data >>
+            send requester.rsp(*response)
+        } else {
+            set noop := *noop
+        } >> cycle 1
+    }
+}

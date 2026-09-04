@@ -1,0 +1,20 @@
+Top level design units:
+    delayed_ack_properties
+
+eir.version 1
+
+module @delayed_ack(%clk : 4s<1>, %req : 4s<1>) -> (ack : 4s<1>) {
+  state @ack : 4s<1>
+  state @clk_prev : 4s<1>
+  %0 : 4s<1> = state_read @clk_prev
+  %1 : 4s<1> = not %0
+  %2 : 4s<1> = and %1, %clk
+  state_write @clk_prev, %clk
+  %3 : 4s<1> = state_read @ack
+  %4 : 4s<1> = state_read @ack
+  %5 : 4s<1> = mux %2, %4, %req
+  state_write @ack, %5
+  yield %5
+}
+endmodule
+

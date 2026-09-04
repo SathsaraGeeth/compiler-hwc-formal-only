@@ -1,0 +1,8 @@
+Top level design units:
+    delayed_ack_properties
+
+btor2.hir {
+  assert delayed_ack_correct {
+    safety = (req -> (##[1:1] ack))
+  }
+}

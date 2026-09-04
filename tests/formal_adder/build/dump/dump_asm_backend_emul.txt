@@ -1,0 +1,18 @@
+Top level design units:
+    formal_adder_properties
+
+0000:  d8270000  import_read x1, 0 <a> : width 8
+0001:  e0000000  literal (continuation)
+0002:  60410008  zext x2, x1, width 9
+0003:  d8270001  import_read x1, 1 <b> : width 8
+0004:  e0000000  literal (continuation)
+0005:  60610008  zext x3, x1, width 9
+0006:  0c221800  add x1, x2, x3
+0007:  804101c0  slice x2, x1, start 0, width 8
+0008:  dc470002  export_write 2 <sum>, x2 : width 8
+0009:  e0000000  literal (continuation)
+000a:  80410008  slice x2, x1, start 8, width 1
+000b:  dc400003  export_write 3 <carry>, x2 : width 1
+000c:  e0000000  literal (continuation)
+000d:  04000000  commit
+000e:  08000000  yield

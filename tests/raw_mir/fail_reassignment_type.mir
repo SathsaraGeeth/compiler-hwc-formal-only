@@ -1,0 +1,9 @@
+mir.version 1
+
+machine @bad_reassignment(%a : 4s<8>) -> (out : 4s<16>) {
+^entry:
+  %acc : 4s<8> = add %a, %a
+  %acc : 4s<16> = zext %acc
+  yield %acc
+}
+endmachine

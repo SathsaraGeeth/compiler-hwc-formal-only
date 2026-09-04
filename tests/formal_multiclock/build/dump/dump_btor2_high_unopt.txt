@@ -1,0 +1,11 @@
+Top level design units:
+    multiclock_bridge
+
+btor2.hir {
+  assert destination_pulse_follows_synchronizer {
+    safety = G((destination_pulse -> synchronized_request))
+  }
+  assume assertion_0 {
+    safety = (source_request -> source_request)
+  }
+}

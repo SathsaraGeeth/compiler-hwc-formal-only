@@ -1,0 +1,46 @@
+Top level design units:
+    delayed_ack_properties
+
+1 sort bitvec 1
+2 input 1 clk
+3 input 1 req
+4 const 1 0
+5 state 1 formal_initialized
+6 const 1 1
+7 state 1 delayed_ack.ack
+8 state 1 delayed_ack.clk_prev
+9 eq 1 8 2
+10 or 1 5 9
+11 not 1 8
+12 and 1 11 2
+13 ite 1 12 3 7
+14 state 1 delayed_ack_correct.clock_previous
+15 eq 1 14 2
+16 or 1 5 15
+17 not 1 14
+18 and 1 17 2
+19 const 1 0
+20 not 1 19
+21 and 1 18 20
+22 not 1 7
+23 const 1 0
+24 state 1 delayed_ack_correct.age_1
+25 const 1 0
+26 ite 1 18 3 24
+27 ite 1 19 25 26
+28 and 1 24 7
+29 or 1 23 28
+30 and 1 24 22
+31 and 1 21 30
+32 and 1 21 29
+33 init 1 5 4
+34 next 1 5 6
+35 next 1 7 13
+36 next 1 8 2
+37 next 1 14 2
+38 init 1 24 23
+39 next 1 24 27
+40 output 7 ack
+41 constraint 10 delayed_ack.clk_prev.initial_edge
+42 constraint 16 delayed_ack_correct.initial_clock
+43 bad 31 delayed_ack_correct

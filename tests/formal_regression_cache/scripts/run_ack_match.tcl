@@ -1,0 +1,8 @@
+read_file -f files_ack_match.f
+set_top directory_ack_match
+create_clock i_clk
+set_reset i_rst_n -active_low
+set_engine bmc
+set_max_depth 8
+prove conflicting_grant_follows_matching_snoop_ack
+prove only_matching_snoop_ack_completes

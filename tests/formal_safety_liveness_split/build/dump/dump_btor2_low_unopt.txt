@@ -1,0 +1,91 @@
+Top level design units:
+    safety_liveness_split
+
+1 sort bitvec 1
+2 sort bitvec 6
+3 sort bitvec 128
+4 sort bitvec 127
+5 input 1 clk
+6 input 1 req
+7 input 1 ack
+8 input 1 done
+9 const 1 0
+10 state 1 formal_initialized
+11 const 1 1
+12 state 2 split_dut.phase
+13 state 3 split_dut.state
+14 state 1 split_dut.clk_prev
+15 eq 1 14 5
+16 or 1 10 15
+17 not 1 14
+18 and 1 17 5
+19 slice 4 13 126 0
+20 slice 1 13 127 127
+21 slice 1 13 95 95
+22 xor 1 20 21
+23 slice 1 13 62 62
+24 xor 1 22 23
+25 slice 1 13 0 0
+26 xor 1 24 25
+27 concat 3 19 26
+28 ite 3 18 27 13
+29 const 2 000001
+30 add 2 12 29
+31 ite 2 18 30 12
+32 state 1 trivial_safety_and_liveness.safety.clock_previous
+33 eq 1 32 5
+34 or 1 10 33
+35 not 1 32
+36 and 1 35 5
+37 eq 1 13 13
+38 const 1 0
+39 not 1 38
+40 and 1 36 39
+41 not 1 37
+42 and 1 40 41
+43 state 1 trivial_safety_and_liveness.guarantee.clock_previous
+44 eq 1 43 5
+45 or 1 10 44
+46 not 1 43
+47 and 1 46 5
+48 const 1 0
+49 not 1 48
+50 and 1 47 49
+51 eq 1 13 13
+52 const 1 0
+53 const 1 1
+54 state 1 trivial_safety_and_liveness.guarantee.state_0
+55 not 1 51
+56 const 1 1
+57 and 1 55 56
+58 const 1 0
+59 and 1 51 58
+60 or 1 57 59
+61 and 1 53 60
+62 and 1 54 61
+63 or 1 52 62
+64 not 1 50
+65 or 1 64 63
+66 or 1 52 62
+67 ite 1 50 66 54
+68 ite 1 48 53 67
+69 or 1 52 54
+70 and 1 50 69
+71 init 1 10 9
+72 next 1 10 11
+73 next 2 12 31
+74 next 3 13 28
+75 next 1 14 5
+76 next 1 32 5
+77 next 1 43 5
+78 init 1 54 53
+79 next 1 54 68
+80 output 13 state
+81 output 13 signature
+82 output 12 phase
+83 constraint 16 split_dut.clk_prev.initial_edge
+84 constraint 34 trivial_safety_and_liveness.safety.initial_clock
+85 bad 42 trivial_safety_and_liveness.safety
+86 constraint 45 trivial_safety_and_liveness.guarantee.initial_clock
+87 constraint 65 trivial_safety_and_liveness.guarantee.transition
+88 justice 1 70 trivial_safety_and_liveness.guarantee

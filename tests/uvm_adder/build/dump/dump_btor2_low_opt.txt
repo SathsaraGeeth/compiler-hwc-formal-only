@@ -1,0 +1,97 @@
+Top level design units:
+    adder_uvm_tb
+
+1 sort bitvec 1
+2 sort bitvec 8
+3 sort bitvec 9
+4 input 1 clk.data
+5 const 1 0
+6 input 1 clk.xmask
+7 input 1 clk.zmask
+8 and 1 6 7
+9 not 1 8
+10 input 2 a.data
+11 const 2 00000000
+12 input 2 a.xmask
+13 input 2 a.zmask
+14 and 2 12 13
+15 redor 1 14
+16 not 1 15
+17 input 2 b.data
+18 input 2 b.xmask
+19 input 2 b.zmask
+20 and 2 18 19
+21 redor 1 20
+22 not 1 21
+23 state 2 sum.data
+24 state 2 sum.xmask
+25 state 2 sum.zmask
+26 state 1 carry.data
+27 state 1 carry.xmask
+28 state 1 carry.zmask
+29 state 1 clk_prev.data
+30 state 1 clk_prev.xmask
+31 state 1 clk_prev.zmask
+32 not 1 29
+33 or 1 30 31
+34 not 1 33
+35 or 1 6 7
+36 not 1 35
+37 and 1 34 29
+38 not 1 4
+39 and 1 36 38
+40 and 1 34 32
+41 and 1 36 4
+42 or 1 37 39
+43 and 1 40 41
+44 or 1 42 43
+45 not 1 44
+46 uext 3 10 1
+47 uext 3 12 1
+48 uext 3 13 1
+49 uext 3 17 1
+50 uext 3 18 1
+51 uext 3 19 1
+52 or 3 50 51
+53 redor 1 52
+54 or 3 47 48
+55 redor 1 54
+56 or 1 55 53
+57 add 3 46 49
+58 const 3 111111111
+59 const 3 000000000
+60 ite 3 56 58 59
+61 slice 2 57 7 0
+62 slice 2 60 7 0
+63 ite 2 43 62 24
+64 ite 2 43 11 25
+65 ite 2 43 61 23
+66 const 2 11111111
+67 ite 2 45 66 63
+68 ite 2 45 11 64
+69 slice 1 57 8 8
+70 slice 1 60 8 8
+71 ite 1 43 70 27
+72 ite 1 43 5 28
+73 ite 1 43 69 26
+74 const 1 1
+75 ite 1 45 74 71
+76 ite 1 45 5 72
+77 next 2 23 65
+78 next 2 24 67
+79 next 2 25 68
+80 next 1 26 73
+81 next 1 27 75
+82 next 1 28 76
+83 next 1 29 4
+84 next 1 30 6
+85 next 1 31 7
+86 output 65 sum.data
+87 output 67 sum.xmask
+88 output 68 sum.zmask
+89 output 73 carry.data
+90 output 75 carry.xmask
+91 output 76 carry.zmask
+92 constraint 9 clk.valid
+93 constraint 16 a.valid
+94 constraint 22 b.valid

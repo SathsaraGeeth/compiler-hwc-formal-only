@@ -1,0 +1,24 @@
+Top level design units:
+    uart_formal
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+@"f_past_valid" = global i64 zeroinitializer
+
+define void @"uart_formal.combinational"() {
+entry:
+  ret void
+}
+
+define void @"uart_formal.clocked"() {
+entry:
+  %0 = zext i1 1 to i64
+  call void @"vir.runtime.nba.store.u64"(ptr @"f_past_valid", i64 %0, i32 1)
+  ret void
+}
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+
+declare void @"vir.runtime.nba.store.u64"(ptr, i64, i32)

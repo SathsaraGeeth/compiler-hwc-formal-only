@@ -1,0 +1,6 @@
+eir.version 1
+
+module @invalid_type(%a : 3s<8>) -> (out : 4s<8>) {
+  yield %a
+}
+endmodule

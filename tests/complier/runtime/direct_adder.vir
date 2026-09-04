@@ -1,0 +1,14 @@
+vir.version 1
+
+func @direct_adder.runtime_io() -> i32 {
+  %clk = import_read @clk, 0, 1
+  %a = import_read @a, 0, 8
+  %b = import_read @b, 0, 8
+  drive @clk, %clk
+  drive @a, %a
+  drive @b, %b
+  delay 1
+  export_write @sum, 1, 8
+  export_write @carry, 1, 1
+  return 0
+}

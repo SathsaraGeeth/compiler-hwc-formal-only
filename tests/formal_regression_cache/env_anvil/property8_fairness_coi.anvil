@@ -1,0 +1,29 @@
+struct fair_req { data : logic }
+struct fair_rsp { data : logic }
+
+chan fair_ch {
+    left  req : (fair_req@#1) @dyn-@dyn,
+    right rsp : (fair_rsp@#1) @dyn-@dyn
+}
+
+proc fairness_coi(cpu0 : left fair_ch, cpu1 : left fair_ch) {
+    reg response    : fair_rsp;
+    reg last_client : logic;
+
+    loop {
+        if (ready cpu0.req &&
+            ((*last_client == 1'b1) || ((ready cpu1.req) == 1'b0))) {
+            let request = recv cpu0.req >>
+            set last_client := 1'b0;
+            set response.data := request.data >>
+            send cpu0.rsp(*response)
+        } else if ready cpu1.req {
+            let request = recv cpu1.req >>
+            set last_client := 1'b1;
+            set response.data := request.data >>
+            send cpu1.rsp(*response)
+        } else {
+            set last_client := *last_client
+        } >> cycle 1
+    }
+}

@@ -1,0 +1,543 @@
+Top level design units:
+    circular_buffer_auto_tb
+
+1 sort bitvec 1
+2 sort bitvec 8
+3 sort bitvec 3
+4 sort bitvec 2
+5 input 1 i_clk.data
+6 const 1 0
+7 input 1 i_clk.xmask
+8 input 1 i_clk.zmask
+9 and 1 7 8
+10 not 1 9
+11 input 1 i_rst_n.data
+12 input 1 i_rst_n.xmask
+13 input 1 i_rst_n.zmask
+14 and 1 12 13
+15 not 1 14
+16 input 1 i_deq_valid.data
+17 input 1 i_deq_valid.xmask
+18 input 1 i_deq_valid.zmask
+19 and 1 17 18
+20 not 1 19
+21 input 2 i_enq_tail_data.data
+22 const 2 00000000
+23 input 2 i_enq_tail_data.xmask
+24 input 2 i_enq_tail_data.zmask
+25 and 2 23 24
+26 redor 1 25
+27 not 1 26
+28 input 1 i_enq_valid.data
+29 input 1 i_enq_valid.xmask
+30 input 1 i_enq_valid.zmask
+31 and 1 29 30
+32 not 1 31
+33 input 1 i_clr_n.data
+34 input 1 i_clr_n.xmask
+35 input 1 i_clr_n.zmask
+36 and 1 34 35
+37 not 1 36
+38 state 1 o_deq_ready.data
+39 state 1 o_deq_ready.xmask
+40 state 1 o_deq_ready.zmask
+41 state 3 r_count.data
+42 const 3 000
+43 state 3 r_count.xmask
+44 state 3 r_count.zmask
+45 state 4 r_tail_ptr.data
+46 const 4 00
+47 state 4 r_tail_ptr.xmask
+48 state 4 r_tail_ptr.zmask
+49 state 4 r_head_ptr.data
+50 state 4 r_head_ptr.xmask
+51 state 4 r_head_ptr.zmask
+52 state 2 r_bypass_data.data
+53 state 2 r_bypass_data.xmask
+54 state 2 r_bypass_data.zmask
+55 state 1 r_bypass_en.data
+56 state 1 r_bypass_en.xmask
+57 state 1 r_bypass_en.zmask
+58 state 1 i_clk_prev.data
+59 state 1 i_clk_prev.xmask
+60 state 1 i_clk_prev.zmask
+61 state 1 i_rst_n_prev.data
+62 state 1 i_rst_n_prev.xmask
+63 state 1 i_rst_n_prev.zmask
+64 state 2 u_buff_mem.o_dout.data
+65 state 2 u_buff_mem.o_dout.xmask
+66 state 2 u_buff_mem.o_dout.zmask
+67 state 2 u_buff_mem.mem[3].data
+68 state 2 u_buff_mem.mem[3].xmask
+69 state 2 u_buff_mem.mem[3].zmask
+70 state 2 u_buff_mem.mem[2].data
+71 state 2 u_buff_mem.mem[2].xmask
+72 state 2 u_buff_mem.mem[2].zmask
+73 state 2 u_buff_mem.mem[1].data
+74 state 2 u_buff_mem.mem[1].xmask
+75 state 2 u_buff_mem.mem[1].zmask
+76 state 2 u_buff_mem.mem[0].data
+77 state 2 u_buff_mem.mem[0].xmask
+78 state 2 u_buff_mem.mem[0].zmask
+79 state 1 u_buff_mem.i_clk_prev.data
+80 state 1 u_buff_mem.i_clk_prev.xmask
+81 state 1 u_buff_mem.i_clk_prev.zmask
+82 or 1 39 40
+83 not 1 82
+84 or 1 17 18
+85 not 1 84
+86 not 1 38
+87 and 1 83 86
+88 not 1 16
+89 and 1 85 88
+90 and 1 83 38
+91 and 1 85 16
+92 or 1 87 89
+93 and 1 90 91
+94 or 1 92 93
+95 not 1 94
+96 const 3 100
+97 or 3 43 44
+98 redor 1 97
+99 eq 1 41 96
+100 eq 1 41 42
+101 not 1 99
+102 const 4 01
+103 or 4 50 51
+104 redor 1 103
+105 add 4 49 102
+106 const 4 11
+107 ite 4 104 106 46
+108 ite 4 93 107 50
+109 ite 4 93 46 51
+110 ite 4 93 105 49
+111 ite 4 95 106 108
+112 ite 4 95 46 109
+113 not 1 79
+114 or 1 80 81
+115 not 1 114
+116 or 1 7 8
+117 not 1 116
+118 and 1 115 79
+119 not 1 5
+120 and 1 117 119
+121 and 1 115 113
+122 and 1 117 5
+123 or 1 118 120
+124 and 1 121 122
+125 or 1 123 124
+126 not 1 125
+127 or 4 47 48
+128 redor 1 127
+129 eq 1 45 102
+130 const 2 11111111
+131 const 4 10
+132 eq 1 45 131
+133 eq 1 45 106
+134 eq 1 45 46
+135 or 4 111 112
+136 redor 1 135
+137 eq 1 110 102
+138 ite 2 137 74 77
+139 ite 2 137 75 78
+140 ite 2 137 73 76
+141 ite 2 136 130 138
+142 ite 2 136 22 139
+143 eq 1 110 131
+144 ite 2 143 71 141
+145 ite 2 143 72 142
+146 ite 2 143 70 140
+147 ite 2 136 130 144
+148 ite 2 136 22 145
+149 eq 1 110 106
+150 ite 2 149 68 147
+151 ite 2 149 69 148
+152 ite 2 149 67 146
+153 ite 2 136 130 150
+154 ite 2 136 22 151
+155 ite 2 124 153 65
+156 ite 2 124 154 66
+157 ite 2 124 152 64
+158 ite 2 126 130 155
+159 ite 2 126 22 156
+160 or 1 56 57
+161 ite 2 55 53 158
+162 ite 2 55 54 159
+163 ite 2 55 52 157
+164 ite 2 160 130 161
+165 ite 2 160 22 162
+166 not 1 98
+167 or 1 29 30
+168 not 1 167
+169 and 1 166 99
+170 not 1 28
+171 and 1 168 170
+172 and 1 166 101
+173 and 1 168 28
+174 or 1 169 171
+175 and 1 172 173
+176 or 1 174 175
+177 not 1 176
+178 concat 4 175 93
+179 concat 4 177 95
+180 redor 1 179
+181 eq 1 178 102
+182 const 1 1
+183 not 1 180
+184 not 1 181
+185 and 1 183 184
+186 and 1 183 181
+187 or 1 185 186
+188 not 1 187
+189 not 1 186
+190 and 1 187 189
+191 and 1 187 186
+192 const 3 001
+193 sub 3 41 192
+194 const 3 111
+195 ite 3 98 194 42
+196 ite 3 186 195 43
+197 ite 3 186 42 44
+198 ite 3 186 193 41
+199 ite 3 188 194 196
+200 ite 3 188 42 197
+201 eq 1 178 131
+202 not 1 201
+203 and 1 183 202
+204 and 1 183 201
+205 or 1 203 204
+206 not 1 205
+207 not 1 204
+208 and 1 205 207
+209 and 1 205 204
+210 add 3 41 192
+211 ite 3 204 195 199
+212 ite 3 204 42 200
+213 ite 3 204 210 198
+214 ite 3 206 194 211
+215 ite 3 206 42 212
+216 not 1 58
+217 or 1 59 60
+218 not 1 217
+219 and 1 218 58
+220 and 1 218 216
+221 or 1 219 120
+222 and 1 220 122
+223 or 1 221 222
+224 not 1 222
+225 and 1 223 224
+226 and 1 223 222
+227 or 1 225 226
+228 not 1 11
+229 or 1 12 13
+230 not 1 229
+231 or 1 62 63
+232 not 1 231
+233 and 1 230 11
+234 not 1 61
+235 and 1 232 234
+236 and 1 230 228
+237 and 1 232 61
+238 or 1 233 235
+239 and 1 236 237
+240 or 1 238 239
+241 not 1 226
+242 and 1 227 241
+243 not 1 239
+244 and 1 240 243
+245 and 1 227 226
+246 and 1 240 239
+247 and 1 242 244
+248 or 1 245 246
+249 or 1 247 248
+250 not 1 248
+251 and 1 249 250
+252 and 1 249 248
+253 or 1 251 233
+254 and 1 252 236
+255 or 1 253 254
+256 not 1 255
+257 ite 1 254 6 56
+258 ite 1 254 6 57
+259 ite 1 254 6 55
+260 ite 1 256 182 257
+261 ite 1 256 6 258
+262 ite 2 254 22 53
+263 ite 2 254 22 54
+264 ite 2 254 22 52
+265 ite 2 256 130 262
+266 ite 2 256 22 263
+267 or 1 251 236
+268 and 1 252 233
+269 or 1 267 268
+270 not 1 33
+271 or 1 34 35
+272 not 1 271
+273 not 1 268
+274 and 1 269 273
+275 and 1 272 33
+276 and 1 269 268
+277 and 1 272 270
+278 or 1 274 275
+279 and 1 276 277
+280 or 1 278 279
+281 not 1 280
+282 ite 1 279 6 260
+283 ite 1 279 6 261
+284 ite 1 279 6 259
+285 ite 1 281 182 282
+286 ite 1 281 6 283
+287 ite 2 279 22 265
+288 ite 2 279 22 266
+289 ite 2 279 22 264
+290 ite 2 281 130 287
+291 ite 2 281 22 288
+292 or 1 274 277
+293 and 1 276 275
+294 or 1 292 293
+295 not 1 294
+296 or 1 128 136
+297 eq 1 45 110
+298 not 1 296
+299 not 1 175
+300 and 1 176 299
+301 not 1 297
+302 and 1 298 301
+303 and 1 176 175
+304 and 1 298 297
+305 or 1 300 302
+306 and 1 303 304
+307 or 1 305 306
+308 not 1 307
+309 ite 1 293 308 285
+310 ite 1 293 6 286
+311 ite 1 293 306 284
+312 ite 1 295 182 309
+313 ite 1 295 6 310
+314 ite 2 293 23 290
+315 ite 2 293 24 291
+316 ite 2 293 21 289
+317 ite 2 295 130 314
+318 ite 2 295 22 315
+319 ite 4 254 46 50
+320 ite 4 254 46 51
+321 ite 4 254 46 49
+322 ite 4 256 106 319
+323 ite 4 256 46 320
+324 ite 4 254 46 47
+325 ite 4 254 46 48
+326 ite 4 254 46 45
+327 ite 4 256 106 324
+328 ite 4 256 46 325
+329 ite 3 254 42 43
+330 ite 3 254 42 44
+331 ite 3 254 42 41
+332 ite 3 256 194 329
+333 ite 3 256 42 330
+334 ite 1 254 6 39
+335 ite 1 254 6 40
+336 ite 1 254 6 38
+337 ite 1 256 182 334
+338 ite 1 256 6 335
+339 ite 4 279 46 322
+340 ite 4 279 46 323
+341 ite 4 279 46 321
+342 ite 4 281 106 339
+343 ite 4 281 46 340
+344 ite 4 279 46 327
+345 ite 4 279 46 328
+346 ite 4 279 46 326
+347 ite 4 281 106 344
+348 ite 4 281 46 345
+349 ite 3 279 42 332
+350 ite 3 279 42 333
+351 ite 3 279 42 331
+352 ite 3 281 194 349
+353 ite 3 281 42 350
+354 ite 1 279 6 337
+355 ite 1 279 6 338
+356 ite 1 279 6 336
+357 ite 1 281 182 354
+358 ite 1 281 6 355
+359 ite 3 293 214 352
+360 ite 3 293 215 353
+361 ite 3 293 213 351
+362 ite 3 295 194 359
+363 ite 3 295 42 360
+364 or 3 214 215
+365 redor 1 364
+366 neq 1 213 42
+367 ite 1 293 365 357
+368 ite 1 293 6 358
+369 ite 1 293 366 356
+370 ite 1 295 182 367
+371 ite 1 295 6 368
+372 not 1 293
+373 and 1 294 372
+374 and 1 294 293
+375 or 1 373 190
+376 and 1 374 191
+377 or 1 375 376
+378 not 1 377
+379 ite 4 376 107 342
+380 ite 4 376 46 343
+381 ite 4 376 105 341
+382 ite 4 378 106 379
+383 ite 4 378 46 380
+384 or 1 373 208
+385 and 1 374 209
+386 or 1 384 385
+387 not 1 386
+388 add 4 45 102
+389 ite 4 128 106 46
+390 ite 4 385 389 347
+391 ite 4 385 46 348
+392 ite 4 385 388 346
+393 ite 4 387 106 390
+394 ite 4 387 46 391
+395 eq 1 178 106
+396 not 1 395
+397 and 1 183 396
+398 and 1 183 395
+399 or 1 397 398
+400 not 1 398
+401 and 1 399 400
+402 and 1 399 398
+403 or 1 373 401
+404 and 1 374 402
+405 or 1 403 404
+406 not 1 405
+407 ite 4 404 107 382
+408 ite 4 404 46 383
+409 ite 4 404 105 381
+410 ite 4 406 106 407
+411 ite 4 406 46 408
+412 ite 4 404 389 393
+413 ite 4 404 46 394
+414 ite 4 404 388 392
+415 ite 4 406 106 412
+416 ite 4 406 46 413
+417 not 1 124
+418 and 1 125 417
+419 and 1 125 124
+420 or 1 418 300
+421 and 1 419 303
+422 or 1 420 421
+423 not 1 128
+424 not 1 421
+425 and 1 422 424
+426 not 1 134
+427 and 1 423 426
+428 and 1 422 421
+429 and 1 423 134
+430 or 1 425 427
+431 and 1 428 429
+432 or 1 430 431
+433 not 1 432
+434 ite 2 431 23 77
+435 ite 2 431 24 78
+436 ite 2 431 21 76
+437 ite 2 433 130 434
+438 ite 2 433 22 435
+439 not 1 129
+440 and 1 423 439
+441 and 1 423 129
+442 or 1 425 440
+443 and 1 428 441
+444 or 1 442 443
+445 not 1 444
+446 ite 2 443 23 74
+447 ite 2 443 24 75
+448 ite 2 443 21 73
+449 ite 2 445 130 446
+450 ite 2 445 22 447
+451 not 1 132
+452 and 1 423 451
+453 and 1 423 132
+454 or 1 425 452
+455 and 1 428 453
+456 or 1 454 455
+457 not 1 456
+458 ite 2 455 23 71
+459 ite 2 455 24 72
+460 ite 2 455 21 70
+461 ite 2 457 130 458
+462 ite 2 457 22 459
+463 not 1 133
+464 and 1 423 463
+465 and 1 423 133
+466 or 1 425 464
+467 and 1 428 465
+468 or 1 466 467
+469 not 1 468
+470 ite 2 467 23 68
+471 ite 2 467 24 69
+472 ite 2 467 21 67
+473 ite 2 469 130 470
+474 ite 2 469 22 471
+475 next 1 38 369
+476 next 1 39 370
+477 next 1 40 371
+478 next 3 41 361
+479 next 3 43 362
+480 next 3 44 363
+481 next 4 45 414
+482 next 4 47 415
+483 next 4 48 416
+484 next 4 49 409
+485 next 4 50 410
+486 next 4 51 411
+487 next 2 52 316
+488 next 2 53 317
+489 next 2 54 318
+490 next 1 55 311
+491 next 1 56 312
+492 next 1 57 313
+493 next 1 58 5
+494 next 1 59 7
+495 next 1 60 8
+496 next 1 61 11
+497 next 1 62 12
+498 next 1 63 13
+499 next 2 64 157
+500 next 2 65 158
+501 next 2 66 159
+502 next 2 67 472
+503 next 2 68 473
+504 next 2 69 474
+505 next 2 70 460
+506 next 2 71 461
+507 next 2 72 462
+508 next 2 73 448
+509 next 2 74 449
+510 next 2 75 450
+511 next 2 76 436
+512 next 2 77 437
+513 next 2 78 438
+514 next 1 79 5
+515 next 1 80 7
+516 next 1 81 8
+517 output 163 o_head_data.data
+518 output 164 o_head_data.xmask
+519 output 165 o_head_data.zmask
+520 output 369 o_deq_ready.data
+521 output 370 o_deq_ready.xmask
+522 output 371 o_deq_ready.zmask
+523 output 101 o_enq_ready.data
+524 output 98 o_enq_ready.xmask
+525 output 6 o_enq_ready.zmask
+526 output 99 o_full.data
+527 output 98 o_full.xmask
+528 output 6 o_full.zmask
+529 output 100 o_empty.data
+530 output 98 o_empty.xmask
+531 output 6 o_empty.zmask
+532 output 41 o_level.data
+533 output 43 o_level.xmask
+534 output 44 o_level.zmask
+535 constraint 10 i_clk.valid
+536 constraint 15 i_rst_n.valid
+537 constraint 20 i_deq_valid.valid
+538 constraint 27 i_enq_tail_data.valid
+539 constraint 32 i_enq_valid.valid
+540 constraint 37 i_clr_n.valid

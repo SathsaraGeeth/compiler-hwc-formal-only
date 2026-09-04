@@ -1,0 +1,9 @@
+eir.version 1
+
+module @bit_pipeline(%a : 4s<4>, %b : 4s<4>) -> (out : 4s<8>) {
+  %joined : 4s<8> = concat %a, %b
+  %extended : 4s<16> = zext %joined
+  %out : 4s<8> = slice %extended, 0, 8
+  yield %out
+}
+endmodule

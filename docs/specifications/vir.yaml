@@ -1,0 +1,207 @@
+# VIR.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+#
+# Version 1.0
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation (FROZEN)
+#
+#
+# Comments:
+# 1. SSA based high level IR for non-synthesizable HDL
+# 2. Some high level additions to the LLVM IR
+# 3. The easiest way to add a feature is through adding a builtin class
+#    The builtin classes and methods are not frozen
+# 4. References:
+#    a. https://pfalcon.github.io/ssabook/latest/book-v1.pdf
+#    b. https://llvm.org/docs/LangRef.html
+#
+
+!include llvm_ir.yaml
+
+# intrinsics
+
+# transport semantics
+transport:
+  evaluate_dut:
+    format: "%status, %job = evaluate_dut @instance"
+    description: returns SUCCESS, RETRY, or ERROR without hiding retry control flow
+  export:
+    format: "%status = export @signal, %value"
+    description: the caller retries the same export when status is RETRY
+  import:
+    format: "%status, %value = import @signal, %peek"
+    description: value is valid only when status is SUCCESS
+
+# external semantics
+external:
+  import:
+    format: "extern @name: function_type"
+  call:
+    format: "%result = extern_call @name(%args)"
+
+# OOP semantics
+object:
+  create:
+    format: "%obj = object_create @type"
+  field_load:
+    format: "%value = field_load %obj, @field"
+  field_store:
+    format: "field_store %obj, @field, %value"
+  method_call:
+    format: "%result = method_call %obj, @method(%args)"
+
+# built in classes
+# e.g. random, logging, errors, channels, types, 
+#      formal, time, scheduling, locks, etc
+builtin_classes:
+  Time:
+    methods:
+      - now()
+      - delay(time)
+      - wait_until(condition)
+      - wait_edge(signal, edge)
+
+  Clock:
+    methods:
+      - create(period)
+      - start()
+      - stop()
+      - wait_edge(edge)
+
+  Process:
+    methods:
+      - spawn(function)
+      - join()
+      - kill()
+      - yield()
+      - state()
+
+  Scheduler:
+    methods:
+      - create()
+      - add(process)
+      - run()
+      - stop()
+      - schedule(process, time)
+
+  Event:
+    methods:
+      - create()
+      - trigger()
+      - wait()
+      - is_triggered()
+
+  Mutex:
+    methods:
+      - create()
+      - lock()
+      - unlock()
+      - try_lock()
+
+  Semaphore:
+    methods:
+      - create(count)
+      - acquire()
+      - release()
+
+  Channel:
+    methods:
+      - create(type)
+      - send(value)
+      - receive()
+      - try_receive()
+      - peek()
+
+  Type:
+    methods:
+      - name()
+      - is_instance(object)
+      - cast(object)
+
+  Object:
+    methods:
+      - create(type)
+      - clone()
+      - compare()
+      - print()
+
+  Assert:
+    methods:
+      - check(condition)
+      - fail(message)
+
+  Assume:
+    methods:
+      - add(condition)
+
+  Cover:
+    methods:
+      - sample(value)
+      - hit()
+
+  Property:
+    methods:
+      - create()
+      - evaluate()
+      - enable()
+      - disable()
+
+  Random:
+    methods:
+      - seed(value)
+      - integer()
+      - range(min,max)
+
+  Constraint:
+    methods:
+      - add(expression)
+      - solve()
+
+  Logger:
+    methods:
+      - info(message)
+      - warning(message)
+      - error(message)
+      - fatal(message)
+      - set_level(level)
+
+  Error:
+    methods:
+      - raise(message)
+      - catch()
+      - terminate()
+
+  DUT:
+    methods:
+      - evaluate()
+      - write(signal,value)
+      - read(signal)
+      - force(signal,value)
+      - release(signal)
+
+  Transaction:
+    methods:
+      - create(type)
+      - set(field,value)
+      - get(field)
+      - clone()
+      - compare()
+
+  Port:
+    methods:
+      - connect(port)
+      - send(transaction)
+      - receive()
+
+  Formal:
+    methods:
+      - assert(property)
+      - assume(property)
+      - cover(property)
+      - prove(property)

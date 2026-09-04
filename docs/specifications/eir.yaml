@@ -1,0 +1,185 @@
+# EIR.yaml
+#
+# Copyright (C) 2026 Sathsara Geeth
+#
+#
+# Version 1.0
+#
+# Version History
+#
+# Version | Description
+# --------+-----------------------------------------
+# 1.0     | Initial implementation (FROZEN)
+#
+#
+# Comments:
+# 1. SSA based high level IR for synthesizable HDL
+# 2. References:
+#    a. https://pfalcon.github.io/ssabook/latest/book-v1.pdf
+#    b. https://circt.llvm.org/docs/Dialects/HW/
+#    c. https://yosyshq.readthedocs.io/projects/yosys/en/stable/yosys_internals/formats/rtlil_rep.html
+#
+
+datatypes:
+  - name: s<N>
+    variants:
+      - name: 2s<N>
+        description: 2 state value
+      - name: 4s<N>
+        description: 4 state value
+
+values:
+  - name: SSA temporary
+    examples: ["%value", "%0", "%1"]
+  - name: constant
+    examples: ["0", "1", "2"]
+
+logic:
+  - name: and
+    format: "and %dst, %src1, %src2"
+  - name: or
+    format: "or %dst, %src1, %src2"
+  - name: not
+    format: "not %dst, %src1"
+  - name: xor
+    format: "xor %dst, %src1, %src2"
+  - name: mux
+    format: "mux %dst, %sel, %src1, %src2"
+  - name: redand
+    format: "redand %dst, %src1"
+  - name: redor
+    format: "redor %dst, %src1"
+  - name: redxor
+    format: "redxor %dst, %src1"
+
+arithmetic:
+  - name: add
+    format: "add %dst, %src1, %src2"
+  - name: sub
+    format: "sub %dst, %src1, %src2"
+  - name: mul
+    format: "mul %dst, %src1, %src2"
+  - name: shl
+    format: "shl %dst, %src1, %src2"
+  - name: lshr
+    format: "lshr %dst, %src1, %src2"
+  - name: ashr
+    format: "ashr %dst, %src1, %src2"
+
+comparison:
+  - name: eq
+    format: "eq %dst, %src1, %src2"
+  - name: ne
+    format: "ne %dst, %src1, %src2"
+  - name: slt
+    format: "slt %dst, %src1, %src2"
+  - name: sle
+    format: "sle %dst, %src1, %src2"
+  - name: ult
+    format: "ult %dst, %src1, %src2"
+  - name: ule
+    format: "ule %dst, %src1, %src2"
+
+bit operations:
+  - name: slice
+    format: "slice %dst, %src, %start, %width"
+  - name: concat
+    format: "concat %dst, %src1, %src2"
+  - name: zext
+    format: "zext %dst, %src"
+  - name: sext
+    format: "sext %dst, %src"
+
+state:
+  - name: state_read
+    format: "state_read %dst, @state"
+    description: reads the current committed value of @state
+  - name: state_write
+    format: "state_write @state, %src"
+    description: stages the next value of @state
+                 not visible until the global atomic state commit
+
+external:
+  - name: import
+    format: "import @name : type"
+    description: declares an external input endpoint
+  - name: export
+    format: "export @name : type"
+    description: declares an external output endpoint
+  - name: import_read
+    format: "import_read %dst, @name"
+    description: reads the current value available at an input endpoint
+  - name: export_write
+    format: "export_write @name, %src"
+    description: writes an SSA value to an output endpoint
+
+hierarchy:
+  - name: module
+    format: module @name(%input : type, ...)  -> (result_name : result_type, ...) {
+              ...
+            }
+    description: defines a reusable hardware block
+  - name: instance
+    format: %result, ... = instance @instance_name, @module_name(%argument, ...)
+    description: instantiates a child module and connects ports
+
+regions:
+  - name: combinational_block
+    format: comb {
+            ...
+          }
+    description: a combinational logic path between sequential state elements
+
+reserved_keywords:
+  - module
+  - endmodule
+  - import
+  - export
+  - import_read
+  - export_write
+  - instance
+
+examples:
+  - name: positive edge producer
+    source: |
+      module @reg_or_clock_events(%clk : 4s<1>) -> (4s<1>) {
+        state @clk_prev : 4s<1>
+        comb {
+          %0 = state_read @clk_prev
+          %1 = not %0
+          %2 = and %1, %clk
+        }
+        state_write @clk_prev, %clk
+        yield %2
+      }
+      endmodule
+
+  - name: registered OR
+    source: |
+      module @reg_or(
+        %clk_posedge : 4s<1>,
+        %in1 : 4s<1>,
+        %in2 : 4s<1>
+      ) -> (4s<1>) {
+        state @q : 4s<1>
+        comb {
+          %0 = or %in1, %in2
+          %1 = state_read @q
+          %2 = mux %clk_posedge, %1, %0
+        }
+        state_write @q, %2
+        yield %1
+      }
+      endmodule
+
+  - name: structural top
+    source: |
+      module @top() {
+        import @clk : 4s<1>
+        export @q : 4s<1>
+        %clk = import_read @clk
+        %clk_posedge = instance @clock_events0, @reg_or_clock_events(%clk)
+        %q = instance @reg_or0, @reg_or(%clk_posedge, 4s<1>'0, 4s<1>'1)
+        export_write @q, %q
+      }
+      endmodule

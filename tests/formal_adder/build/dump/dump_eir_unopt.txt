@@ -1,0 +1,15 @@
+Top level design units:
+    formal_adder_properties
+
+eir.version 1
+
+module @formal_add(%a : 4s<8>, %b : 4s<8>) -> (sum : 4s<8>, carry : 4s<1>) {
+  %0 : 4s<9> = zext %a
+  %1 : 4s<9> = zext %b
+  %2 : 4s<9> = add %0, %1
+  %3 : 4s<8> = slice %2, 0, 8
+  %4 : 4s<1> = slice %2, 8, 1
+  yield %3, %4
+}
+endmodule
+

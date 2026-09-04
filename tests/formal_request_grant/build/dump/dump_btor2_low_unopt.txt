@@ -1,0 +1,230 @@
+Top level design units:
+    formal_request_grant_properties
+
+1 sort bitvec 1
+2 sort bitvec 2
+3 input 1 clk
+4 input 1 rst_n
+5 input 1 request
+6 const 1 0
+7 state 1 formal_initialized
+8 const 1 1
+9 state 2 request_grant_fsm.state
+10 state 1 request_grant_fsm.clk_prev
+11 eq 1 10 3
+12 or 1 7 11
+13 const 2 00
+14 eq 1 9 13
+15 const 2 00
+16 neq 1 9 15
+17 const 2 10
+18 eq 1 9 17
+19 not 1 10
+20 and 1 19 3
+21 not 1 4
+22 and 1 20 21
+23 const 2 00
+24 ite 2 22 23 9
+25 not 1 21
+26 and 1 20 25
+27 const 2 00
+28 eq 1 9 27
+29 const 1 0
+30 or 1 29 28
+31 const 1 0
+32 or 1 31 30
+33 and 1 26 30
+34 const 2 01
+35 const 2 00
+36 ite 2 5 34 35
+37 ite 2 33 36 24
+38 const 2 01
+39 eq 1 9 38
+40 const 1 0
+41 or 1 40 39
+42 or 1 32 41
+43 and 1 26 41
+44 const 2 10
+45 ite 2 43 44 37
+46 const 2 10
+47 eq 1 9 46
+48 const 1 0
+49 or 1 48 47
+50 or 1 42 49
+51 and 1 26 49
+52 const 2 00
+53 ite 2 51 52 45
+54 not 1 50
+55 and 1 26 54
+56 const 2 00
+57 ite 2 55 56 53
+58 state 1 request_grant_contract.safety.clock_previous
+59 eq 1 58 3
+60 or 1 7 59
+61 not 1 58
+62 and 1 61 3
+63 not 1 14
+64 eq 1 16 63
+65 not 1 4
+66 not 1 65
+67 and 1 62 66
+68 not 1 64
+69 and 1 67 68
+70 not 1 4
+71 not 1 70
+72 and 1 62 71
+73 not 1 14
+74 const 1 0
+75 const 1 1
+76 state 1 request_grant_contract.safety.state_0
+77 state 1 request_grant_contract.safety.state_1
+78 const 1 1
+79 and 1 75 78
+80 and 1 76 79
+81 not 1 16
+82 not 1 18
+83 const 1 0
+84 and 1 82 83
+85 const 1 1
+86 and 1 18 85
+87 or 1 84 86
+88 and 1 81 87
+89 not 1 73
+90 not 1 18
+91 const 1 0
+92 and 1 90 91
+93 const 1 1
+94 and 1 18 93
+95 or 1 92 94
+96 and 1 89 95
+97 const 1 0
+98 and 1 73 97
+99 or 1 96 98
+100 and 1 16 99
+101 or 1 88 100
+102 and 1 75 101
+103 and 1 77 102
+104 not 1 16
+105 not 1 18
+106 const 1 1
+107 and 1 105 106
+108 const 1 0
+109 and 1 18 108
+110 or 1 107 109
+111 and 1 104 110
+112 not 1 73
+113 not 1 18
+114 const 1 1
+115 and 1 113 114
+116 const 1 0
+117 and 1 18 116
+118 or 1 115 117
+119 and 1 112 118
+120 const 1 1
+121 and 1 73 120
+122 or 1 119 121
+123 and 1 16 122
+124 or 1 111 123
+125 and 1 75 124
+126 and 1 77 125
+127 or 1 74 80
+128 or 1 127 103
+129 or 1 128 126
+130 not 1 72
+131 or 1 130 129
+132 or 1 74 80
+133 or 1 132 103
+134 ite 1 72 133 76
+135 ite 1 70 74 134
+136 or 1 74 126
+137 ite 1 72 136 77
+138 ite 1 70 75 137
+139 or 1 74 76
+140 and 1 72 139
+141 state 1 request_grant_contract.reactivity.clock_previous
+142 eq 1 141 3
+143 or 1 7 142
+144 not 1 141
+145 and 1 144 3
+146 not 1 4
+147 not 1 146
+148 and 1 145 147
+149 input 2 request_grant_contract.reactivity.edge
+150 const 1 0
+151 const 1 1
+152 state 1 request_grant_contract.reactivity.state_0
+153 state 1 request_grant_contract.reactivity.state_1
+154 const 2 00
+155 eq 1 149 154
+156 const 1 1
+157 and 1 155 156
+158 and 1 152 157
+159 const 2 01
+160 eq 1 149 159
+161 not 1 18
+162 not 1 5
+163 const 1 0
+164 and 1 162 163
+165 not 1 14
+166 const 1 0
+167 and 1 165 166
+168 const 1 1
+169 and 1 14 168
+170 or 1 167 169
+171 and 1 5 170
+172 or 1 164 171
+173 and 1 161 172
+174 const 1 0
+175 and 1 18 174
+176 or 1 173 175
+177 and 1 160 176
+178 and 1 152 177
+179 const 2 10
+180 eq 1 149 179
+181 not 1 18
+182 const 1 1
+183 and 1 181 182
+184 const 1 0
+185 and 1 18 184
+186 or 1 183 185
+187 and 1 180 186
+188 and 1 153 187
+189 or 1 150 158
+190 or 1 189 178
+191 or 1 190 188
+192 not 1 148
+193 or 1 192 191
+194 or 1 150 158
+195 ite 1 148 194 152
+196 ite 1 146 151 195
+197 or 1 150 178
+198 or 1 197 188
+199 ite 1 148 198 153
+200 ite 1 146 150 199
+201 or 1 150 153
+202 and 1 148 201
+203 init 1 7 6
+204 next 1 7 8
+205 next 2 9 57
+206 next 1 10 3
+207 next 1 58 3
+208 init 1 76 74
+209 next 1 76 135
+210 init 1 77 75
+211 next 1 77 138
+212 next 1 141 3
+213 init 1 152 151
+214 next 1 152 196
+215 init 1 153 150
+216 next 1 153 200
+217 output 14 ready
+218 output 16 busy
+219 output 18 grant
+220 constraint 12 request_grant_fsm.clk_prev.initial_edge
+221 constraint 60 request_grant_contract.safety.initial_clock
+222 bad 69 request_grant_contract.safety
+223 constraint 131 request_grant_contract.safety.transition
+224 justice 1 140 request_grant_contract.safety
+225 constraint 143 request_grant_contract.reactivity.initial_clock
+226 constraint 193 request_grant_contract.reactivity.transition
+227 justice 1 202 request_grant_contract.reactivity

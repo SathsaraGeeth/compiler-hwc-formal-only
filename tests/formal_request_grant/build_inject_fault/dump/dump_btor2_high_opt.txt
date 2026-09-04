@@ -1,0 +1,10 @@
+Top level design units:
+    formal_request_grant_properties
+
+btor2.hir {
+  assert request_grant_contract {
+    safety = G((busy <-> LogicalNot(ready)))
+    safety = G((grant -> (busy && LogicalNot(ready))))
+    reactivity = G(((request && ready) -> F(grant)))
+  }
+}

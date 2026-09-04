@@ -1,0 +1,10 @@
+mir.version 1
+machine @multiple_blocks(%input : 4s<8>) -> (%output : 4s<8>) {
+^entry:
+  %first : 4s<8> = copy %input
+  yield %first
+^unreachable:
+  %second : 4s<8> = add %input, %input
+  yield %second
+}
+endmachine

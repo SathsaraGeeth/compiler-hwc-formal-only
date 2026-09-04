@@ -1,0 +1,11 @@
+read_file -f request_grant_fault.f
+set_top formal_request_grant_properties
+create_clock clk
+set_reset rst_n -active_low
+set_engine bmc
+set_formal_backend btormc
+set_max_depth 8
+set_formal_work_directory work/fault
+set_formal_timeout 2m
+set_expected_result counterexample
+prove request_grant_contract

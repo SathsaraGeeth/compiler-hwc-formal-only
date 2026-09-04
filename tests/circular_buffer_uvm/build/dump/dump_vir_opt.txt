@@ -1,0 +1,173 @@
+Top level design units:
+    circular_buffer_uvm_tb
+
+; VIR: portable LLVM IR using the VIR runtime ABI
+@"clk" = global i1 zeroinitializer
+@"clr_n" = global i1 zeroinitializer
+@"deq_valid" = global i1 zeroinitializer
+@"empty" = global i1 zeroinitializer
+@"enq_tail_data" = global i8 zeroinitializer
+@"enq_valid" = global i1 zeroinitializer
+@"head_data" = global i8 zeroinitializer
+@"level" = global i3 zeroinitializer
+@"rst_n" = global i1 zeroinitializer
+@".str.0" = private unnamed_addr constant [21 x i8] c"circular_buffer_test\00"
+
+define void @"circular_buffer_uvm_tb.combinational"() {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_uvm_tb.clocked"() {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_uvm_tb.initial"() {
+entry:
+  call void @"vir.runtime.uvm.run_test"(ptr @".str.0")
+  ret void
+}
+
+define void @"__uvm_coverage_init"() {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_test.build_phase"(ptr %0) {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_test.connect_phase"(ptr %1) {
+entry:
+  ret void
+}
+
+define void @"circular_buffer_test.run_phase"(ptr %2) {
+entry:
+  %3 = call i64 @"vir.runtime.uvm.process.pc"(ptr %2)
+  %4 = icmp eq i64 %3, 0
+  br i1 %4, label %process.start.0, label %process.dispatch.9
+process.start.0:
+  call void @"vir.runtime.uvm.objection.raise"()
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"rst_n"
+  store i1 0, ptr @"deq_valid"
+  store i8 0, ptr @"enq_tail_data"
+  store i1 0, ptr @"enq_valid"
+  store i1 1, ptr @"clr_n"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 1)
+  %5 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %5)
+  ret void
+process.resume.1:
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 2)
+  %6 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %6)
+  ret void
+process.resume.2:
+  store i1 0, ptr @"clk"
+  store i1 1, ptr @"rst_n"
+  store i8 42, ptr @"enq_tail_data"
+  store i1 1, ptr @"enq_valid"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 3)
+  %7 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %7)
+  ret void
+process.resume.3:
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 4)
+  %8 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %8)
+  ret void
+process.resume.4:
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"enq_valid"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 5)
+  %9 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %9)
+  ret void
+process.resume.5:
+  %10 = load i3, ptr @"level"
+  %11 = icmp eq i3 %10, 1
+  call void @"vir.runtime.assert.check"(i1 %11)
+  %12 = load i1, ptr @"empty"
+  %13 = xor i1 %12, true
+  call void @"vir.runtime.assert.check"(i1 %13)
+  %14 = load i8, ptr @"head_data"
+  %15 = icmp eq i8 %14, 42
+  call void @"vir.runtime.assert.check"(i1 %15)
+  store i1 1, ptr @"deq_valid"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 6)
+  %16 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %16)
+  ret void
+process.resume.6:
+  store i1 1, ptr @"clk"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 7)
+  %17 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %17)
+  ret void
+process.resume.7:
+  store i1 0, ptr @"clk"
+  store i1 0, ptr @"deq_valid"
+  call void @"vir.runtime.uvm.process.set_pc"(ptr %2, i64 8)
+  %18 = zext i32 1 to i64
+  call void @"vir.runtime.uvm.process.wait_time"(ptr %2, i64 %18)
+  ret void
+process.resume.8:
+  %19 = load i3, ptr @"level"
+  %20 = icmp eq i3 %19, 0
+  call void @"vir.runtime.assert.check"(i1 %20)
+  %21 = load i1, ptr @"empty"
+  call void @"vir.runtime.assert.check"(i1 %21)
+  call void @"vir.runtime.uvm.objection.drop"()
+  call void @"vir.runtime.uvm.process.complete"(ptr %2)
+  ret void
+process.dispatch.9:
+  %22 = icmp eq i64 %3, 1
+  br i1 %22, label %process.resume.1, label %process.dispatch.10
+process.dispatch.10:
+  %23 = icmp eq i64 %3, 2
+  br i1 %23, label %process.resume.2, label %process.dispatch.11
+process.dispatch.11:
+  %24 = icmp eq i64 %3, 3
+  br i1 %24, label %process.resume.3, label %process.dispatch.12
+process.dispatch.12:
+  %25 = icmp eq i64 %3, 4
+  br i1 %25, label %process.resume.4, label %process.dispatch.13
+process.dispatch.13:
+  %26 = icmp eq i64 %3, 5
+  br i1 %26, label %process.resume.5, label %process.dispatch.14
+process.dispatch.14:
+  %27 = icmp eq i64 %3, 6
+  br i1 %27, label %process.resume.6, label %process.dispatch.15
+process.dispatch.15:
+  %28 = icmp eq i64 %3, 7
+  br i1 %28, label %process.resume.7, label %process.dispatch.16
+process.dispatch.16:
+  %29 = icmp eq i64 %3, 8
+  br i1 %29, label %process.resume.8, label %process.dispatch.17
+process.dispatch.17:
+  call void @"vir.runtime.uvm.process.complete"(ptr %2)
+  ret void
+}
+
+declare void @"vir.runtime.uvm.objection.raise"()
+
+declare void @"vir.runtime.assert.check"(i1)
+
+declare void @"vir.runtime.uvm.objection.drop"()
+
+define void @"circular_buffer_test.check_phase"(ptr %30) {
+entry:
+  ret void
+}
+
+declare i64 @"vir.runtime.uvm.process.pc"(ptr)
+declare void @"vir.runtime.uvm.process.complete"(ptr)
+declare void @"vir.runtime.uvm.process.set_pc"(ptr, i64)
+declare void @"vir.runtime.uvm.process.wait_time"(ptr, i64)
+declare void @"vir.runtime.uvm.run_test"(ptr)
