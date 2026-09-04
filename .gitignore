@@ -6,3 +6,4 @@
 /tests/**/formal-work/
 /tests/**/work/
 /tests/**/*.log
+/docs/specifications/program.yaml
