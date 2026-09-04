@@ -10,6 +10,9 @@ This repository currently hosts the compiler components needed for the formal
 verification flow. The simulation and emulation platform components are not
 part of the published project.
 
+Read [`docs/specifications`](docs/specifications) to understand the
+architecture.
+
 ## Main components
 
 | Component | Main task |
